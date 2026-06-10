@@ -1,0 +1,11 @@
+# Fichiers de session R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Données Insee : NE PAS versionner (licence de diffusion + volume)
+Data/
+
+# Sorties générées
+output/
