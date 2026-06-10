@@ -3,9 +3,13 @@ library(tidyverse)   # manipulation + ggplot
 library(broom)       # résultats de modèles propres
 
 # ── Import ────────────────────────────────────────────────
-srcv <- read_csv("data/srcv.csv")   # adapte le nom du fichier
+srcv06 <- read_csv2("Data/lil-0457/lil-0457.csv/Csv/menages06_diff.csv")   # adapte le nom du fichier
+srcv10 <- read_csv2("Data/lil-0747/lil-0747.csv/Csv/menages10_diff.csv")
+srcv14 <- read_csv2("Data/lil-1090/lil-1090.csv/Csv/MENAGES14_DIFF.csv")
+srcv18 <- read_csv2("Data/lil-1374/lil-1374.csv/Csv/MENAGES18_DIFF.csv")
+srcv22 <- read_csv2("Data/lil-1646/lil-1646-Donnees_CSV/tab_men_fpr_2022.csv")
 
-glimpse(srcv)        # inspecter la structure
+glimpse(srcv06)        # inspecter la structure
 summary(srcv)
 
 # ── Préparation ───────────────────────────────────────────
