@@ -2,10 +2,23 @@
 .Rproj.user
 .Rhistory
 .RData
+.RDataTmp
 .Ruserdata
 
 # Données Insee : NE PAS versionner (licence de diffusion + volume)
 Data/
 
-# Sorties générées
+# Sorties générées (micro-données dérivées : dépôt public)
+# Les deux casses sont listées : la correspondance des motifs .gitignore est
+# sensible à la casse hors Windows, et "output/" seul ne protégerait pas
+# "Output/" sur un système de fichiers sensible à la casse.
+Output/
 output/
+Rplots.pdf
+# LaTeX : fichiers auxiliaires et PDF compilés (le .tex et les figures sont suivis)
+pdf/**/*.aux
+pdf/**/*.log
+pdf/**/*.out
+pdf/**/*.toc
+pdf/**/*.synctex.gz
+pdf/**/*.pdf

@@ -27,12 +27,17 @@ library(survey)      # régression pondérée tenant compte du plan de sondage
 library(broom)       # résultats de modèles propres
 
 # ── Import ────────────────────────────────────────────────
-# Ce script n'analyse QUE 2006 : les sept autres millésimes qui étaient chargés
-# ici ne servaient à rien (≈ 40 s et 1,5 Go de mémoire pour rien). Ils sont lus
-# proprement par lire_srcv() dans 02 et suivants.
-# ⚠️ read_csv2() suppose une décimale ',' alors que SRCV utilise '.' — c'est
-# l'une des raisons pour lesquelles ce script ne doit pas servir de référence.
-srcv06 <- read_csv2("Data/lil-0457/lil-0457.csv/Csv/menages06_diff.csv")
+srcv06 <- read_csv2("Data/lil-0457/lil-0457.csv/Csv/menages06_diff.csv")   # adapte le nom du fichier
+srcv10 <- read_csv2("Data/lil-0747/lil-0747.csv/Csv/menages10_diff.csv")
+srcv14 <- read_csv2("Data/lil-1090/lil-1090.csv/Csv/MENAGES14_DIFF.csv")
+srcv18 <- read_csv2("Data/lil-1374/lil-1374.csv/Csv/MENAGES18_DIFF.csv")
+srcv22 <- read_csv2("Data/lil-1646/lil-1646-Donnees_CSV/tab_men_fpr_2022.csv")
+# Millésimes FPR récents (décimale '.') — ATTENTION : 2024-2025 sont séparés par ',' (pas ';')
+srcv23 <- read_delim("Data/lil-1710/lil-1710-Donnees_CSV/TAB_MEN_FPR_2023.csv", delim = ";", locale = locale(decimal_mark = "."), show_col_types = FALSE)
+srcv24 <- read_delim("Data/lil-1738/lil-1738-Donnees_CSV/TAB_MEN_FPR_2024.csv", delim = ",", locale = locale(decimal_mark = "."), show_col_types = FALSE)
+srcv25 <- read_delim("Data/lil-1804/lil-1804-Donnees_CSV/TAB_MEN_FPR_2025.csv", delim = ",", locale = locale(decimal_mark = "."), show_col_types = FALSE)
+
+summary(srcv06)
 
 # ── Sélection des variables utiles ──────────────────────────────────────────
 # On ne garde que ce dont on a besoin pour alléger le jeu de données.
@@ -149,8 +154,8 @@ resultats <- broom::tidy(modele, conf.int = TRUE, exponentiate = TRUE)
 print(resultats, n = Inf)
 
 # Export des résultats
-if (!dir.exists("Output")) dir.create("Output")
-write_csv(resultats, "Output/resultats_logit_naissance.csv")
+if (!dir.exists("output")) dir.create("output")
+write_csv(resultats, "output/resultats_logit_naissance.csv")
 
 # ── Lecture rapide ──────────────────────────────────────────────────────────
 # Pour la variable taux_effort :

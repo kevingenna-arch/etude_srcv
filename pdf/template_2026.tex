@@ -1,0 +1,650 @@
+% =====================================================================
+%  TEMPLATE D'ÉTUDE — Transitions démographiques / Transitions économiques
+%  Compilation : xelatex template_2026.tex (x2 pour la table des matières)
+% =====================================================================
+\documentclass[12pt,a4paper]{article}
+
+% --------------------------- Polices & langue ------------------------
+\usepackage{fontspec}
+\setmainfont{EB Garamond}          % police du template Word d'origine
+\newfontfamily\headingfont{EB Garamond}
+
+% --------------------------- Mise en page -----------------------------
+\usepackage[a4paper,top=3.25cm,bottom=2cm,left=2.5cm,right=2.5cm,headheight=28pt]{geometry}
+\usepackage{xcolor}
+\definecolor{brandnavy}{HTML}{243443}   % couleur exacte fournie
+\definecolor{brandgrey}{HTML}{595959}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{eso-pic}                    % fond de page complet (couverture)
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{microtype} 
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\tolerance=9999       
+\emergencystretch=3em
+\usepackage[hidelinks,colorlinks=true,linkcolor=brandnavy,urlcolor=brandnavy,citecolor=brandnavy]{hyperref}
+\usepackage{booktabs} 
+\usepackage[flushleft]{threeparttable}
+
+% La police EB Garamond "Bold" fournie par le système ne contient pas les
+% caractères accentués : on retire le \bfseries par défaut des entrées de
+% table des matières (article.cls) pour éviter les caractères manquants.
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\l@section}{\bfseries}{}{}{}
+\makeatother
+
+% Chemin du logo (image fournie par l'utilisateur)
+\newcommand{\logoPath}{assets/logo.jpg}
+\newcommand{\logoPathi}{assets/logo1.jpg}
+
+% --------------------------- Titres de section -------------------------
+% NB : la coupe "Bold" de la police EB Garamond fournie par Ubuntu ne contient
+% pas les caractères accentués. On évite donc le gras et on distingue les
+% titres par la couleur, la taille et l'approche des capitales.
+\titleformat{\section}
+{\headingfont\color{brandnavy}\Large}
+{\thesection.}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.4em}{1.2em}
+
+\titleformat{\subsection}
+{\headingfont\color{brandnavy}\large\itshape}
+{\thesubsection.}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{1.6em}{0.8em}
+
+% --------------------------- En-tête / pied de page ---------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{brandgrey}\itshape\leftmark}
+\fancyhead[R]{\raisebox{-0.2\height}{\includegraphics[height=1cm]{\logoPathi}}}
+\fancyfoot[C]{\footnotesize\color{brandgrey}\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}
+	\fancyfoot[C]{\footnotesize\color{brandgrey}\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+}
+
+% =====================================================================
+%                        VARIABLES DU DOCUMENT
+%  -> à modifier pour chaque nouvelle étude
+% =====================================================================
+\newcommand{\etudeTitre}{Logement et politique familiale}
+\newcommand{\etudeSousTitre}{Quelles conséquences sur la natalité ?}
+\newcommand{\etudeAuteur}{GENNA Kévin}
+\newcommand{\etudeDate}{Août 2026} % pas de \today : sans babel, il s'affiche en anglais — indiquez la date à la main
+
+\definecolor{srcv1}{HTML}{1F4E79}
+\definecolor{srcv2}{HTML}{B9770E}
+\definecolor{srcv3}{HTML}{C0392B}
+\definecolor{srcvE}{HTML}{707070}
+
+\begin{document}
+	
+	% =====================================================================
+	% PAGE DE COUVERTURE
+	% =====================================================================
+	\begin{titlepage}
+		\AddToShipoutPicture*{%
+			\put(0,0){%
+				\begin{tikzpicture}[remember picture,overlay]
+					\fill[brandnavy] (current page.south west) rectangle (current page.north east);
+				\end{tikzpicture}%
+			}%
+		}
+		\thispagestyle{empty}
+		\color{white}
+		\begin{center}
+			\vspace*{-3cm}
+			\includegraphics[width=0.6\textwidth]{\logoPath}\\[2.8cm]
+			{\headingfont\fontsize{36}{42}\selectfont \etudeTitre}\\[0.8cm]
+			{\headingfont\Large\itshape \etudeSousTitre}\\[2.5cm]
+			\vfill
+			{\headingfont\Large \etudeAuteur \\ 
+				\quad \\
+				\etudeDate}
+			\vspace*{6.5cm}
+		\end{center}
+	\end{titlepage}
+	
+	\color{black}
+	
+	% =====================================================================
+	% RÉSUMÉ
+	% =====================================================================
+	\section*{Résumé}
+	\addcontentsline{toc}{section}{Résumé}
+	\markboth{Résumé}{}
+	
+	[Synthèse de l'étude en une page : contexte, méthode, principaux résultats et conclusion.]
+	
+	\newpage
+	
+	% =====================================================================
+	% TABLE DES MATIÈRES
+	% =====================================================================
+	\tableofcontents
+	\thispagestyle{plain}
+	\newpage
+	
+	% =====================================================================
+	% CORPS DE L'ÉTUDE
+	% =====================================================================
+	\section{Introduction}
+	
+Longtemps vue comme une exception, la forte natalité française commence elle aussi à fléchir, et se retrouve plus proche que jamais de nos voisins européens. Le taux de fécondité est descendu à 1,58 enfants par femme en 2025, le plus faible depuis 1945. Pire encore, pour la première fois su une année, le nombre de décès a excédé le nombre de naissance, à la faveur d’une pyramide démographique fortement déformée par la nombreuse génération des baby-boomers, et d’une natalité qui se contracte d’années en années depuis 2012. \\
+
+\noindent Bien que les dynamiques démographiques soient difficiles à anticiper, une tendance claire semble se dessiner à travers le monde, et en particulier dans les pays de l’OCDE (hors Israël). La natalité faiblit, du cas extrême de la Corée du Sud avec une fécondité sous les 0,8 enfants par femme à la Suède (1,5), l’Italie (1,2) et même jusqu’aux Etats-Unis (1,4), les pays membres de l’OCDE sont loin du taux de renouvellement des générations de 2,05 enfants par femme. De nombreuses études\footnote{Doepke et al. (2024), Saudubray (2026) ...} tentent de décrypter pourquoi la fécondité baisse : logement, politiques familiales, inégalités hommes femmes persistantes, fin des structures de couple classique, manque de confiance en l’avenir … Il s’avère alors que la chute de la natalité est multiforme et ne puisse se traiter de manière holistique par un seul canal. Le récent rapport de l’assemblée nationale sur la mission d’information liée aux causes et aux conséquences de la baisse de la natalité\footnote{Rapport de l'AN ?} ne s’y est pas trompé, de nouvelles solutions sont à mettre en place et plusieurs points sont à analyser avec finesse, notamment le rôle du logement mais aussi celui des politiques familiales. \\
+
+\noindent Dans cette étude nous remettons le couple et sa décision d’avoir un enfant au cœur du processus de procréation, avec une emphase plus particulière sur le cas de la France. Les enjeux que nous voulons traiter ici sont les facteurs influençant directement le couple mais indirectement la fécondité : le logement, la politique familiale et les choix de garde d’enfant. Le premier objet semble essentiel à nos yeux, car depuis les années 2000, un couple aux revenus médian a perdu près de 20m$^2$ de capacité d’achat\footnote{Meilleurs agents (2022)}  soit l’équivalent d’une seconde voir d’une troisième chambre dans un logement. Le cas des politiques familiales semble plus complexe à analyser, car la France est encore le 5$^e$ pays de l’OCDE sur les dépenses de politique familiale en points de PIB, mais elle se différencie des pays scandinaves avec des exonérations d’impôts qui comptent pour près d’un quart des dépenses familiales (contre 0 dans les pays du Nord). Nous discuterons comment cette conception de la politique familiale peut avoir un impact sur l’offre de travail des mères et donc aussi sur les choix de garde d’enfants. \\
+
+\noindent L’analyse que nous proposons est une analyse purement économique et se soustrait à toute conception sociale ou sociétal de la décision d’avoir un enfant. Loin de vouloir négliger cet aspect, qui revêt un attrait plus sociologique voir idéologique (comme le mouvement « No Kids », même s’il reste relativement marginal\footnote{rouver une étude de la marginalité du no kids}), nous préférons apposer la focale sur les mécanismes économiques de la fertilité. La première raison est que nous sommes une équipe d’économistes donc nous nous concentrons sur notre cœur de métier, la seconde est que le sujet est extrêmement large et que nous ne pouvons avoir l’ambition de traiter tous ces sujets en une seule étude, il nous faut donc concentrer notre analyse. \\
+
+\noindent Pour mener à bien cette étude nous allons utiliser les Statistiques sur les Ressources et Conditions de Vie (SRCV) éditées chaque année par l’Insee. Il s’agit de données individuelles et représentatives des ménages français, avec des informations sur les naissances au sein des ménages, le niveau de vie, la taille du logement, est-ce que le ménage est propriétaire ou locataire, la part des prestations familiales dans le revenu disponible … Cette source nous permet de traiter les effets du logement mais aussi des prestations familiales en espèces, parmi d’autres variables, sur la probabilité qu’une naissance ait lieu. Nous nous concentrerons sur les 4 vagues les plus récentes, de 2022 à 2025, afin d’éviter la présence d’un quelconque effet Covid, tout en gardant une quantité de données suffisantes pour l’exploitation des résultats. Nos ferons aussi des comparaisons de grands agrégats avec les vagues 2006, 2010, 2014 et 2018 afin de comparer sur des périodes de temps plus longues. 
+	
+	\section{Se loger en France}
+	
+Un des points qui revient le plus souvent lorsque l’on parle de la baisse de la fécondité est le logement, et cela se comprend car pour avoir un enfant il faut pouvoir l’héberger dans des conditions décentes. Ainsi la décision de procréer peut d’abord passer par la location ou l’acquisition d’un logement adéquat. \\
+
+\noindent Dans cette partie nous nous intéresserons à l’évolution du logement, son prix, sa surface, sa disponibilité pour établir une cartographie des logements de 2006 à 2025. Pour ce faire nous utiliserons les données SRCV qui suivent plusieurs milliers de ménages chaque année, et qui vont nous permettre de dresser un bilan précis des conditions de logements des ménages français. 
+
+\subsection{L'évolution des ménages et de leur logement}
+
+Les données utilisées nous permettent d'avoir une vue sur quasiment 20 ans de l'évolution des ménages et de leur logement, et la richesses de l'information nous donne une idée de la composition des ménages. Nous proposons d'abord une description statistique des données que nous utilisons entre 2014 et 2025, avec un point d'étape en 2018\footnote{Nous ne pouvons pas remonter jusqu'à 2006 ici car les données avant 2014 diffèrent et certaines informations, comme ?, ne sont disponibles qu'à partir de 2014}. Il s'agit pour nous de présenter la moyenne de l'âge des ménage, le nombre de naissances pour 1000 ménages, les ressources, les caractéristiques moyennes des logement et son coût.  
+
+\begin{table}[h!]
+	\centering
+	\small
+	\setlength{\tabcolsep}{2pt}
+	\begin{threeparttable}
+		\caption{Caractéristiques des ménages comportant une femme de 15 à 49 ans, selon le statut d'occupation : \textcolor{srcv1}{2014}\,\textbar\,\textcolor{srcv2}{2018}\,\textbar\,\textcolor{srcv3}{2025}}
+		\label{tab:descriptif_statut}
+		\begin{tabular}{l@{\hspace{5pt}}r@{\,\textbar\,}r@{\,\textbar\,}r@{\hspace{7pt}}r@{\,\textbar\,}r@{\,\textbar\,}r@{\hspace{7pt}}r@{\,\textbar\,}r@{\,\textbar\,}r}
+			\toprule
+			& \multicolumn{3}{c}{Locataires} & \multicolumn{3}{c}{Accédants} & \multicolumn{3}{c}{Non accédants} \\
+			\cmidrule(lr){2-4}     \cmidrule(lr){5-7}     \cmidrule(lr){8-10}
+			& \textcolor{srcv1}{2014} & \textcolor{srcv2}{2018} & \textcolor{srcv3}{2025} & \textcolor{srcv1}{2014} & \textcolor{srcv2}{2018} & \textcolor{srcv3}{2025} & \textcolor{srcv1}{2014} & \textcolor{srcv2}{2018} & \textcolor{srcv3}{2025} \\
+			\midrule
+			\multicolumn{10}{l}{\textit{Démographie}} \\
+			Âge moyen des parents (ans) & \textcolor{srcv1}{35,3} & \textcolor{srcv2}{35,2} & \textcolor{srcv3}{35,6} & \textcolor{srcv1}{38,9} & \textcolor{srcv2}{39,1} & \textcolor{srcv3}{38,9} & \textcolor{srcv1}{42,2} & \textcolor{srcv2}{44,3} & \textcolor{srcv3}{40,5} \\
+			Taille du ménage (avant naiss.) & \textcolor{srcv1}{2,57} & \textcolor{srcv2}{2,67} & \textcolor{srcv3}{2,76} & \textcolor{srcv1}{3,42} & \textcolor{srcv2}{3,40} & \textcolor{srcv3}{3,24} & \textcolor{srcv1}{3,18} & \textcolor{srcv2}{3,42} & \textcolor{srcv3}{3,08} \\
+			Familles monoparentales (\%) & \textcolor{srcv1}{18,9} & \textcolor{srcv2}{17,7} & \textcolor{srcv3}{21,5} & \textcolor{srcv1}{5,4} & \textcolor{srcv2}{5,2} & \textcolor{srcv3}{4,8} & \textcolor{srcv1}{6,2} & \textcolor{srcv2}{7,6} & \textcolor{srcv3}{11,8} \\
+			Naissances pour 1\,000 ménages & \textcolor{srcv1}{98} & \textcolor{srcv2}{83} & \textcolor{srcv3}{48} & \textcolor{srcv1}{95} & \textcolor{srcv2}{93} & \textcolor{srcv3}{70} & \textcolor{srcv1}{44} & \textcolor{srcv2}{31} & \textcolor{srcv3}{32} \\
+			\addlinespace
+			\multicolumn{10}{l}{\textit{Ressources}} \\
+			Revenu disponible (k\texteuro/an) & \textcolor{srcv1}{36,7} & \textcolor{srcv2}{38,9} & \textcolor{srcv3}{40,6} & \textcolor{srcv1}{61,6} & \textcolor{srcv2}{64,1} & \textcolor{srcv3}{69,2} & \textcolor{srcv1}{60,6} & \textcolor{srcv2}{67,2} & \textcolor{srcv3}{59,6} \\
+			Niveau de vie (k\texteuro/an/UC) & \textcolor{srcv1}{22,1} & \textcolor{srcv2}{23,4} & \textcolor{srcv3}{24,1} & \textcolor{srcv1}{31,0} & \textcolor{srcv2}{32,3} & \textcolor{srcv3}{36,1} & \textcolor{srcv1}{30,3} & \textcolor{srcv2}{32,1} & \textcolor{srcv3}{30,5} \\
+			\addlinespace
+			\multicolumn{10}{l}{\textit{Logement}} \\
+			Surface du logement (m\textsuperscript{2}) & \textcolor{srcv1}{71,7} & \textcolor{srcv2}{70,6} & \textcolor{srcv3}{68,7} & \textcolor{srcv1}{112,1} & \textcolor{srcv2}{111,0} & \textcolor{srcv3}{112,4} & \textcolor{srcv1}{111,1} & \textcolor{srcv2}{112,8} & \textcolor{srcv3}{107,7} \\
+			Nombre de pièces & \textcolor{srcv1}{3,25} & \textcolor{srcv2}{3,29} & \textcolor{srcv3}{3,21} & \textcolor{srcv1}{4,67} & \textcolor{srcv2}{4,65} & \textcolor{srcv3}{4,58} & \textcolor{srcv1}{4,61} & \textcolor{srcv2}{4,69} & \textcolor{srcv3}{4,54} \\
+			Surface par personne (m\textsuperscript{2}) & \textcolor{srcv1}{32,7} & \textcolor{srcv2}{31,2} & \textcolor{srcv3}{30,4} & \textcolor{srcv1}{36,1} & \textcolor{srcv2}{36,2} & \textcolor{srcv3}{38,4} & \textcolor{srcv1}{39,0} & \textcolor{srcv2}{36,0} & \textcolor{srcv3}{40,9} \\
+			Surface par pièce (m\textsuperscript{2}) & \textcolor{srcv1}{22,9} & \textcolor{srcv2}{22,2} & \textcolor{srcv3}{22,0} & \textcolor{srcv1}{24,3} & \textcolor{srcv2}{24,1} & \textcolor{srcv3}{24,8} & \textcolor{srcv1}{24,6} & \textcolor{srcv2}{25,2} & \textcolor{srcv3}{24,1} \\
+			\addlinespace
+			\multicolumn{10}{l}{\textit{Coût}} \\
+			Coût du logement (\texteuro/mois) & \textcolor{srcv1}{867} & \textcolor{srcv2}{837} & \textcolor{srcv3}{885} & \textcolor{srcv1}{1\,715} & \textcolor{srcv2}{1\,644} & \textcolor{srcv3}{1\,703} & \textcolor{srcv1}{316} & \textcolor{srcv2}{349} & \textcolor{srcv3}{294} \\
+			Coût au m\textsuperscript{2} (\texteuro/mois) & \textcolor{srcv1}{13,56} & \textcolor{srcv2}{13,45} & \textcolor{srcv3}{14,49} & \textcolor{srcv1}{16,69} & \textcolor{srcv2}{16,50} & \textcolor{srcv3}{17,89} & \textcolor{srcv1}{3,12} & \textcolor{srcv2}{3,38} & \textcolor{srcv3}{3,24} \\
+			Taux d'effort (\%) & \textcolor{srcv1}{34,0} & \textcolor{srcv2}{31,6} & \textcolor{srcv3}{32,4} & \textcolor{srcv1}{36,6} & \textcolor{srcv2}{34,2} & \textcolor{srcv3}{31,2} & \textcolor{srcv1}{8,0} & \textcolor{srcv2}{8,3} & \textcolor{srcv3}{8,4} \\
+			\addlinespace
+			\multicolumn{10}{l}{\textit{Géographie}} \\
+			Rural (\%) & \textcolor{srcv1}{13,9} & \textcolor{srcv2}{11,9} & \textcolor{srcv3}{10,7} & \textcolor{srcv1}{29,9} & \textcolor{srcv2}{26,7} & \textcolor{srcv3}{27,0} & \textcolor{srcv1}{29,9} & \textcolor{srcv2}{32,5} & \textcolor{srcv3}{27,8} \\
+			Unité urbaine < 20\,000 hab. (\%) & \textcolor{srcv1}{14,7} & \textcolor{srcv2}{13,5} & \textcolor{srcv3}{12,1} & \textcolor{srcv1}{20,2} & \textcolor{srcv2}{19,2} & \textcolor{srcv3}{20,2} & \textcolor{srcv1}{17,4} & \textcolor{srcv2}{21,5} & \textcolor{srcv3}{20,9} \\
+			20\,000 à 199\,999 hab. (\%) & \textcolor{srcv1}{22,7} & \textcolor{srcv2}{21,9} & \textcolor{srcv3}{19,2} & \textcolor{srcv1}{15,2} & \textcolor{srcv2}{15,6} & \textcolor{srcv3}{16,4} & \textcolor{srcv1}{16,5} & \textcolor{srcv2}{10,1} & \textcolor{srcv3}{15,9} \\
+			200\,000 hab. à 2 M (\%) & \textcolor{srcv1}{33,7} & \textcolor{srcv2}{31,0} & \textcolor{srcv3}{34,9} & \textcolor{srcv1}{20,6} & \textcolor{srcv2}{23,3} & \textcolor{srcv3}{22,9} & \textcolor{srcv1}{18,8} & \textcolor{srcv2}{20,1} & \textcolor{srcv3}{20,3} \\
+			Agglomération de Paris (\%) & \textcolor{srcv1}{15,1} & \textcolor{srcv2}{21,7} & \textcolor{srcv3}{23,1} & \textcolor{srcv1}{14,1} & \textcolor{srcv2}{15,2} & \textcolor{srcv3}{13,5} & \textcolor{srcv1}{17,5} & \textcolor{srcv2}{15,9} & \textcolor{srcv3}{15,1} \\
+			\addlinespace
+			\midrule
+			Part dans le champ (\%) & \textcolor{srcv1}{43,8} & \textcolor{srcv2}{45,9} & \textcolor{srcv3}{48,0} & \textcolor{srcv1}{44,1} & \textcolor{srcv2}{46,0} & \textcolor{srcv3}{42,0} & \textcolor{srcv1}{12,1} & \textcolor{srcv2}{8,1} & \textcolor{srcv3}{10,0} \\
+			Effectif (non pondéré) & \textcolor{srcv1}{1\,632} & \textcolor{srcv2}{1\,493} & \textcolor{srcv3}{1\,847} & \textcolor{srcv1}{1\,969} & \textcolor{srcv2}{1\,701} & \textcolor{srcv3}{2\,303} & \textcolor{srcv1}{551} & \textcolor{srcv2}{356} & \textcolor{srcv3}{541} \\
+			\bottomrule
+		\end{tabular}
+		\begin{tablenotes}[flushleft]\scriptsize
+			\item \textit{Lecture} : chaque case donne les moyennes pondérées de \textcolor{srcv1}{2014}\,\textbar\,\textcolor{srcv2}{2018}\,\textbar\,\textcolor{srcv3}{2025}.
+			\item \textit{Statuts} : \textit{Accédants} = propriétaires remboursant un emprunt sur
+			leur résidence principale ; \textit{Non accédants} = propriétaires sans emprunt en cours.
+			\item \textit{Champ} : ménages comportant une femme de 15 à 49      ans (personne de référence ou conjointe), France entière --- couples et familles
+			monoparentales. Les familles monoparentales dirigées par un homme en sont absentes
+			par construction : la part reportée est celle des mères isolées.
+			\item \textit{Âge moyen du ou des parents} : moyenne d'âge de la personne de référence
+			et de son conjoint, \textbf{enfants exclus} (fichier individus). Pour une famille
+			monoparentale, c'est l'âge du parent seul.
+			\item \textit{Familles monoparentales} : ménages hors couple ayant au moins un enfant.
+			\item \textit{Géographie} : tranche d'unité urbaine de la commune de résidence, regroupée
+			en cinq classes ; les cinq parts somment à 100\,\% dans chaque colonne. Source :
+			\texttt{tuu10} (2014, 2018, population 2010) puis \texttt{TUU2017} (2025, population
+			2017) --- même concept, seule l'année de référence du recensement change.
+			Le degré d'urbanisation \texttt{DB100} n'est pas utilisé : la nomenclature Eurostat
+			DEGURBA a été révisée vers 2011-2012 et ses niveaux ne sont pas comparables entre
+			vagues. Les millésimes antérieurs à 2014 ne portent que \texttt{TAU99}, qui mesure des
+			\textit{aires} urbaines et non des \textit{unités} urbaines.
+			\item \textit{Montants} : euros constants 2025 (IPC Insee) ; k\texteuro{} = milliers d'euros.
+			Coût du logement =
+			charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+			Taux d'effort = coût annuel rapporté au revenu disponible, borné à [0 ; 100]\,\%.
+			\item \textit{Naissances} : ménages déclarant une naissance récente, pour 1\,000
+			ménages du statut. \textbf{Attention} : la naissance est mesurée par \texttt{EVENEMEN\_C}
+			(naissance dans l'année) jusqu'en 2018 et reconstruite depuis le fichier individus
+			(enfant né en N ou N-1) à partir de 2022. L'écart franchissant cette rupture mélange
+			évolution réelle et changement de mesure ; les sous-périodes situées d'un même côté
+			de 2018 sont, elles, comparables.
+			\item \textit{Millésimes} : 2023 et 2024 sont exclus (anomalie de pondération
+			documentée dans R/17--18).
+			\item \textit{Source} : Insee, SRCV 2014, 2018, 2025, calculs de l'auteur.
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table}
+
+
+
+
+\newpage
+
+\subsection{Augmentation des prix et baisse des surfaces, les jeunes ménages pris en tenaille}
+
+L’intérêt pour nous est de regarder l’évolution des prix et des surfaces pour les ménages les plus jeunes, car ce sont eux qui sont en mesure d’avoir des enfants. Nous nous intéresserons tout particulièrement aux tranches d’âge de 20 à 40 ans, les naissances avant 20 ans ou après 40 ans restant marginales, la question du logement paraît moins pertinente. La première question est de savoir si les ménages ont vu la taille de leur logement augmenter ou diminuer sur les 20 dernières années et si leur prix a augmenté en même temps. Nous allons répondre à cette question en différenciant les locataires des propriétaires accédants\footnote{Nous faisons le choix de ne pas prendre en compte les propriétaires qui ont déjà payé leur logement, qui sont logés à titre gratuit ou qui ont hérité d’un bien.}, et nous présenterons la surface moyenne, le prix moyen du logement ainsi que le prix moyen au m² auxquels font face les locataires et les propriétaires (pour les propriétaires la totalité de la charge est égale aux frais de copropriété plus les mensualités de remboursement d’emprunt). Nous différencions 4 grandes tranches d’âge : 20-24 ans, 25-29 ans, 30-34 ans et 35-39 ans. \\
+
+\noindent L’intégralité des tableaux et des résultats sont disponibles en annexe \ref{annexe1}, ce qu’il faut retenir majoritairement c’est que globalement les ménages locataires de 20 à 40 ans ont vu la taille de leur logement diminuer et le prix des loyers\footnote{Déflaté de l'indice des prix à la consommation}  augmenter, -5m$^2$ et + 75€/mois pour les 20-24ans, -2m$^2$ et +50€ pour les 25-29ans, -8m$^2$ et +85€/mois pour les 30-34ans et -7m$^2$ et +83€/mois pour les 35-39ans entre 2006 et 2025. Pour les ménages accédant, la surface est resté globalement stable et le prix par mois a légèrement diminué, à la faveur de taux d’intérêt très bas entre 2012 et 2022. Ces chiffres bruts ne prennent pas en compte l'évolution des revenus des ménages, uniquement celle des prix. Dans l'annexe \ref{annexe1b} nous prenons en compte l'évolution des revenus pour caractériser l'évolution du taux d'effort des ménages de 2006 à 2025. Nos résultats montrent que chez les locataires le taux d'effort est globalement stable alors que pour les propriétaires il a progressivement diminué, -7 points pour les 25-29 ans, -4 points pour les 30-34 ans et -8 points pour les 35-39 ans\footnote{Il n'y a pas assez d'observations de propriétaires accédant chez les 20-24 ans pour produire cette statistique dans ce groupe d'âge}. Cette baisse chez les propriétaires accédant est majoritairement dû à une baisse rapide des taux d'intérêt après les crise des subprimes de 2008 et celle des dettes souveraines après 2012, où les taux d'intérêt sont restés très proches de 0 pendant de nombreuses années, réduisant ainsi le coût du crédit. Le tableau \ref{tab:logsum} ci-dessous reprend les évolutions des conditions de logement chez les 20-39 ans entre 2006 et 2025.  
+
+\bigskip
+
+	\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\begin{threeparttable}
+		\caption{Évolution des conditions de logement chez les 20-39 ans entre 2006 et 2025 (coûts en euros constants de 2025)}
+		\label{tab:logsum}
+		\begin{tabular}{lrrrrrr}
+			\toprule
+			& \multicolumn{3}{c}{Locataires} & \multicolumn{3}{c}{Propriétaires accédants} \\
+			\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+			Âge & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} &  \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}}  \\
+			\midrule
+			20-24 ans & -4,9 & +75 & +2,7  & --- & --- & ---  \\
+			25-29 ans & -1,9 & +54 & -2,2  & +6,1 & -92 & -7,4  \\
+			30-34 ans & -8,4 & +85 & -0,3  & -1,8 & -177 & -7,8  \\
+			35-39 ans & -6,9 & +82 & -1,9  & -1,6 & +15 & -8  \\
+			\bottomrule
+		\end{tabular}
+		\begin{tablenotes}[flushleft]\scriptsize
+			\item \textit{Champ} : ménages dont la personne de référence a 20-39 ans, France entière.
+			\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+			charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+			\item \textit{Déflateur} : coûts déflatés par l'indice des prix à la consommation (Insee, base 100 = 2025) ; les montants sont en euros de pouvoir d'achat constant.
+			\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+			moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+			\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table} 
+
+\bigskip
+
+\noindent En conclusion, on observe une tendance à la baisse des surfaces chez les locataires, qui s'associe à une hausse du coût à un rythme similaire aux revenus car le taux d'effort est globalement stable chez les 20-39 ans. Pour un poids similaire dans les revenus, les jeunes ménages locataires ont vu leur surface d'habitation se déprécier alors que chez les propriétaires accédant, la donne est inversée car la surface achetée est restée globalement stable mais leur taux d'effort s'est considérablement rétracté (environ 8 points de pourcentage en moins). Par la suite, nous allons tester si ces résultats sont différenciés selon les catégorie de revenus et finalement si le logement joue sur la natalité. Rappelons nous que (citer le papier américain) trouve que les propriétaires américains ont un taux de fécondité plus élevé que les locataires, au regard de nos résultats on pourrait s'attendre au même type de résultat ici.  
+
+\subsection{Des effets différenciés pour les classes de revenus}
+
+Nous avons vu que les ménages ne sont pas affectés de manière homogène par l'évolution du marché immobilier depuis 2006, les locataires de moins de 40 ans sont affectés négativement, surtout en termes de surface, alors que les propriétaires accédant ont vu leur taux d'effort se contracter dans les 20 dernières années. Dans cette partie nous allons voir s'il existe également des différences entre niveaux de revenus, à savoir est-ce que les ménages les plus précaires ont été fortement affectés par l'évoltuion du marché de l'immobilier ou est-ce l'inverse ? Cette question est centrale car la natalité a une courbe en J dans la distribution des revenus\footnote{Retrouver la référence}, les classes moyennes sont celles avec la fécondité la plus basse et cela pourrait s'aggraver si elles souffrent le plus de la baisse des surfaces. Les graphiques \ref{fig:loc_quintile} et \ref{fig:acc_quintile} ci-dessous montrent l'évolution des prix, des surfaces et du taux d'efforts des ménages de 20 à 39 ans en fonction de leur quintile de revenu et en différenciant locataires et propriétaires accédant.
+
+\bigskip  
+
+\begin{figure}[h]
+	\centering
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{graph_quintiles_locataires}
+		\caption{Prix et surface par quintile}\label{fig:loc_quintile}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{graph_quintiles_accedants}
+		\caption{Prix et surface par quintile}\label{fig:acc_quintile}
+	\end{minipage}
+\end{figure} 
+
+\bigskip
+
+\noindent On remarque que globalement le taux d'effort est resté stable entre 2006 et 2025 pour les ménages français entre 20 et 39 ans, et globalement on retrouve les mêmes variations que lors des calculs par classe d'âge. Les locataires accusent une baisse de surface avec une hausse des prix, quand les propriétaires restent globalement stables sur tous les aspects, hormis quelques valeurs aberrantes. Les principaux enseignements sont que les quintiles les plus touchés sont les plus élevés chez les locataires de 30-39 ans et le quintile le moins élevé chez les 20-29 ans. Le dernier quintile des 30-39 ans a perdu 20\% de surface pour un prix au m$^2$ qui a bondi de plus de 30\% sur 20 ans. Le 2e quintile a moins subit sur la surface de son logement mais accuse une hausse de près de 30\% du prix au m$^2$ également. \\
+
+\noindent Nous avons donc vu que l'évolution du marché immobilier a affecté de manière hétérogène les ménages français, par rapport à 2006 les ménages qui ont le plus été impactés sont les locataires du 30 à 39, et plus particulièrement ceux des quintiles 3 à 5. Ils ont perdu jusqu'à 20\% de la surface de leur logement pour un prix plus élevé, bien que le prix ait augmenté un peu moins rapidement que les revenus, ce qui fait que le taux d'effort s'est légèrement contracté. Il faut donc retenir qu'à niveau de dépense constante du logement dans le revenu, les jeunes ménages français ont surtout perdu de l'espace, ce qui va dans le sens de MeilleurAgents (2022) qui montrait qu'un couple avec des revenus médians avait perdu 18m$^2$ de capacité d'achat dans les métropoles hors Paris.   
+
+\subsection{la distribution des naissances par rapport aux logements}
+
+
+\newpage
+	
+	\section{Partie 2}
+	
+	[Développement de la seconde partie.]
+	
+	\section{Conclusion}
+	
+	[Synthèse des résultats et perspectives.]
+	
+	\section*{Bibliographie}
+	\addcontentsline{toc}{section}{Bibliographie}
+	\markboth{Bibliographie}{}
+	
+	\begin{itemize}[leftmargin=1.2em]
+		\item Auteur, \textit{Titre de l'ouvrage}, Éditeur, Année.
+	\end{itemize}
+
+\newpage
+
+	\appendix
+	
+	\section{Evolution du prix et des surfaces des logements chez les 20-39 ans}\label{annexe1}
+	
+	Dans cette section Nous présentons les chiffres détaillés sur les conditions de logement moyennes des jeunes en France, en fonction de leur statut de locataire ou de propriétaire accédant. Nous ne proposons pas les propriétaires non accédants et les personnes logées à titre gratuit car elles sont marginales dans les données et que nous préférons nous focaliser sur les ménages avec des dépenses mensuelles plus élevées. Dans les deux sous-parties suivantes nous présentons les résultats en déflatant par les prix (l'indice des prix à la consommation de 2006 à 2025) puis par les revenus, en rapportant les évolutions du prix aux évolutions du revenu, et en proposant ainsi un taux d'effort moyen représentant la part des dépenses de logement dans le revenu. 
+	
+	\subsection{Prix déflatés de l'inflation}\label{annexe1a}
+	
+	Les quatre tableaux ci-après présentent les variations des surfaces, prix et prix au m$^2$ pour les quatre classes d'âge retenues, le tout déflaté de l'indice des prix à la consommation. 
+	
+	\begin{table}[htbp]
+		\centering
+		\footnotesize
+		\setlength{\tabcolsep}{4pt}
+		\begin{threeparttable}
+			\caption{Conditions de logement des ménages dont la personne de référence a 20-24 ans (coûts en euros constants de 2025)}
+			\label{tab:logementipc_20_24}
+			\begin{tabular}{lrrrrrrrr}
+				\toprule
+				& \multicolumn{4}{c}{Locataires} & \multicolumn{4}{c}{Propriétaires accédants} \\
+				\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+				Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+				\midrule
+				2006 & 56,6 & 670 & 13,8 & {\scriptsize 264} & --- & --- & --- & {\scriptsize 23} \\
+				2010 & 54,2 & 707 & 15,5 & {\scriptsize 274} & --- & --- & --- & {\scriptsize 9} \\
+				2014 & 52,9 & 712 & 16,1 & {\scriptsize 212} & --- & --- & --- & {\scriptsize 12} \\
+				2018 & 50,0 & 689 & 16,8 & {\scriptsize 206} & --- & --- & --- & {\scriptsize 12} \\
+				\addlinespace
+				2022 & 49,8 & 698 & 17,0 & {\scriptsize 239} & --- & --- & --- & {\scriptsize 17} \\
+				2023 & 49,8 & 639 & 16,5 & {\scriptsize 204} & --- & --- & --- & {\scriptsize 19} \\
+				2024 & 50,9 & 715 & 16,8 & {\scriptsize 224} & --- & --- & --- & {\scriptsize 23} \\
+				2025 & 51,7 & 745 & 17,4 & {\scriptsize 219} & --- & --- & --- & {\scriptsize 13} \\
+				\bottomrule
+			\end{tabular}
+			\begin{tablenotes}[flushleft]\scriptsize
+				\item \textit{Champ} : ménages dont la personne de référence a 20-24 ans, France entière.
+				\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+				charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+				\item \textit{Déflateur} : coûts déflatés par l'indice des prix à la consommation (Insee, base 100 = 2025) ; les montants sont en euros de pouvoir d'achat constant.
+				\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+				moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+				\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+			\end{tablenotes}
+		\end{threeparttable}
+	\end{table}
+	
+	\begin{table}[htbp]
+		\centering
+		\footnotesize
+		\setlength{\tabcolsep}{4pt}
+		\begin{threeparttable}
+			\caption{Conditions de logement des ménages dont la personne de référence a 25-29 ans (coûts en euros constants de 2025)}
+			\label{tab:logementipc_25_29}
+			\begin{tabular}{lrrrrrrrr}
+				\toprule
+				& \multicolumn{4}{c}{Locataires} & \multicolumn{4}{c}{Propriétaires accédants} \\
+				\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+				Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+				\midrule
+				2006 & 60,3 & 734 & 13,8 & {\scriptsize 404} & 83,9 & 1\,531 & 20,8 & {\scriptsize 103} \\
+				2010 & 62,7 & 779 & 14,2 & {\scriptsize 406} & 86,8 & 1\,638 & 21,2 & {\scriptsize 166} \\
+				2014 & 61,6 & 824 & 15,1 & {\scriptsize 385} & 93,4 & 1\,547 & 19,4 & {\scriptsize 137} \\
+				2018 & 61,6 & 756 & 15,1 & {\scriptsize 337} & 91,5 & 1\,300 & 15,7 & {\scriptsize 118} \\
+				\addlinespace
+				2022 & 55,9 & 766 & 16,2 & {\scriptsize 378} & 89,9 & 1\,200 & 15,5 & {\scriptsize 166} \\
+				2023 & 56,4 & 774 & 15,5 & {\scriptsize 349} & 91,5 & 1\,206 & 15,0 & {\scriptsize 159} \\
+				2024 & 61,5 & 801 & 14,8 & {\scriptsize 358} & 86,4 & 1\,298 & 17,0 & {\scriptsize 171} \\
+				2025 & 58,4 & 788 & 15,8 & {\scriptsize 336} & 90,0 & 1\,439 & 17,7 & {\scriptsize 154} \\
+				\bottomrule
+			\end{tabular}
+			\begin{tablenotes}[flushleft]\scriptsize
+				\item \textit{Champ} : ménages dont la personne de référence a 25-29 ans, France entière.
+				\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+				charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+				\item \textit{Déflateur} : coûts déflatés par l'indice des prix à la consommation (Insee, base 100 = 2025) ; les montants sont en euros de pouvoir d'achat constant.
+				\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+				moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+				\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+			\end{tablenotes}
+		\end{threeparttable}
+	\end{table}
+	
+	\begin{table}[htbp]
+		\centering
+		\footnotesize
+		\setlength{\tabcolsep}{4pt}
+		\begin{threeparttable}
+			\caption{Conditions de logement des ménages dont la personne de référence a 30-34 ans (coûts en euros constants de 2025)}
+			\label{tab:logementipc_30_34}
+			\begin{tabular}{lrrrrrrrr}
+				\toprule
+				& \multicolumn{4}{c}{Locataires} & \multicolumn{4}{c}{Propriétaires accédants} \\
+				\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+				Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+				\midrule
+				2006 & 69,5 & 789 & 13,5 & {\scriptsize 377} & 105,3 & 1\,639 & 17,2 & {\scriptsize 337} \\
+				2010 & 69,5 & 836 & 13,8 & {\scriptsize 365} & 98,0 & 1\,716 & 20,2 & {\scriptsize 322} \\
+				2014 & 64,5 & 835 & 14,8 & {\scriptsize 325} & 103,6 & 1\,754 & 18,7 & {\scriptsize 314} \\
+				2018 & 66,4 & 801 & 13,7 & {\scriptsize 326} & 100,7 & 1\,567 & 17,6 & {\scriptsize 278} \\
+				\addlinespace
+				2022 & 63,2 & 809 & 14,8 & {\scriptsize 449} & 105,3 & 1\,508 & 16,5 & {\scriptsize 386} \\
+				2023 & 62,6 & 818 & 15,0 & {\scriptsize 397} & 102,0 & 1\,462 & 16,7 & {\scriptsize 361} \\
+				2024 & 60,7 & 850 & 16,2 & {\scriptsize 395} & 103,0 & 1\,495 & 17,1 & {\scriptsize 380} \\
+				2025 & 61,1 & 874 & 16,5 & {\scriptsize 422} & 103,5 & 1\,464 & 17,1 & {\scriptsize 377} \\
+				\bottomrule
+			\end{tabular}
+			\begin{tablenotes}[flushleft]\scriptsize
+				\item \textit{Champ} : ménages dont la personne de référence a 30-34 ans, France entière.
+				\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+				charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+				\item \textit{Déflateur} : coûts déflatés par l'indice des prix à la consommation (Insee, base 100 = 2025) ; les montants sont en euros de pouvoir d'achat constant.
+				\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+				moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+				\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+			\end{tablenotes}
+		\end{threeparttable}
+	\end{table}
+	
+	\begin{table}[htbp]
+		\centering
+		\footnotesize
+		\setlength{\tabcolsep}{4pt}
+		\begin{threeparttable}
+			\caption{Conditions de logement des ménages dont la personne de référence a 35-39 ans (coûts en euros constants de 2025)}
+			\label{tab:logementipc_35_39}
+			\begin{tabular}{lrrrrrrrr}
+				\toprule
+				& \multicolumn{4}{c}{Locataires} & \multicolumn{4}{c}{Propriétaires accédants} \\
+				\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+				Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+				\midrule
+				2006 & 72,3 & 813 & 12,4 & {\scriptsize 388} & 109,3 & 1\,781 & 17,4 & {\scriptsize 471} \\
+				2010 & 72,2 & 854 & 13,1 & {\scriptsize 392} & 110,7 & 1\,746 & 17,8 & {\scriptsize 500} \\
+				2014 & 71,5 & 909 & 14,4 & {\scriptsize 343} & 105,4 & 1\,681 & 17,2 & {\scriptsize 511} \\
+				2018 & 73,2 & 838 & 13,0 & {\scriptsize 306} & 106,6 & 1\,694 & 17,9 & {\scriptsize 383} \\
+				\addlinespace
+				2022 & 67,1 & 867 & 14,4 & {\scriptsize 435} & 108,2 & 1\,637 & 17,6 & {\scriptsize 630} \\
+				2023 & 70,0 & 826 & 13,4 & {\scriptsize 408} & 105,9 & 1\,517 & 16,3 & {\scriptsize 575} \\
+				2024 & 69,4 & 844 & 13,5 & {\scriptsize 413} & 107,0 & 1\,656 & 17,3 & {\scriptsize 616} \\
+				2025 & 65,4 & 895 & 15,4 & {\scriptsize 443} & 107,7 & 1\,796 & 19,5 & {\scriptsize 608} \\
+				\bottomrule
+			\end{tabular}
+			\begin{tablenotes}[flushleft]\scriptsize
+				\item \textit{Champ} : ménages dont la personne de référence a 35-39 ans, France entière.
+				\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+				charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+				\item \textit{Déflateur} : coûts déflatés par l'indice des prix à la consommation (Insee, base 100 = 2025) ; les montants sont en euros de pouvoir d'achat constant.
+				\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+				moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+				\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+			\end{tablenotes}
+		\end{threeparttable}
+	\end{table}
+
+\newpage
+
+\subsection{prix déflatés du revenu }\label{annexe1b}
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\begin{threeparttable}
+		\caption{Conditions de logement des ménages dont la personne de référence a 20-24 ans}
+		\label{tab:logement_20_24}
+		\begin{tabular}{lrrrrrrrrrr}
+			\toprule
+			& \multicolumn{5}{c}{Locataires} & \multicolumn{5}{c}{Propriétaires accédants} \\
+			\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+			Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+			\midrule
+			2006 & 56,6 & 823 & 17,0 & 44,0 & {\scriptsize 264} & --- & --- & --- & --- & {\scriptsize 23} \\
+			2010 & 54,2 & 737 & 16,1 & 48,2 & {\scriptsize 274} & --- & --- & --- & --- & {\scriptsize 9} \\
+			2014 & 52,9 & 733 & 16,6 & 48,3 & {\scriptsize 212} & --- & --- & --- & --- & {\scriptsize 12} \\
+			2018 & 50,0 & 695 & 16,9 & 45,0 & {\scriptsize 206} & --- & --- & --- & --- & {\scriptsize 12} \\
+			\addlinespace
+			2022 & 49,8 & 746 & 18,2 & 49,2 & {\scriptsize 239} & --- & --- & --- & --- & {\scriptsize 17} \\
+			2023 & 49,8 & 680 & 17,6 & 45,2 & {\scriptsize 204} & --- & --- & --- & --- & {\scriptsize 19} \\
+			2024 & 50,9 & 736 & 17,3 & 41,8 & {\scriptsize 224} & --- & --- & --- & --- & {\scriptsize 23} \\
+			2025 & 51,7 & 745 & 17,4 & 46,7 & {\scriptsize 219} & --- & --- & --- & --- & {\scriptsize 13} \\
+			\bottomrule
+		\end{tabular}
+		\begin{tablenotes}[flushleft]\scriptsize
+			\item \textit{Champ} : ménages dont la personne de référence a 20-24 ans, France entière.
+			\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+			charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+			Taux d'effort = coût annuel rapporté au revenu disponible, borné à [0 ; 100]\,\%.
+			\item \textit{Déflateur} : coûts déflatés par l'indice du niveau de vie médian de chaque vague (base 100 = 2025) ; un montant stable signifie une progression au même rythme que les revenus.
+			\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+			moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+			\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\begin{threeparttable}
+		\caption{Conditions de logement des ménages dont la personne de référence a 25-29 ans}
+		\label{tab:logement_25_29}
+		\begin{tabular}{lrrrrrrrrrr}
+			\toprule
+			& \multicolumn{5}{c}{Locataires} & \multicolumn{5}{c}{Propriétaires accédants} \\
+			\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+			Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+			\midrule
+			2006 & 60,3 & 900 & 17,0 & 33,8 & {\scriptsize 404} & 83,9 & 1\,879 & 25,6 & 44,9 & {\scriptsize 103} \\
+			2010 & 62,7 & 812 & 14,8 & 36,5 & {\scriptsize 406} & 86,8 & 1\,709 & 22,1 & 43,7 & {\scriptsize 166} \\
+			2014 & 61,6 & 849 & 15,5 & 34,8 & {\scriptsize 385} & 93,4 & 1\,593 & 20,0 & 43,0 & {\scriptsize 137} \\
+			2018 & 61,6 & 762 & 15,2 & 32,0 & {\scriptsize 337} & 91,5 & 1\,311 & 15,9 & 36,9 & {\scriptsize 118} \\
+			\addlinespace
+			2022 & 55,9 & 818 & 17,3 & 35,0 & {\scriptsize 378} & 89,9 & 1\,283 & 16,6 & 36,9 & {\scriptsize 166} \\
+			2023 & 56,4 & 823 & 16,5 & 32,6 & {\scriptsize 349} & 91,5 & 1\,284 & 15,9 & 34,3 & {\scriptsize 159} \\
+			2024 & 61,5 & 824 & 15,3 & 31,3 & {\scriptsize 358} & 86,4 & 1\,335 & 17,5 & 35,0 & {\scriptsize 171} \\
+			2025 & 58,4 & 788 & 15,8 & 31,6 & {\scriptsize 336} & 90,0 & 1\,439 & 17,7 & 37,5 & {\scriptsize 154} \\
+			\bottomrule
+		\end{tabular}
+		\begin{tablenotes}[flushleft]\scriptsize
+			\item \textit{Champ} : ménages dont la personne de référence a 25-29 ans, France entière.
+			\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+			charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+			Taux d'effort = coût annuel rapporté au revenu disponible, borné à [0 ; 100]\,\%.
+			\item \textit{Déflateur} : coûts déflatés par l'indice du niveau de vie médian de chaque vague (base 100 = 2025) ; un montant stable signifie une progression au même rythme que les revenus.
+			\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+			moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+			\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\begin{threeparttable}
+		\caption{Conditions de logement des ménages dont la personne de référence a 30-34 ans}
+		\label{tab:logement_30_34}
+		\begin{tabular}{lrrrrrrrrrr}
+			\toprule
+			& \multicolumn{5}{c}{Locataires} & \multicolumn{5}{c}{Propriétaires accédants} \\
+			\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+			Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+			\midrule
+			2006 & 69,5 & 969 & 16,5 & 32,1 & {\scriptsize 377} & 105,3 & 2\,012 & 21,1 & 41,6 & {\scriptsize 337} \\
+			2010 & 69,5 & 872 & 14,3 & 32,6 & {\scriptsize 365} & 98,0 & 1\,790 & 21,1 & 41,0 & {\scriptsize 322} \\
+			2014 & 64,5 & 860 & 15,2 & 33,2 & {\scriptsize 325} & 103,6 & 1\,806 & 19,3 & 42,2 & {\scriptsize 314} \\
+			2018 & 66,4 & 807 & 13,8 & 30,9 & {\scriptsize 326} & 100,7 & 1\,580 & 17,8 & 36,9 & {\scriptsize 278} \\
+			\addlinespace
+			2022 & 63,2 & 865 & 15,9 & 33,3 & {\scriptsize 449} & 105,3 & 1\,612 & 17,6 & 35,4 & {\scriptsize 386} \\
+			2023 & 62,6 & 871 & 16,0 & 31,7 & {\scriptsize 397} & 102,0 & 1\,556 & 17,7 & 34,6 & {\scriptsize 361} \\
+			2024 & 60,7 & 875 & 16,7 & 31,5 & {\scriptsize 395} & 103,0 & 1\,539 & 17,6 & 34,0 & {\scriptsize 380} \\
+			2025 & 61,1 & 874 & 16,5 & 31,8 & {\scriptsize 422} & 103,5 & 1\,464 & 17,1 & 33,8 & {\scriptsize 377} \\
+			\bottomrule
+		\end{tabular}
+		\begin{tablenotes}[flushleft]\scriptsize
+			\item \textit{Champ} : ménages dont la personne de référence a 30-34 ans, France entière.
+			\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+			charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+			Taux d'effort = coût annuel rapporté au revenu disponible, borné à [0 ; 100]\,\%.
+			\item \textit{Déflateur} : coûts déflatés par l'indice du niveau de vie médian de chaque vague (base 100 = 2025) ; un montant stable signifie une progression au même rythme que les revenus.
+			\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+			moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+			\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\setlength{\tabcolsep}{4pt}
+	\begin{threeparttable}
+		\caption{Conditions de logement des ménages dont la personne de référence a 35-39 ans}
+		\label{tab:logement_35_39}
+		\begin{tabular}{lrrrrrrrrrr}
+			\toprule
+			& \multicolumn{5}{c}{Locataires} & \multicolumn{5}{c}{Propriétaires accédants} \\
+			\cmidrule(lr){2-6} \cmidrule(lr){7-11}
+			Année & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} & \multicolumn{1}{c}{\shortstack{Surface\\(m\textsuperscript{2})}} & \multicolumn{1}{c}{\shortstack{Coût\\(\texteuro/mois)}} & \multicolumn{1}{c}{\shortstack{Coût/m\textsuperscript{2}\\(\texteuro)}} & \multicolumn{1}{c}{\shortstack{Effort\\(\%)}} & \multicolumn{1}{c}{\shortstack{\textit{n}}} \\
+			\midrule
+			2006 & 72,3 & 998 & 15,2 & 31,9 & {\scriptsize 388} & 109,3 & 2\,187 & 21,4 & 41,3 & {\scriptsize 471} \\
+			2010 & 72,2 & 891 & 13,6 & 31,7 & {\scriptsize 392} & 110,7 & 1\,821 & 18,6 & 38,2 & {\scriptsize 500} \\
+			2014 & 71,5 & 936 & 14,9 & 34,8 & {\scriptsize 343} & 105,4 & 1\,731 & 17,7 & 37,4 & {\scriptsize 511} \\
+			2018 & 73,2 & 845 & 13,1 & 31,6 & {\scriptsize 306} & 106,6 & 1\,709 & 18,0 & 36,9 & {\scriptsize 383} \\
+			\addlinespace
+			2022 & 67,1 & 927 & 15,3 & 33,8 & {\scriptsize 435} & 108,2 & 1\,749 & 18,8 & 33,4 & {\scriptsize 630} \\
+			2023 & 70,0 & 879 & 14,2 & 31,7 & {\scriptsize 408} & 105,9 & 1\,614 & 17,3 & 33,2 & {\scriptsize 575} \\
+			2024 & 69,4 & 868 & 13,9 & 31,9 & {\scriptsize 413} & 107,0 & 1\,705 & 17,8 & 33,2 & {\scriptsize 616} \\
+			2025 & 65,4 & 895 & 15,4 & 30,0 & {\scriptsize 443} & 107,7 & 1\,796 & 19,5 & 33,3 & {\scriptsize 608} \\
+			\bottomrule
+		\end{tabular}
+		\begin{tablenotes}[flushleft]\scriptsize
+			\item \textit{Champ} : ménages dont la personne de référence a 35-39 ans, France entière.
+			\item \textit{Lecture} : moyennes pondérées (poids de sondage SRCV). Coût du logement =
+			charges (\texttt{HH070}) + mensualité de remboursement (\texttt{REMP}/\texttt{REMPR}).
+			Taux d'effort = coût annuel rapporté au revenu disponible, borné à [0 ; 100]\,\%.
+			\item \textit{Déflateur} : coûts déflatés par l'indice du niveau de vie médian de chaque vague (base 100 = 2025) ; un montant stable signifie une progression au même rythme que les revenus.
+			\item \textit{n} : effectif non pondéré de la cellule. Les moyennes reposant sur
+			moins de 30 observations ne sont pas reportées et sont remplacées par ---.
+			\item \textit{Source} : Insee, SRCV 2006-2025, calculs de l'auteur.
+		\end{tablenotes}
+	\end{threeparttable}
+\end{table}
+	
+	
+\end{document}
