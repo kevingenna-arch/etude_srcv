@@ -41,10 +41,10 @@ if (!dir.exists("Output")) dir.create("Output")
 #  On ancre donc le dénominateur sur l'indicateur conjoncturel de fécondité
 #  publié par l'Insee, et on n'utilise SRCV que pour les ÉLASTICITÉS et pour
 #  l'ÉVOLUTION DES CONDITIONS DE LOGEMENT (mesurées, elles, à l'identique).
-#  ICF_2010 et ICF_2025 sont définis dans 00_config.R (source unique, avec la
+#  ICF_BASE et ICF_2025 sont définis dans 00_config.R (source unique, avec la
 #  référence Insee). Le 1,58 utilisé dans une première version pour 2025 n'était
 #  pas vérifié : l'Insee publie 1,56 (bilan démographique 2025, février 2026).
-BAISSE_RELATIVE <- (ICF_2025 - ICF_2010) / ICF_2010          # ~ -22,8 %
+BAISSE_RELATIVE <- (ICF_2025 - ICF_BASE) / ICF_BASE          # ~ -22,8 %
 
 # ============================================================================
 #  §0 — DONNÉES
@@ -121,7 +121,7 @@ faits <- df %>% filter(annee %in% VAGUES_TAUX) %>%
             .groups = "drop") %>%
   mutate(across(where(is.numeric), ~ round(.x, 2)))
 print(as.data.frame(faits), row.names = FALSE)
-write_csv(faits, "Output/faits_par_rang.csv")
+ecrire(faits, "Output/faits_par_rang.csv")
 
 # Taux de naissance par quartile de surface (pondéré), séparément par rang.
 quartiles_surface <- df %>% filter(annee %in% VAGUES_TAUX) %>%
@@ -137,7 +137,7 @@ quartiles_surface <- df %>% filter(annee %in% VAGUES_TAUX) %>%
             .groups = "drop")
 cat("\nTaux de naissance par quartile de surface :\n")
 print(as.data.frame(quartiles_surface), row.names = FALSE)
-write_csv(quartiles_surface, "Output/quartiles_surface.csv")
+ecrire(quartiles_surface, "Output/quartiles_surface.csv")
 
 # ============================================================================
 #  §2 — EFFET DE LA SURFACE PAR RANG DE NAISSANCE
@@ -217,7 +217,7 @@ print(as.data.frame(df %>% filter(!is.na(anciennete)) %>%
             .groups = "drop")), row.names = FALSE)
 
 res_rang_tout <- bind_rows(res_rang, res_rang_pred)
-write_csv(res_rang_tout, "Output/natalite_par_rang.csv")
+ecrire(res_rang_tout, "Output/natalite_par_rang.csv")
 
 # ============================================================================
 #  §3 — LE STATUT D'OCCUPATION : ESCALIER DE CONTRÔLES
@@ -259,7 +259,7 @@ res_escalier <- bind_rows(
 cat("\nEcart de probabilite de naissance vs LOCATAIRE (points de %) :\n")
 print(as.data.frame(res_escalier %>% mutate(across(where(is.numeric), ~ round(.x, 3)))),
       row.names = FALSE)
-write_csv(res_escalier, "Output/escalier_statut.csv")
+ecrire(res_escalier, "Output/escalier_statut.csv")
 
 # Écart d'âge et de revenu entre statuts : ce que l'escalier absorbe.
 cat("\nCe que les controles absorbent (moyennes ponderees) :\n")
@@ -318,7 +318,7 @@ print(as.data.frame(grad_zeat %>% select(zeat, estimate, conf.low, conf.high, p.
 cat("\nTest de Wald sur les interactions surface x ZEAT :\n")
 print(regTermTest(m_zeat, ~ surface_10:zeat))
 
-write_csv(bind_rows(
+ecrire(bind_rows(
   grad_surface %>% transmute(dimension = "Tranche d'unite urbaine",
                              variable = "Surface (+10 m2)",
                              zone = as.character(densite),
@@ -347,7 +347,7 @@ cat("\n\n########## §5 — DECOMPOSITION DE LA BAISSE DE NATALITE ##########\n"
 
 # rang_pondere() et transposer() : 00_utils.R (partagées avec le script 28).
 
-d10 <- df %>% filter(annee == "2010")
+d10 <- df %>% filter(annee == ANNEE_BASE)
 d25 <- df %>% filter(annee == "2025")
 cat("2010 : n =", nrow(d10), " | 2025 : n =", nrow(d25), "\n")
 
@@ -451,7 +451,7 @@ borne_mde <- tibble(
   mutate(valeur = round(valeur, 3))
 cat("\nBorne de puissance (MDE) :\n"); print(as.data.frame(borne_mde), row.names = FALSE)
 
-write_csv(bind_rows(
+ecrire(bind_rows(
   conditions %>% transmute(bloc = "Conditions 2010 vs 2025", cle = grandeur,
                            v2010, v2025, valeur = ecart),
   decompo    %>% transmute(bloc = paste("Contrefactuel -", modele), cle = canal,
@@ -507,7 +507,7 @@ res_param <- bind_rows(
   mutate(across(where(is.numeric), ~ round(.x, 4)))
 cat("\n(a) Effet de +10 m2 selon ce qu'on tient fixe :\n")
 print(as.data.frame(res_param), row.names = FALSE)
-write_csv(res_param, "Output/parametrisation_surface.csv")
+ecrire(res_param, "Output/parametrisation_surface.csv")
 
 # ── (b) Logement, âge, niveau de vie : contrefactuels comparables ──────────
 #  L'âge est transposé À PARITÉ DONNÉE (dans chaque classe de nb_enfants) :
@@ -546,7 +546,7 @@ res_poids <- bind_rows(poids_relatif(m_ref,  "Association (borne haute)"),
   mutate(across(where(is.numeric), ~ round(.x, 3)))
 cat("\n(b) Ce que chaque canal reproduirait de la baisse 2010-2025 :\n")
 print(as.data.frame(res_poids), row.names = FALSE)
-write_csv(res_poids, "Output/poids_relatif_canaux.csv")
+ecrire(res_poids, "Output/poids_relatif_canaux.csv")
 
 # ── (c) Là où le logement s'est vraiment dégradé : locataires de < 40 ans ──
 loc10 <- d10 %>% filter(statut3 == "Locataire", age_femme < 40)
@@ -577,7 +577,7 @@ res_loc <- map_dfr(list("Association (borne haute)" = m_ref,
   }, .id = "modele") %>% mutate(across(where(is.numeric), ~ round(.x, 3)))
 cat("\n    Contrefactuel restreint aux locataires de moins de 40 ans :\n")
 print(as.data.frame(res_loc), row.names = FALSE)
-write_csv(res_loc, "Output/contrefactuel_locataires_jeunes.csv")
+ecrire(res_loc, "Output/contrefactuel_locataires_jeunes.csv")
 
 # ── Convergence des modèles utilisés ───────────────────────────────────────
 cat("\nConvergence :",
@@ -613,7 +613,7 @@ res_periode <- bind_rows(
   filter(variable == "surface_10") %>% mutate(across(where(is.numeric), ~ round(.x, 4)))
 cat("\n(a) Effet de la surface (+10 m2) de part et d'autre de 2018 :\n")
 print(as.data.frame(res_periode), row.names = FALSE)
-write_csv(res_periode, "Output/robustesse_periode.csv")
+ecrire(res_periode, "Output/robustesse_periode.csv")
 
 # ── (b) Surface en tranches : seuil ou pente ? ─────────────────────────────
 SEUILS <- c(-Inf, 50, 70, 90, 120, Inf)
@@ -644,7 +644,7 @@ res_tranches <- bind_rows(
   mutate(across(where(is.numeric), ~ round(.x, 3)))
 cat("\n(b) Ecart de probabilite de naissance par tranche de surface (pts) :\n")
 print(as.data.frame(res_tranches), row.names = FALSE)
-write_csv(res_tranches, "Output/surface_en_tranches.csv")
+ecrire(res_tranches, "Output/surface_en_tranches.csv")
 
 # Répartition des couples sans enfant dans ces tranches, 2010 vs 2025 : c'est
 # la part sous le seuil qui compte, pas la surface moyenne.
@@ -711,7 +711,7 @@ sous50 <- bind_rows(
 cat("\nPart des menages loges sous 50 m2 :\n")
 print(as.data.frame(sous50), row.names = FALSE)
 
-write_csv(bind_rows(
+ecrire(bind_rows(
   res_seuil %>% transmute(bloc = "Contrefactuel - seuil", cle = canal,
                           valeur = ecart_relatif_pct, part = part_de_la_baisse_pct),
   sous50 %>% transmute(bloc = "Part sous 50 m2", cle = situation,

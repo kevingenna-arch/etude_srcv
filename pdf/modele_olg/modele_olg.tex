@@ -1,0 +1,404 @@
+% =====================================================================
+%  Note de modélisation — Logement, fécondité et générations imbriquées
+%  Compilation : xelatex modele_olg.tex (x2 pour les références)
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{EB Garamond}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=2.6cm,right=2.6cm]{geometry}
+\usepackage{xcolor}
+\definecolor{brandnavy}{HTML}{243443}
+\usepackage[hidelinks,colorlinks=true,linkcolor=brandnavy,citecolor=brandnavy]{hyperref}
+\usepackage{titlesec}
+\titleformat{\section}{\color{brandnavy}\Large}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\color{brandnavy}\large\itshape}{\thesubsection.}{0.6em}{}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemme}{Lemme}
+\theoremstyle{definition}
+\newtheorem{hypothese}{Hypothèse}
+\newtheorem{remarque}{Remarque}
+\renewcommand{\proofname}{Preuve}
+
+\newcommand{\eps}{\varepsilon}
+
+\title{\color{brandnavy}Logement, fécondité et générations imbriquées\\[0.3em]
+{\large\itshape Un modèle-jouet à trois périodes}}
+\author{GENNA Kévin}
+\date{Septembre 2026 — note de travail, projet SRCV}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Cette note pose un modèle-jouet à générations imbriquées et trois périodes — jeune adulte qui achète son logement, adulte qui décide de sa fécondité, retraité qui revend — dont l'unique fonction est de donner, avant la partie empirique, quelques intuitions tractables sur le lien entre logement et natalité. En séparant dans le temps l'achat du logement et la décision d'enfant, le modèle formalise la lecture « contrainte » de ce lien : la fécondité de l'adulte dépend du prix qu'il a affronté \emph{jeune}, pas du prix courant, et la surface acquise doit prédire la naissance qui suit — une prédiction que le panel de l'étude ne confirme pas. Le modèle se résout presque entièrement en forme close. À l'état stationnaire, la surface nécessaire au remplacement des générations ne dépend que des préférences, pas des revenus : la croissance des revenus s'absorbe intégralement dans le prix, pas dans la taille de la population. La dynamique converge toujours, et de façon monotone ; mais, parce que le marché transmet le parc des parents aux enfants à l'intérieur de chaque lignée, un programme de construction laisse un écho permanent dans la taille des cohortes, une sur deux, là où un choc de population s'efface. À long terme, les mètres carrés ajoutés ou retirés se traduisent en ménages supplémentaires ou en moins, non en logements plus grands ou plus petits ; pendant la transition, un retrait pèse plus sur la fécondité qu'une construction de même taille ne l'élève. Étendu à deux régions, le modèle prédit des logements plus petits et une fécondité plus faible en ville, sans autre effet de la ville à surface donnée, et une baisse de la fécondité moyenne quand la prime urbaine attire les jeunes vers la ville. Le modèle prédit aussi que le revenu n'agit sur la fécondité qu'à travers la surface, ce que les données confirment une fois le revenu mesuré avant la naissance, et que les ménages modestes sont les plus sensibles à l'espace, ce qu'elles ne confirment pas. Calibré de façon cohérente, il n'est compatible avec une fécondité désirée proche du remplacement que si l'espace consommé par enfant est faible : le canal d'espace pur est lent et quantitativement modeste. La note nomme enfin ce qu'elle ne couvre pas : le crédit et le statut d'occupation, la décohabitation, le rang de naissance et la forme en marche du lien observé.
+\end{abstract}
+
+% =====================================================================
+\section{Objet et positionnement}
+
+Cette note n'a pas l'ambition d'un modèle structurel calibré. Son rôle est de donner, en une poignée d'équations résolubles à la main, les grandes lignes de ce qu'on doit attendre d'un lien entre logement et fécondité, avant de dérouler la partie empirique de l'étude. Deux conséquences pour ce qui suit. D'abord, la parcimonie prime sur l'exhaustivité : le nombre d'équations égale le nombre d'inconnues à chaque étape, et tout paramètre superflu est retiré. Ensuite, ce que le modèle ne couvre pas est nommé explicitement (§\ref{sec:limites}) plutôt que traité par une extension numérique — un modèle-jouet qui se met à exiger une résolution par ordinateur a cessé d'être un modèle-jouet.
+
+Le choix de trois périodes plutôt que deux tient à une seule chose : il sépare dans le temps l'achat du logement et la décision d'enfant. Dans un modèle à deux périodes où les deux sont choisis dans le même programme, la corrélation entre surface et fécondité ne dit rien sur qui contraint qui — c'est un choix joint, pas une contrainte. En achetant jeune et en décidant des enfants plus tard, avec un logement devenu illiquide entre les deux, le modèle produit une vraie relation temporelle : la fécondité future dépend du prix passé. C'est la logique du test des ménages installés de la partie empirique ; la remarque~\ref{rem:correspondance} confronte cette prédiction à ses résultats.
+
+Le modèle emprunte à Becker et Barro (1988) le coût en temps de l'enfant, à Galor et Weil (2000) l'actif en offre fixe détenu par les vieux et vendu aux jeunes, et à la convention de Diamond (1965) l'utilité logarithmique. L'élément non standard est que les enfants consomment de la surface — c'est le seul paramètre, $\sigma$, dont l'annulation ramène au cas sans logement.
+
+% =====================================================================
+\section{Le noyau à trois périodes}\label{sec:noyau}
+
+\subsection{Environnement}
+
+Le temps est discret. Chaque individu passe d'abord une période d'enfance chez ses parents, sans décision, puis vit trois périodes : jeune adulte en $t$, adulte en $t+1$, retraité en $t+2$. On appelle cohorte $t$ la génération qui devient jeune adulte en $t$ — née en $t-1$ — et on note $N_t$ sa taille.
+
+\begin{hypothese}[Logement]
+Le parc est un stock fixe $H$ de mètres carrés. Un logement acheté par un jeune adulte est \textbf{illiquide} : il est conservé sans renégociation jusqu'à la retraite, où il est revendu. À chaque date, deux cohortes détiennent donc le parc — celle qui vient d'acheter et celle qui a acheté la période précédente — pendant que la cohorte la plus âgée le revend.
+\end{hypothese}
+
+\begin{hypothese}[Myopie du jeune adulte]\label{hyp:myopie}
+Le jeune adulte achète son logement pour son usage \emph{du moment}, sans valoriser les enfants qu'il n'a pas encore décidé d'avoir. C'est une hypothèse délibérée : sans elle, le jeune achèterait en anticipant sa fécondité future et l'on retomberait sur le choix joint d'un modèle à deux périodes, sans gain par rapport à lui.
+\end{hypothese}
+
+\begin{hypothese}[Enfants]
+Chaque enfant coûte à l'adulte une fraction $\phi \in (0,1)$ de son temps et $\sigma \geq 0$ mètres carrés, prélevés sur le logement déjà acquis. Les enfants de la cohorte $t$ naissent en $t+1$, vivent chez leurs parents pendant cette période et deviennent jeunes adultes en $t+2$ : ils achètent leur logement à la date même où leurs parents revendent le leur.
+\end{hypothese}
+
+Chaque étage de vie résout son propre programme, sur ses seules ressources de l'étage : le jeune adulte ne dispose que de son salaire $w_1$, l'adulte que de $w_2$, le retraité que du produit de la revente. Il n'existe pas d'instrument d'épargne autre que le logement lui-même.
+
+\subsection{Le jeune adulte : l'achat}
+
+En $t$, le jeune adulte perçoit $w_1$ et choisit sa consommation $c_1$ et sa surface $x$ :
+\begin{equation}\label{eq:P1}
+\max_{c_1,\,x} \ \ln c_1 + \gamma \ln x \quad \text{s.c.} \quad c_1 + p_t x = w_1 .
+\end{equation}
+Sous utilité logarithmique, les parts de dépense sont constantes et la solution est immédiate :
+\begin{equation}\label{eq:x}
+x_t = X(p_t) \equiv \frac{\gamma\, w_1}{(1+\gamma)\, p_t} , \qquad c_1 = \frac{w_1}{1+\gamma} .
+\end{equation}
+La surface achetée est indexée par la cohorte $t$ : elle est conservée telle quelle jusqu'à la revente en $t+2$. Sa demande a une élasticité-prix unitaire, exactement $-1$ — une conséquence de Cobb-Douglas, pas une hypothèse séparée.
+
+\subsection{L'adulte : la fécondité sous contrainte d'espace hérité}
+
+En $t+1$, l'adulte perçoit $w_2$ et choisit sa consommation $c_2$ et son nombre d'enfants $n$, \textbf{à surface $x_t$ déjà fixée} :
+\begin{equation}\label{eq:P2}
+\max_{c_2,\,n} \ \ln c_2 + \gamma \ln (x_t - \sigma n) + \eta \ln n
+\quad \text{s.c.} \quad c_2 = w_2\,(1-\phi n) .
+\end{equation}
+Le terme $x_t - \sigma n$ est l'espace de vie qui reste au ménage une fois celui des enfants prélevé. La condition du premier ordre est
+\begin{equation}\label{eq:foc-n}
+\frac{\eta}{n} = \frac{\phi}{1-\phi n} + \frac{\gamma \sigma}{x_t - \sigma n} .
+\end{equation}
+Le membre de droite est le coût marginal d'un enfant : son coût en temps, plus l'espace de vie qu'il retire au couple. Elle définit implicitement une fonction de politique $n = \nu(x_t)$.
+
+Deux choses sont à noter immédiatement. D'abord, $w_2$ \textbf{n'apparaît pas} dans \eqref{eq:foc-n} : sous utilité logarithmique, l'arbitrage temps contre espace ne dépend pas du niveau du salaire adulte, seulement de la surface héritée. Ensuite, et c'est le point central de toute cette construction, le prix \emph{courant} $p_{t+1}$ n'apparaît nulle part non plus : la fécondité ne réagit qu'au prix passé, $p_t$, via $x_t$.
+
+\begin{lemme}[Statique comparée de la fécondité]\label{lem:comp-stat}
+$\nu$ est strictement croissante :
+\begin{equation}\label{eq:nu-prime}
+\nu'(x) = \frac{\dfrac{\gamma\sigma}{(x-\sigma n)^2}}{\dfrac{\eta}{n^2} + \dfrac{\phi^2}{(1-\phi n)^2} + \dfrac{\gamma\sigma^2}{(x-\sigma n)^2}} \ > 0 .
+\end{equation}
+\end{lemme}
+\begin{proof}
+Différentiation implicite de \eqref{eq:foc-n} : notons $\Psi(n;x)$ le membre de gauche moins le membre de droite. $\Psi_x = \gamma\sigma/(x-\sigma n)^2 > 0$ et $\Psi_n = -\eta/n^2 - \phi^2/(1-\phi n)^2 - \gamma\sigma^2/(x-\sigma n)^2 < 0$ (coût marginal croissant en $n$). Alors $\nu'(x) = -\Psi_x/\Psi_n$, d'où \eqref{eq:nu-prime}.
+\end{proof}
+
+\begin{proposition}[Le résultat qui justifie la structure à trois périodes]\label{prop:coeur}
+La fécondité de la cohorte $t$ est décroissante dans le prix qu'elle a affronté à l'achat, et strictement indépendante du prix courant :
+\begin{equation}\label{eq:dn-dp}
+\frac{d n_t}{d p_t} = \nu'(x_t)\, X'(p_t) < 0 , \qquad \frac{\partial n_t}{\partial p_{t+1}} = 0 .
+\end{equation}
+\end{proposition}
+
+\begin{remarque}[Ce que la partie empirique en dit]\label{rem:correspondance}
+La proposition formalise la lecture « contrainte » du lien entre surface et naissance, celle que le test des ménages installés depuis trois ans ou plus (§3.2 de l'étude) cherche à isoler : un logement acquis avant la décision d'enfant, dont la surface pèse sur la fécondité qui suit. Elle en tire une prédiction testable : la surface doit prédire la naissance \emph{suivante}. C'est précisément ce que le panel de l'étude ne trouve pas : sur les mêmes ménages, la surface est associée à la naissance récente mais ne prédit pas celle qui survient entre deux vagues. Ce résultat va contre le mécanisme de la proposition et en faveur de l'anticipation — un logement choisi en fonction d'un projet d'enfant déjà formé —, c'est-à-dire de ce que l'hypothèse~\ref{hyp:myopie} exclut par construction. Le modèle décrit donc ce que produirait une contrainte de logement pure ; les données suggèrent que cette contrainte n'est pas le canal dominant chez les couples déjà installés.
+\end{remarque}
+
+\subsection{Le retraité}
+
+En $t+2$, le retraité revend $x_t$ au prix courant et consomme le produit de la vente, sans autre choix :
+\begin{equation}\label{eq:P3}
+d_t = p_{t+2}\, x_t .
+\end{equation}
+Le prix de revente n'intervient dans aucun choix antérieur : $x_t$ est fixé dès la période 1 par un jeune adulte qui ne valorise pas la revente, et rien dans le programme de l'adulte ne dépend de $p_{t+2}$.
+
+\subsection{Marché, démographie et état stationnaire}
+
+\begin{hypothese}[Apurement]
+À chaque date $\tau$, le parc est détenu par les deux cohortes qui ne vendent pas — celle qui vient d'acheter et celle qui a acheté une période plus tôt :
+\begin{equation}\label{eq:M}
+H = N_\tau x_\tau + N_{\tau-1} x_{\tau-1} .
+\end{equation}
+\end{hypothese}
+\begin{hypothese}[Démographie]
+\begin{equation}\label{eq:D}
+N_{t+2} = n_t\, N_t .
+\end{equation}
+Les enfants de la cohorte $t$ forment la cohorte $t+2$ : les cohortes des dates paires et celles des dates impaires constituent deux lignées distinctes, chacune descendant de la précédente de même parité.
+\end{hypothese}
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Inconnues (5 par cohorte) & Équations & Nature \\
+\midrule
+$c_1, x_t$ & \eqref{eq:x} & jeune adulte \\
+$c_2, n_t$ & \eqref{eq:P2}, \eqref{eq:foc-n} & adulte \\
+$d_t$ & \eqref{eq:P3} & retraité \\
+$p_\tau$ (par date) & \eqref{eq:M} & apurement \\
+$N_{t+2}$ & \eqref{eq:D} & démographie \\
+\bottomrule
+\end{tabular}
+\caption{Comptage du noyau à trois périodes.}
+\end{table}
+
+\begin{lemme}[Le parc se transmet à l'intérieur de chaque lignée]\label{lem:conservation}
+Notons $A_\tau \equiv N_\tau x_\tau$ la surface totale achetée par la cohorte $\tau$. À parc constant, $A_\tau = A_{\tau-2}$ : chaque lignée conserve indéfiniment la part du parc qu'elle détient, $a$ pour la lignée des dates paires et $H-a$ pour celle des dates impaires.
+\end{lemme}
+\begin{proof}
+\eqref{eq:M} aux dates $\tau-1$ et $\tau$ donne $H = A_{\tau-1} + A_{\tau-2} = A_\tau + A_{\tau-1}$, d'où $A_\tau = A_{\tau-2}$. Économiquement : à la date $\tau$, les seuls vendeurs sont les retraités de la cohorte $\tau-2$, les seuls acheteurs les jeunes de la cohorte $\tau$, qui sont leurs enfants par \eqref{eq:D} ; la cohorte $\tau-1$, de l'autre lignée, n'achète ni ne vend. Le marché transmet le parc des parents aux enfants à l'intérieur de chaque lignée, jamais d'une lignée à l'autre.
+\end{proof}
+
+Le partage $a$ est donc une donnée de l'histoire, que rien dans le modèle ne modifie — sauf une variation du parc lui-même, captée tout entière par la cohorte qui achète à cette date.
+
+\begin{proposition}[État stationnaire]\label{prop:ss}
+Si $\eta > \phi/(1-\phi)$, il existe, pour chaque partage $a$ du parc, un unique état stationnaire à fécondité de remplacement, donné en forme close par
+\begin{equation}\label{eq:xstar}
+x^* = \sigma\left(1 + \frac{\gamma}{\eta - \dfrac{\phi}{1-\phi}}\right) ,
+\qquad
+p^* = \frac{\gamma\, w_1}{(1+\gamma)\, x^*} ,
+\qquad
+N^*_{\text{pair}} = \frac{a}{x^*} , \quad N^*_{\text{impair}} = \frac{H-a}{x^*} .
+\end{equation}
+Dans le cas symétrique $a = H/2$, toutes les cohortes ont la même taille $N^* = H/(2x^*)$. Si $\eta \leq \phi/(1-\phi)$, la population s'éteint quel que soit le prix.
+\end{proposition}
+\begin{proof}
+À l'état stationnaire $n^*=1$ ; poser $n=1$ dans \eqref{eq:foc-n} et résoudre en $x$ donne \eqref{eq:xstar}. Existence et unicité : la contrainte $n < x/\sigma$ (pour que l'espace de vie $x-\sigma n$ reste positif) encadre $\nu(x)$ entre $0$ et $x/\sigma$, donc $\nu(x) \to 0$ quand $x \to 0^+$ ; à l'autre borne, $\nu(x) \to \bar n \equiv \eta/[\phi(1+\eta)]$ quand $x \to \infty$, en annulant le troisième terme de \eqref{eq:foc-n}. Continue et strictement croissante (lemme~\ref{lem:comp-stat}) entre ces deux bornes, $\nu$ croise $1$ une fois exactement si $\bar n > 1$, condition équivalente à $\eta > \phi/(1-\phi)$. Le prix suit de \eqref{eq:x} inversée ; la taille des cohortes du lemme~\ref{lem:conservation}, $N^*_\tau x^* = A_\tau$ valant $a$ ou $H-a$ selon la parité de $\tau$.
+\end{proof}
+
+\begin{remarque}[La population de long terme ne dépend pas du revenu]\label{rem:neutralite}
+Dans \eqref{eq:xstar}, $x^*$ ne dépend que de $\sigma, \gamma, \eta, \phi$, et la taille des cohortes que de $x^*$ et du parc — jamais de $w_1$ ou $w_2$. À l'état stationnaire, la surface nécessaire au remplacement des générations est un fait de préférences et de technologie, pas de revenu ; une économie plus riche n'a pas une population stationnaire plus nombreuse, elle a un logement plus cher : $p^*$ est strictement proportionnel à $w_1$. L'effet de surface que documente la partie empirique — le canal par lequel un supplément de mètres carrés élève la probabilité de naissance — est donc, dans ce modèle, un phénomène de \emph{transition} vers l'état stationnaire, pas une propriété de l'état stationnaire lui-même. C'est cohérent avec le fait que l'étude mesure une fenêtre de quinze ans, non un régime permanent.
+\end{remarque}
+
+\subsection{Dynamique : convergence et écho}
+
+\begin{lemme}[L'élasticité de la fécondité à la surface est inférieure à un]\label{lem:eps}
+Soit $\eps(x) \equiv x\,\nu'(x)/\nu(x)$ l'élasticité de la fécondité à la surface héritée, et $n = \nu(x)$. Pour tout $x > 0$ et $\sigma > 0$,
+\begin{equation}\label{eq:eps}
+\eps(x) = \frac{E_1 + E_2}{E_1 + E_2 + T_1 + T_2} \in (0,1),
+\end{equation}
+avec
+\[
+E_1 = \frac{\gamma\sigma}{x-\sigma n},\qquad
+E_2 = \frac{n\gamma\sigma^2}{(x-\sigma n)^2},\qquad
+T_1 = \frac{\phi}{1-\phi n},\qquad
+T_2 = \frac{n\phi^2}{(1-\phi n)^2} .
+\]
+\end{lemme}
+\begin{proof}
+D'après \eqref{eq:nu-prime}, $\eps = x\nu'/n = \big[\gamma\sigma x/(x-\sigma n)^2\big] \big/ \big[\eta/n + T_2 + E_2\big]$. Au numérateur, écrire $x = (x-\sigma n) + \sigma n$ donne $E_1 + E_2$ ; au dénominateur, \eqref{eq:foc-n} remplace $\eta/n$ par $T_1 + E_1$.
+\end{proof}
+
+L'élasticité est la part du canal d'espace ($E$) dans la courbure totale du coût marginal d'un enfant, espace et temps ($T$) réunis. Elle n'atteindrait $1$ que si l'enfant ne coûtait aucun temps.
+
+\begin{proposition}[Dynamique globale]\label{prop:stab}
+Supposons $\eta > \phi/(1-\phi)$ et le parc constant. Quelles que soient les tailles initiales des cohortes et le partage initial $a$ du parc :
+\begin{enumerate}
+\item[(i)] dans chaque lignée, la taille des cohortes converge vers sa valeur stationnaire, $a/x^*$ ou $(H-a)/x^*$, et de façon monotone : une lignée moins nombreuse que sa taille stationnaire croît à chaque génération sans jamais la dépasser, une lignée plus nombreuse décroît sans jamais passer en dessous ;
+\item[(ii)] la surface par ménage, le prix et la fécondité convergent vers $x^*$, $p^*$ et $1$ ;
+\item[(iii)] si $a \neq H/2$, la taille des cohortes alterne indéfiniment d'une date à l'autre, avec un écart $|H-2a|/x^*$ qui ne s'amortit pas, sans aucune oscillation résiduelle des prix ni de la fécondité.
+\end{enumerate}
+Près de l'état stationnaire, l'écart d'une lignée à sa taille stationnaire est multiplié par $1 - \eps_n$ à chaque génération, où $\eps_n \equiv \eps(x^*) = \nu'(x^*)\,x^*$.
+\end{proposition}
+\begin{proof}
+En annexe~\ref{app:stab}.
+\end{proof}
+
+La fécondité ne peut donc jamais, à elle seule, engendrer de cycle : le lemme~\ref{lem:eps} exclut qu'une génération trop nombreuse, en se comprimant, réduise sa descendance au point de faire passer la suivante sous sa taille stationnaire. L'oscillation qui subsiste, en (iii), a une autre origine.
+
+\begin{remarque}[Le mécanisme de l'écho]\label{rem:echo}
+L'alternance de (iii) tient à deux propriétés. La première est le lemme~\ref{lem:conservation} : parce que le logement est illiquide et le parc fixe, le marché transmet les mètres carrés des parents aux enfants à l'intérieur de chaque lignée, de sorte que le partage $a$ du parc entre les deux lignées est une variable d'état que rien ne vient corriger. La seconde est que la fécondité ajuste la taille de chaque lignée à son stock jusqu'à ce que chaque ménage dispose de $x^*$ : une lignée mieux dotée finit plus nombreuse, pas mieux logée.
+
+Les deux chocs possibles ne sont alors pas symétriques. Un choc de population — une cohorte plus nombreuse de 30\,\% — laisse $a$ inchangé : la cohorte, à l'étroit, a moins d'enfants, et sa lignée revient à sa taille stationnaire ; le choc s'efface. Un choc de construction — $\Delta H$ mètres carrés mis sur le marché à la date $\tau$ — est capté tout entier par la cohorte qui achète en $\tau$, puis transmis à sa seule descendance : sa lignée croît jusqu'à $(a+\Delta H)/x^*$, l'autre ne bouge pas, et le programme de construction laisse dans la taille des cohortes un écho permanent de $\Delta H/x^*$, une cohorte sur deux. Les prix et la fécondité, eux, ne varient que pendant la transition.
+\end{remarque}
+
+\begin{remarque}[Le cas $\sigma = 0$]
+Sans coût en espace, \eqref{eq:foc-n} devient $\eta/n = \phi/(1-\phi n)$, indépendante de $x$ : la fécondité est constante, $n \equiv \bar n = \eta/[\phi(1+\eta)]$, et $\eps_n = 0$. On retrouve Barro-Becker : sans le canal de logement, rien dans ce modèle ne relie prix et fécondité.
+\end{remarque}
+
+\subsection{Un choc sur le parc}\label{sec:choc}
+
+Partons de l'état stationnaire symétrique et faisons varier le parc de $\Delta H$ à la date $\tau_0$, de façon permanente : construction si $\Delta H > 0$, retrait si $\Delta H < 0$ — démolition, changement d'usage, logement soustrait à la résidence principale.
+
+\begin{proposition}[Effets d'une variation du parc]\label{prop:choc}
+\begin{enumerate}
+\item[(i)] \emph{Impact.} La variation est captée tout entière par la cohorte qui achète en $\tau_0$ :
+\[
+x_{\tau_0} = x^*\Big(1 + \frac{2\,\Delta H}{H}\Big), \qquad
+p_{\tau_0} = \frac{p^*}{1 + 2\,\Delta H/H}, \qquad
+n_{\tau_0} = \nu(x_{\tau_0}) \approx 1 + \eps_n\,\frac{2\,\Delta H}{H} .
+\]
+L'autre lignée n'est affectée à aucune date.
+\item[(ii)] \emph{Transition.} La lignée touchée converge de façon monotone vers $(H/2 + \Delta H)/x^*$ ; sa surface, son prix et sa fécondité reviennent à $x^*$, $p^*$ et $1$.
+\item[(iii)] \emph{Long terme.} Deux cohortes successives comptent ensemble $(H + \Delta H)/x^*$ ménages : la population est proportionnelle au parc, et la variation du parc est absorbée entièrement par le nombre de ménages, en rien par leur surface.
+\item[(iv)] \emph{Étalement.} Si la variation est répartie également sur deux dates consécutives, chaque lignée en reçoit la moitié ; la surface à l'impact devient $x^*(1 + \Delta H/H)$ pour chacune des deux cohortes, et aucun écho ne subsiste.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(i) Par \eqref{eq:M}, la cohorte $\tau_0$ achète $H + \Delta H - H/2$, qu'elle partage entre $N^* = H/(2x^*)$ ménages ; le prix suit de \eqref{eq:x}, la fécondité d'un développement au premier ordre de $\nu$ autour de $x^*$. La lignée de la date $\tau_0 - 1$ garde $H/2$ par le lemme~\ref{lem:conservation}. (ii) est la proposition~\ref{prop:stab} appliquée avec $a = H/2 + \Delta H$ ; (iii) en découle en sommant les deux lignées ; (iv) applique (i) à chaque date avec $\Delta H/2$.
+\end{proof}
+
+Le facteur $2$ de (i) tient à ce que seule la moitié du parc change de mains à chaque date : un choc de $10\,\%$ du parc représente $20\,\%$ de la surface de la cohorte qui achète. Au calibrage du §\ref{sec:calibrage}, une construction de $10\,\%$ du parc abaisse le prix de $17\,\%$ pour cette cohorte et relève sa fécondité de $1{,}9\,\%$ ; un retrait de même taille relève le prix de $25\,\%$ et abaisse la fécondité de $2{,}8\,\%$. Le retrait pèse donc plus qu'une construction de même taille, pour deux raisons qui s'additionnent : une baisse de $20\,\%$ de la surface est un choc plus grand, en logarithme, qu'une hausse de $20\,\%$, et l'élasticité $\eps(x)$ est plus forte dans les petits logements — propriété vérifiée sur tous les jeux de paramètres que nous avons explorés, sans que nous l'ayons démontrée. La transition est lente : il faut sept générations pour que la moitié d'une construction se traduise en ménages supplémentaires, cinq pour un retrait.
+
+% =====================================================================
+\section{Hétérogénéité de revenu}
+
+Deux types $i \in \{L,H\}$, de salaire de jeunesse $w_1^L < w_1^H$. Le type est tiré à chaque génération indépendamment de celui des parents, de sorte que les proportions $\pi_L, \pi_H$ restent fixes même si les deux types n'ont pas la même fécondité. Chaque type résout \eqref{eq:P1} puis \eqref{eq:P2} avec son propre $w_1^i$, et le marché s'apure sur la moyenne :
+\[
+H = N_\tau \sum_i \pi_i\, x_i(p_\tau) + N_{\tau-1} \sum_i \pi_i\, x_i(p_{\tau-1}) .
+\]
+La démographie devient $N_{t+2} = N_t \sum_i \pi_i\, \nu(x_{i,t})$, et le lemme~\ref{lem:conservation} s'applique tel quel.
+
+\begin{remarque}[Incidence d'un choc de prix et gradient de revenu]
+D'un côté, l'incidence d'un choc de prix est neutre entre types au premier stade : $X_i(p)$ a la même élasticité-prix, exactement $-1$, quel que soit $w_1^i$ — une hausse de prix comprime la surface achetée dans la même proportion, riche ou pauvre. De l'autre, $\nu$ étant croissante, le type qui achète plus grand (le riche) a \emph{plus} d'enfants une fois adulte : le canal de logement prédit un gradient revenu-fécondité \textbf{positif}, qui passe tout entier par la surface, puisque $w_2$ n'entre pas dans \eqref{eq:foc-n}. Les données de l'étude ne contredisent pas ce signe, à condition de mesurer le revenu avant la naissance et hors prestations familiales : mesuré après, il paraît peser négativement sur la fécondité, parce que la naissance réduit mécaniquement le niveau de vie par unité de consommation et augmente les transferts. Correctement mesuré, le taux de naissance ne décroît pas avec le niveau de vie, et, à surface donnée, le revenu n'a plus d'effet propre — la prédiction du modèle. Un canal de qualité (de la Croix et Doepke, 2003) ne serait nécessaire que pour rendre compte d'une fécondité décroissante avec le revenu, que ces données ne montrent pas.
+\end{remarque}
+
+\begin{remarque}[Qui reçoit les mètres carrés, qui fait les enfants]
+Face à une variation du parc (§\ref{sec:choc}), chaque type de la cohorte touchée voit sa surface varier dans la même proportion, puisque $x_i \propto w_1^i/p$ : les ménages aisés captent une part des mètres carrés nouveaux égale à leur part du revenu. La fécondité, elle, réagit davantage chez les ménages modestes, logés plus petit, dont l'élasticité $\eps(x)$ est plus forte. Avec des salaires à $0{,}6$ et $1{,}4$ fois la moyenne et le calibrage du §\ref{sec:calibrage}, les ménages aisés reçoivent $70\,\%$ d'une construction, mais la fécondité des ménages modestes augmente de $2{,}7\,\%$ contre $1{,}2\,\%$ pour les aisés ; un retrait de même taille l'abaisse de $3{,}9\,\%$ contre $1{,}7\,\%$. Construire profite aux aisés en mètres carrés, aux modestes en naissances. Les données de l'étude ne confirment pas cette plus grande sensibilité des ménages modestes : estimé par tercile de niveau de vie, l'effet de dix mètres carrés supplémentaires est au contraire un peu plus faible dans le tercile le plus modeste (0,3 point contre 0,5 dans le plus aisé), sans que l'écart soit significatif.
+\end{remarque}
+
+% =====================================================================
+\section{Deux régions : la ville et la campagne}\label{sec:regions}
+
+Deux régions $j \in \{u, r\}$, la ville et la campagne, disposent chacune d'un parc fixe $H_j$ et versent des salaires $w_1^j$, avec une prime urbaine $w_1^u > w_1^r$. Le jeune adulte choisit sa région en même temps que son logement et y reste : l'illiquidité s'étend à la localisation. Fidèle à l'hypothèse~\ref{hyp:myopie}, il la choisit sur sa seule utilité de jeune adulte ; ses enfants, eux, choisiront librement la leur. Chaque marché régional s'apure séparément : à la date $\tau$, les jeunes installés en $j$ achètent ce que les retraités de $j$ revendent, $A_{j,\tau} = H_j - A_{j,\tau-1}$, et le lemme~\ref{lem:conservation} vaut désormais par région. La démographie agrège les deux régions : $N_{\tau+2} = \sum_j N_{j,\tau}\,\nu(x_{j,\tau})$, avec $N_{j,\tau}\,x_{j,\tau} = A_{j,\tau}$.
+
+Par \eqref{eq:x}, l'utilité du jeune adulte installé en $j$ vaut $(1+\gamma)\ln w_1^j - \gamma \ln p_j$ à une constante près. L'équilibre spatial égalise ces utilités tant que les deux régions sont habitées.
+
+\begin{proposition}[Équilibre spatial]\label{prop:regions}
+\begin{enumerate}
+\item[(i)] Les prix et les surfaces des deux régions sont liés par la seule prime salariale :
+\[
+\frac{p_u}{p_r} = \Big(\frac{w_1^u}{w_1^r}\Big)^{(1+\gamma)/\gamma} ,
+\qquad
+\kappa \equiv \frac{x_u}{x_r} = \Big(\frac{w_1^u}{w_1^r}\Big)^{-1/\gamma} ,
+\]
+indépendamment des parcs, de la population et de $\sigma$.
+\item[(ii)] Avec une prime urbaine, les logements urbains sont plus petits et la fécondité urbaine plus faible, $n_u = \nu(\kappa\,x_r) < n_r$ ; à surface donnée, en revanche, la région n'a aucun effet sur la fécondité : la ville ne réduit la fécondité qu'à travers la surface.
+\item[(iii)] Les jeunes se répartissent selon $N_u/N_r = (A_u/A_r)/\kappa$ : une hausse de la prime attire les jeunes vers la ville.
+\item[(iv)] À l'état stationnaire symétrique ($A_j = H_j/2$), la part urbaine est $\pi_u = (H_u/\kappa)/(H_u/\kappa + H_r)$ et la surface rurale $x_r^*$ est l'unique solution de $\pi_u\,\nu(\kappa x_r) + (1-\pi_u)\,\nu(x_r) = 1$, qui existe sous la condition de la proposition~\ref{prop:ss}.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(i) L'égalité $(1+\gamma)\ln w_1^u - \gamma\ln p_u = (1+\gamma)\ln w_1^r - \gamma\ln p_r$ donne le rapport des prix ; \eqref{eq:x} donne $x_u/x_r = (w_1^u/w_1^r)(p_r/p_u)$. (ii) $\nu$ est croissante, et \eqref{eq:foc-n} ne contient ni $w_1^j$ ni $p_j$. (iii) $N_j = A_j/x_j$. (iv) $N_j = H_j/(2x_j)$ donne $\pi_u$, qui ne dépend pas de $x_r$ ; le membre de gauche est continu, strictement croissant en $x_r$, tend vers $0$ en $0^+$ et vers $\bar n > 1$ à l'infini.
+\end{proof}
+
+Avec $\gamma = 0{,}43$, l'exposant $1/\gamma$ vaut $2{,}3$ : une prime urbaine de $20\,\%$ suffit à rendre les logements urbains plus petits de $35\,\%$. Le tableau~\ref{tab:regions} donne l'état stationnaire au calibrage du §\ref{sec:calibrage}, pour deux régions de même parc.
+
+\begin{table}[htbp]
+\centering\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Prime urbaine & 0\,\% & 10\,\% & 20\,\% & 30\,\% \\
+\midrule
+Surface ville / campagne, $\kappa$ & 1,00 & 0,80 & 0,65 & 0,54 \\
+Part des jeunes en ville (\%) & 50,0 & 55,5 & 60,5 & 64,8 \\
+Fécondité en ville & 1,000 & 0,989 & 0,982 & 0,978 \\
+Fécondité à la campagne & 1,000 & 1,014 & 1,028 & 1,041 \\
+Taille d'une cohorte & 50,0 & 49,4 & 48,0 & 46,2 \\
+\bottomrule
+\end{tabular}
+\caption{État stationnaire à deux régions, $H_u = H_r$, calibrage du §\ref{sec:calibrage} avec $\phi = 0{,}10$.}\label{tab:regions}
+\end{table}
+
+\begin{remarque}[Le gain de la campagne ne compense pas la perte de la ville]\label{rem:exode}
+Une hausse de la prime urbaine de $10$ à $30\,\%$ attire les jeunes en ville, où la surface baisse, et laisse à la campagne plus d'espace pour moins de monde. La fécondité moyenne de la cohorte concernée baisse de $0{,}8\,\%$ : près de $30\,\%$ de la baisse vient de la composition, davantage de jeunes vivant là où la fécondité est basse ; le reste vient de ce que la perte de fécondité urbaine touche deux tiers des jeunes et le gain rural un tiers. À long terme, la population est plus petite : pour compenser une fécondité urbaine sous le remplacement, les ménages ruraux doivent disposer de davantage d'espace, et la campagne se vide plus que la ville ne se densifie.
+\end{remarque}
+
+\begin{remarque}[Ce que la myopie exclut : la périurbanisation]
+Un jeune adulte qui anticiperait ses enfants valoriserait l'espace de la période suivante ; la localisation étant ici figée au premier stade, il ne peut pas déménager vers la périphérie en devenant parent. Lever l'hypothèse~\ref{hyp:myopie} et autoriser un second choix de localisation produirait une migration de cycle de vie — la ville pour travailler, la périphérie pour élever des enfants —, qui est le schéma observé et une forme de l'anticipation que suggèrent les données (remarque~\ref{rem:correspondance}).
+\end{remarque}
+
+% =====================================================================
+\section{Ce que ce modèle ne dit pas}\label{sec:limites}
+
+Un modèle-jouet vaut par ce qu'il isole, pas par ce qu'il couvre. Quatre canaux que la partie empirique montre importants restent, ici, délibérément hors champ.
+
+\textbf{Le crédit et le statut d'occupation.} Le modèle n'a ni taux d'intérêt ni marché du crédit : tout le monde « achète » comptant, et la seule chose qui compte est la surface obtenue, jamais le mode de financement. Or le résultat le plus important de la partie empirique — le solde nul de la décomposition 2010-2025 — tient entièrement à l'accession à la propriété, permise par la baisse des taux d'intérêt (§3.5 de l'étude). Ce modèle ne peut ni produire ni discuter ce canal ; il ne prétend décrire que la quantité de logement, pas son financement.
+
+\textbf{La décohabitation.} L'hypothèse~\ref{hyp:myopie} fait du jeune adulte un acheteur par défaut. Le rendre capable de rester chez ses parents plutôt que d'acheter — un choix discret, pas une variable continue — endogénéiserait la marge que la Conclusion de l'étude désigne comme celle où le logement joue peut-être le plus, et que les données de couples déjà formés ne peuvent pas voir. C'est un changement de nature du modèle, pas une extension marginale.
+
+\textbf{Le rang de naissance.} La fécondité $n$ est ici une variable continue unique ; rien ne distingue la décision d'avoir un premier enfant de celle d'en avoir un second. C'est pourtant l'un des contrastes nets de la partie empirique : la marche sous 50 m$^2$ y abaisse la probabilité de première naissance de plus de la moitié de son taux de base, contre moins d'un tiers, et sans significativité, pour les naissances suivantes. Une marge extensive distincte de la marge intensive corrigerait ce point, mais introduirait un choix discret supplémentaire.
+
+\textbf{La forme du lien.} \eqref{eq:foc-n} donne une relation lisse entre surface et fécondité ; la partie empirique trouve une marche, à 60 mètres carrés, au-delà de laquelle la surface ne départage plus rien. Un coût fixe d'installation — qui rejoindrait naturellement la décohabitation ci-dessus — produirait ce type de discontinuité ; l'optimum intérieur de ce modèle ne le peut pas.
+
+Aucun de ces quatre points n'appelle une résolution numérique du modèle actuel : ils appellent un modèle différent, plus riche, que cette note ne cherche pas à construire.
+
+% =====================================================================
+\section{Calibrage indicatif}\label{sec:calibrage}
+
+Deux précautions d'abord. Dans le modèle, chaque ménage se reproduit seul et $n = 1$ est le remplacement : une fécondité observée doit donc être rapportée au seuil de remplacement, soit environ $\text{ICF}/2{,}05$. Ensuite, quatre cibles suffisent pour les quatre paramètres $(\gamma, \phi, \eta, \sigma)$ : $\sigma$ n'est pas choisi, il découle des trois autres et de $x^*$ par \eqref{eq:xstar}.
+\begin{itemize}
+\item $\gamma = 0{,}43$ : une part du logement de 30\,\% dans la dépense du jeune adulte, $\gamma/(1+\gamma) = 0{,}3$ ;
+\item $\phi$ : de l'ordre de 0,10 à 0,15, valeur usuelle de la littérature quantitative ;
+\item $\eta$ : tel que $\bar n = \eta/[\phi(1+\eta)] = 2{,}3/2{,}05 \approx 1{,}12$, 2,3 étant le nombre d'enfants souhaité déclaré en France, soit $\eta \approx 0{,}13$ à $0{,}20$ ;
+\item $x^* = H/(2N^*)$ : 100 m$^2$, la surface moyenne des couples en âge d'avoir des enfants (étude, tableau de décomposition). \eqref{eq:xstar} donne alors $\sigma \approx 3{,}4$ à $5{,}7$ m$^2$ par unité de $n$.
+\end{itemize}
+
+Ce $\sigma$ implicite est faible : une unité de $n$ représente environ deux enfants, soit moins de 3 m$^2$ par enfant, et il faudrait une fécondité désirée de 3 à 3,7 enfants par femme pour que l'espace par enfant atteigne les 10 m$^2$ d'une chambre. La raison est dans \eqref{eq:xstar} : quand la fécondité désirée dépasse à peine le remplacement, $\eta - \phi/(1-\phi)$ est proche de zéro et la surface nécessaire au remplacement, $x^*/\sigma$, devient très grande ; même un faible espace par enfant suffit alors à faire passer la fécondité sous le remplacement dans un logement qui n'est pas grand. Sous ces valeurs, $\eps_n \approx 0{,}11$ : l'écart d'une lignée à sa taille stationnaire ne se réduit que d'un neuvième par génération. Le canal d'espace pur est donc lent et quantitativement modeste, ce qui est cohérent avec la partie empirique, où il porte au plus un dixième de la baisse de la fécondité. Ce calibrage ne prétend pas ajuster le modèle aux niveaux observés, ce qui excéderait l'ambition d'une note d'intuition.
+
+% =====================================================================
+\appendix
+\section{Preuve de la proposition~\ref{prop:stab}}\label{app:stab}
+
+Par le lemme~\ref{lem:conservation}, $A_\tau = a$ aux dates paires et $H-a$ aux dates impaires. Prenons la lignée paire et notons $N_k \equiv N_{2k}$. La démographie \eqref{eq:D} s'écrit, avec $x = a/N_k$,
+\[
+N_{k+1} = G(N_k), \qquad G(N) \equiv N\,\nu(a/N) .
+\]
+\emph{Sens du mouvement.} $G(N)/N = \nu(a/N)$ est strictement décroissante en $N$ (lemme~\ref{lem:comp-stat}) et vaut $1$ en $N_a^* \equiv a/x^*$ (proposition~\ref{prop:ss}) : $G(N) > N$ si $N < N_a^*$, $G(N) < N$ si $N > N_a^*$.
+
+\emph{Absence de dépassement.} $G'(N) = \nu(x) - x\,\nu'(x) = \nu(x)\,[1-\eps(x)] > 0$ par le lemme~\ref{lem:eps} : $G$ est strictement croissante, donc $N < N_a^*$ entraîne $G(N) < G(N_a^*) = N_a^*$.
+
+Ainsi $N_k < N_a^*$ implique $N_k < N_{k+1} < N_a^*$ : la suite est croissante et majorée, elle converge vers un point fixe de $G$, qui est unique puisque $G(N) = N$ équivaut à $\nu(a/N) = 1$, soit $a/N = x^*$. Le cas $N_k > N_a^*$ est symétrique, et la lignée impaire se traite de même avec $H-a$. Il suit $x_\tau = A_\tau/N_\tau \to x^*$, $p_\tau = \gamma w_1/[(1+\gamma)x_\tau] \to p^*$ et $n_\tau = \nu(x_\tau) \to 1$, ce qui établit (i) et (ii) ; les tailles limites $a/x^*$ et $(H-a)/x^*$ alternent d'une date à l'autre, d'où (iii).
+
+\emph{Vitesse.} $G'(N_a^*) = \nu(x^*)[1-\eps(x^*)] = 1-\eps_n$, qui mesure la contraction de l'écart par génération au voisinage de l'état stationnaire. En temps calendaire, la linéarisation du système complet a pour valeurs propres $\pm\sqrt{1-\eps_n}$ — les deux lignées s'écartant de leur taille stationnaire dans le même sens ou en sens opposés — et $-1$, qui traduit le partage invariant du parc du lemme~\ref{lem:conservation} : c'est l'écho de (iii), ni amorti ni explosif.
+
+\section{Notation}
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+$N_t$ & taille de la cohorte qui devient jeune adulte en $t$ (née en $t-1$) \\
+$H$ & parc de logement, en m$^2$, fixe \\
+$A_t = N_t x_t$ & surface totale détenue par la cohorte $t$ \\
+$a$, $H-a$ & part du parc détenue par la lignée des dates paires, impaires \\
+$p_t$ & prix du m$^2$ à la date $t$ \\
+$w_1, w_2$ & salaire du jeune adulte, de l'adulte (exogènes, constants) \\
+$x_t$ & surface achetée par la cohorte $t$ (indexée par cohorte, conservée jusqu'à la revente) \\
+$\sigma$ & espace par enfant, en m$^2$ \\
+$\phi$ & coût en temps par enfant \\
+$\gamma, \eta$ & poids de la surface de vie, du nombre d'enfants \\
+$n_t = \nu(x_t)$ & fécondité de la cohorte $t$, fonction de la surface héritée \\
+$\bar n = \eta/[\phi(1+\eta)]$ & fécondité désirée sans contrainte de logement ($x\to\infty$) \\
+$\eps(x)$, $\eps_n = \eps(x^*)$ & élasticité de la fécondité à la surface, à l'état stationnaire \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{Références}
+\begin{itemize}\setlength{\itemsep}{0.2em}
+\item Barro, R.~J. et G.~S. Becker (1989), « Fertility Choice in a Model of Economic Growth », \emph{Econometrica}, 57(2).
+\item Becker, G.~S. et R.~J. Barro (1988), « A Reformulation of the Economic Theory of Fertility », \emph{Quarterly Journal of Economics}, 103(1).
+\item Couillard, B.~K. (2025), « Build, Baby, Build: How Housing Shapes Fertility », document de travail, Université de Toronto.
+\item de la Croix, D. et M. Doepke (2003), « Inequality and Growth: Why Differential Fertility Matters », \emph{American Economic Review}, 93(4).
+\item Diamond, P.~A. (1965), « National Debt in a Neoclassical Growth Model », \emph{American Economic Review}, 55(5).
+\item Galor, O. et D.~N. Weil (2000), « Population, Technology, and Growth: From Malthusian Stagnation to the Demographic Transition and Beyond », \emph{American Economic Review}, 90(4).
+\end{itemize}
+
+\end{document}

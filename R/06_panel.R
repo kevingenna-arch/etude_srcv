@@ -122,6 +122,8 @@ transitions <- map_dfr(seq_len(length(waves) - 1), function(k) {
 IPC <- charger_ipc()
 
 panel <- transitions %>%
+  # Mensualités aberrantes (> MENSUALITE_MAX, 00_config.R) mesurées en t : transition supprimée.
+  filter(rembours <= MENSUALITE_MAX) %>%
   mutate(
     cout_log_reel = deflater(cout_log, annee_t,     IPC, base = 2025),
     revenu_reel   = deflater(revenu,   annee_t - 1, IPC, base = 2025),
@@ -129,6 +131,11 @@ panel <- transitions %>%
   ) %>%
   mutate(
     parite = cut(nenf, breaks = c(-Inf, 0, 1, 2, Inf), labels = c("0","1","2","3+")),  # PRÉ-naissance
+    # Surfaces implausibles -> NA, même règle que 00_prepa_fecondite.R. Le
+    # fichier en contient une centaine (2022-2025), dont des années saisies
+    # comme surfaces (1960, 2015...) : gardées, elles écrasaient l'effet de la
+    # surface et son erreur-type dans 07 et 15.
+    surface    = if_else(surface >= 9 & surface <= 400, surface, NA_real_),
     surface_10 = surface / 10,           # pour OR "par +10 m²"
     # Variables monétaires rééchelonnées, en EUROS CONSTANTS 2025
     cout_100   = cout_log_reel / 100,    # par +100 €/mois (réel)

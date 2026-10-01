@@ -46,7 +46,7 @@ activer_cache_prepa()
 IPC <- charger_ipc()
 if (!dir.exists("Output")) dir.create("Output")
 
-BAISSE_RELATIVE <- (ICF_2025 - ICF_2010) / ICF_2010      # ICF_* : 00_config.R
+BAISSE_RELATIVE <- (ICF_2025 - ICF_BASE) / ICF_BASE      # ICF_* : 00_config.R
 ANCIENNETE_MIN  <- 3
 SEUILS     <- c(-Inf, 50, 70, 90, 120, Inf)
 LIB_SEUILS <- c("Moins de 50 m2", "50 a 69 m2", "70 a 89 m2 (ref.)",
@@ -185,7 +185,7 @@ ligne <- function(bloc, lib, d, x, contraste = "surface_10") {
 
 # ── Décomposition 2010-2025 (§5 et §8 du script 23) sous une variante ───────
 decomposer_variante <- function(d, di) {
-  d10 <- filter(d, annee == "2010"); d25 <- filter(d, annee == "2025")
+  d10 <- filter(d, annee == ANNEE_BASE); d25 <- filter(d, annee == "2025")
   part_statut <- function(x) prop.table(tapply(x$poids, droplevels(x$statut3), sum))
   p10 <- part_statut(d10); p25 <- part_statut(d25)
   poids_statut <- d25$poids * unname((p10 / p25)[as.character(d25$statut3)])
@@ -258,7 +258,7 @@ estimer_variante <- function(v, nom) {
 }
 
 resultats <- imap_dfr(VARIANTES, estimer_variante)
-write_csv(resultats, "Output/robustesse_naissance_fpr.csv")
+ecrire(resultats, "Output/robustesse_naissance_fpr.csv")
 
 # ============================================================================
 #  §2 — SYNTHÈSE : les chiffres publiés tiennent-ils ?
@@ -292,4 +292,4 @@ print(as.data.frame(resultats %>% filter(str_detect(bloc, "Decomposition")) %>%
   row.names = FALSE)
 
 cat("\n=== 28 termine. Baisse de l'ICF a expliquer :",
-    round(100 * BAISSE_RELATIVE, 1), "% (", ICF_2010, "->", ICF_2025, "). ===\n")
+    round(100 * BAISSE_RELATIVE, 1), "% (", ICF_BASE, "->", ICF_2025, "). ===\n")

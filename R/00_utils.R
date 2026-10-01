@@ -312,9 +312,11 @@ ajouter_naissance <- function(raw, cfg, nom = "y_birth") {
 #   - niveau de vie = revenu disponible / UC (HX050)
 #   - âge de la FEMME du ménage (PR ou conjointe)
 #   - taux d'effort censuré dans [0 ; 100]
-#  Seul filtre appliqué : poids valide. Les restrictions de champ (âge, statut,
+#  Filtres appliqués : poids valide, mensualité d'emprunt au plus égale à
+#  MENSUALITE_MAX (00_config.R). Les restrictions de champ (âge, statut,
 #  couple...) restent la responsabilité du script appelant.
-charger_menages <- function(annee, cfg, surface_min = 9, surface_max = 400) {
+charger_menages <- function(annee, cfg, surface_min = 9, surface_max = 400,
+                            mensualite_max = MENSUALITE_MAX) {
   v <- cfg$vars
   d <- lire_srcv(cfg$men)
   tibble(
@@ -350,7 +352,7 @@ charger_menages <- function(annee, cfg, surface_min = 9, surface_max = 400) {
                              sexe_cj == "2" ~ age_cj, TRUE ~ NA_real_),
       effort     = taux_effort(cout, revenu)
     ) %>%
-    filter(!is.na(poids), poids > 0)
+    filter(!is.na(poids), poids > 0, remb <= mensualite_max)
 }
 
 # ── Fichiers INDIVIDUS : clé ménage et âges ─────────────────────────────────

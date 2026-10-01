@@ -1,0 +1,676 @@
+% =====================================================================
+%  ARTICLE — Logement et fécondité en France, 2014-2025
+%  Modèle à générations imbriquées et tests sur données SRCV
+%  Compilation : xelatex article_logement_fecondite.tex (x2)
+%  Chiffres : sorties *_2014 des scripts 23, 27-30, 32 (SRCV_DEBUT=2014),
+%  script 29 (panel) et script 31 (figures).
+% =====================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{EB Garamond}
+\usepackage[english,french]{babel}
+% Espaces insécables seulement là où une espace est tapée (titres anglais intacts) ;
+% guillemets actifs : « et » ne se séparent plus de leur contenu en fin de ligne.
+\frenchsetup{AutoSpacePunctuation=false, og=«, fg=»}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[a4paper,top=2.6cm,bottom=2.6cm,left=2.7cm,right=2.7cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[flushleft]{threeparttable}
+\usepackage{caption}
+\captionsetup{font=small,labelsep=period}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.6}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+
+% babel redéfinit ces noms au \begin{document} : on les fixe dans \captionsfrench
+\addto\captionsfrench{\renewcommand{\tablename}{Tableau}\renewcommand{\figurename}{Graphique}%
+  \renewcommand{\refname}{Références}\renewcommand{\abstractname}{Résumé}}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemme}{Lemme}
+\theoremstyle{definition}
+\newtheorem{hypothese}{Hypothèse}
+\theoremstyle{remark}
+\newtheorem{remarque}{Remarque}
+\renewcommand{\proofname}{Preuve}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\sym}[1]{\textsuperscript{#1}}
+
+\title{La surface fait-elle les naissances ?\\[0.3em]
+\large Logement et fécondité en France, 2014-2025 : un modèle à générations imbriquées confronté aux données}
+\author{Kévin Genna\thanks{Correspondance : k.genna@hotmail.fr. Affiliation à compléter.}}
+\date{Octobre 2026 — version de travail}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent La fécondité française est passée de 2,00 à 1,56 enfant par femme entre 2014 et 2025, et le logement figure en bonne place parmi les explications avancées. Nous formalisons l'hypothèse d'une contrainte d'espace dans un modèle à générations imbriquées à trois périodes, où le jeune adulte achète un logement illiquide avant de décider de sa fécondité, puis nous en confrontons les prédictions aux six vagues 2014 à 2025 de l'enquête Statistiques sur les ressources et conditions de vie de l'Insee. Les prédictions en coupe se vérifient : la surface, et non le prix au mètre carré, est associée à la probabilité d'une naissance ; l'association prend la forme d'un seuil, situé entre 45 et 60 mètres carrés, et concerne surtout le premier enfant ; à surface donnée, le revenu n'a pas d'effet significatif, à condition de le mesurer avant la naissance. La prédiction centrale, d'ordre temporel, ne se vérifie pas : sur les mêmes couples, la surface est liée à la naissance récente mais ne prédit pas la suivante, ce qui désigne un logement choisi en vue d'un projet d'enfant plutôt qu'une contrainte. La géographie va dans le même sens : les logements urbains sont plus petits, mais la fécondité urbaine n'est pas plus faible. Même lue comme causale, la dégradation des surfaces depuis 2014 n'expliquerait qu'entre 4 et 19\,\% du recul de la fécondité.
+\end{abstract}
+
+\begin{center}
+\begin{minipage}{0.88\linewidth}\small
+\begin{otherlanguage}{english}\textbf{Abstract.} Housing is often blamed for the fall of French fertility, from 2.00 to 1.56 children per woman between 2014 and 2025. We cast the space-constraint hypothesis in a three-period overlapping-generations model in which young adults buy an illiquid dwelling before choosing fertility, and test its predictions on six waves (2014-2025) of the French SILC survey. Cross-sectional predictions hold: floor space, not its price, is associated with births, through a threshold between 45 and 60 square metres that mostly concerns first births, and income has no significant effect at given floor space once measured before the birth. The central, timing prediction is not borne out: in the panel, floor space is related to the recent birth but does not predict the next one, pointing to housing chosen for a planned child rather than to a binding constraint. Urban dwellings are smaller, yet urban fertility is not lower. Even read causally, the decline in floor space since 2014 accounts for 4 to 19 per cent of the fertility decline.\end{otherlanguage}
+
+\medskip
+\textbf{Classification JEL} : J13, R21, R31, D15. \quad
+\textbf{Mots-clés} : fécondité, logement, générations imbriquées, surface, France.
+\end{minipage}
+\end{center}
+
+\newpage
+
+% =====================================================================
+\section{Introduction}
+
+L'indicateur conjoncturel de fécondité de la France est tombé à 1,56 enfant par femme en 2025, contre 2,00 en 2014 (Insee, 2026). Parmi les explications avancées, le logement occupe une place de choix : le rapport parlementaire consacré à la baisse de la natalité y voit l'un des leviers de l'action publique (Assemblée nationale, 2026), et le raisonnement a l'évidence pour lui — pour accueillir un enfant, il faut une chambre de plus. Aux États-Unis, Couillard (2025) attribue à la hausse des loyers depuis 1990 la moitié du recul de la fécondité entre les années 2000 et 2010.
+
+Ce raisonnement mêle pourtant deux mécanismes que les données en coupe ne distinguent pas. Selon le premier, le logement est une \emph{contrainte} : un couple logé trop petit renonce à l'enfant ou le reporte, et c'est la surface disponible qui commande la fécondité. Selon le second, le logement est un \emph{choix} : un couple qui projette un enfant cherche un logement plus grand, de sorte que la surface suit le projet plutôt qu'elle ne le conditionne. Les deux mécanismes produisent la même corrélation entre surface et naissances ; seul l'ordre temporel des décisions les sépare.
+
+Cet article formalise le premier mécanisme pour en tirer des prédictions qui le distinguent du second, puis les teste sur données françaises. Le modèle est un modèle-jouet à générations imbriquées et à trois périodes, inspiré de Becker et Barro (1988) pour le coût de l'enfant, de Galor et Weil (2000) pour l'actif en offre fixe transmis des anciens aux jeunes, et de Diamond (1965) pour la structure des générations. Sa seule hypothèse non standard est qu'un enfant consomme de l'espace. Le jeune adulte achète un logement illiquide ; une période plus tard, il décide de sa fécondité dans ce logement. Cette séparation des décisions donne au modèle sa prédiction centrale : la fécondité dépend de la surface acquise \emph{auparavant}, et la surface doit prédire les naissances \emph{à venir}. Le modèle en tire d'autres implications : le revenu n'agit sur la fécondité qu'à travers la surface, la relation est concave, et, étendu à deux régions, il prédit des logements plus petits et une fécondité plus faible dans les villes où la prime salariale est capitalisée dans les prix.
+
+Nous testons ces prédictions sur les six vagues 2014-2025 de l'enquête Statistiques sur les ressources et conditions de vie (SRCV) de l'Insee, soit près de 19\,700 observations de couples en âge d'avoir des enfants. Quatre résultats se dégagent. Premièrement, les prédictions en coupe se vérifient : la surface est associée à la probabilité d'une naissance, le prix au mètre carré ne l'est pas, et l'association prend la forme d'un seuil situé entre 45 et 60 mètres carrés, concentré sur le premier enfant. Deuxièmement, à surface donnée, le revenu n'a pas d'effet significatif, comme le prédit le modèle — un résultat qui exige de mesurer le revenu avant la naissance, faute de quoi la naissance elle-même fabrique un effet négatif du revenu. Troisièmement, la prédiction centrale ne se vérifie pas : sur l'échantillon en panel de l'enquête, la surface est liée à la naissance récente mais ne prédit pas la suivante — l'effet prospectif est trois fois plus faible que l'effet contemporain et non significatif —, signature d'un logement choisi en vue d'un projet d'enfant. Les prédictions géographiques confirment cette lecture : les logements urbains sont bien plus petits, mais la fécondité urbaine n'est pas plus faible. Quatrièmement, même en lisant l'association comme causale, la dégradation des surfaces depuis 2014 n'expliquerait qu'entre 4 et 19\,\% du recul de la fécondité selon la forme retenue pour la relation, et le logement pris dans son ensemble moins encore.
+
+L'article contribue à trois littératures. À la littérature empirique sur le logement et la fécondité, il apporte des données françaises récentes et une distinction systématique entre la surface, son prix et le revenu, que les études fondées sur les prix immobiliers ne séparent pas. À la littérature démographique sur la sélection résidentielle, il ajoute un test d'ordre temporel sur données de panel, qui rejoint ses conclusions. À la littérature théorique, il propose un modèle minimal dont les prédictions sont explicitement réfutables, et montre lesquelles le sont effectivement.
+
+La section~\ref{sec:litt} situe l'article dans la littérature. La section~\ref{sec:modele} présente le modèle et en dérive les prédictions testables. La section~\ref{sec:donnees} décrit les données et la stratégie empirique, la section~\ref{sec:resultats} les résultats. La section~\ref{sec:decompo} évalue la part de la baisse de la fécondité que le logement peut porter, et la section~\ref{sec:discussion} discute la portée des résultats.
+
+% =====================================================================
+\section{Littérature}\label{sec:litt}
+
+\paragraph{Logement et fécondité.} Une première série de travaux exploite les variations des prix immobiliers. Aux États-Unis, Lovenheim et Mumford (2013) montrent que les hausses de prix accroissent la fécondité des propriétaires, par un effet de richesse ; Dettling et Kearney (2014) confirment cet effet chez les propriétaires et trouvent l'effet inverse chez les locataires, pour qui la hausse des prix est un renchérissement. Clark et Ferrer (2019) obtiennent des résultats proches au Canada, Atalay, Li et Whelan (2021) en Australie. Couillard (2025) estime, dans un modèle structurel, que la hausse des loyers depuis 1990 aurait réduit de 11\,\% le nombre d'enfants nés aux États-Unis. Ces travaux identifient l'effet des \emph{prix} ; ils ne disent pas si c'est la richesse, le coût ou l'espace qui agit. Nous séparons ces trois canaux.
+
+\paragraph{Sélection résidentielle.} La démographie insiste depuis longtemps sur la relation à double sens entre logement et famille (Mulder, 2006). Kulu et Vikat (2007) montrent, sur données finlandaises, que l'écart de fécondité entre types de logement tient en grande partie aux déménagements sélectifs des couples qui projettent un enfant ; Kulu et Steele (2013) modélisent conjointement les transitions résidentielles et les naissances et concluent dans le même sens. Notre test d'ordre temporel apporte une confirmation française de cette lecture, avec un instrument différent : l'échantillon en panel d'une enquête sur les revenus.
+
+\paragraph{Théorie.} Le modèle s'inscrit dans la tradition des modèles de fécondité endogène de Becker et Barro (1988) et Barro et Becker (1989), qui font dépendre la fécondité du coût de l'enfant, et des modèles à générations imbriquées où un actif en offre fixe est vendu par les anciens aux jeunes (Galor et Weil, 2000). L'hétérogénéité de revenu et le canal de qualité de l'enfant ont été introduits par de la Croix et Doepke (2003) ; Doepke, Hannusch, Kindermann et Tertilt (2023) font le point sur l'économie de la fécondité. Nous empruntons à ces travaux leurs ingrédients, en ajoutant un seul élément : l'enfant consomme de l'espace.
+
+% =====================================================================
+\section{Un modèle de fécondité sous contrainte d'espace}\label{sec:modele}
+
+\subsection{Environnement}
+
+Le temps est discret. Chaque individu passe une période d'enfance chez ses parents, sans décision, puis vit trois périodes : jeune adulte en $t$, adulte en $t+1$, retraité en $t+2$. La cohorte $t$, de taille $N_t$, est celle qui devient jeune adulte en $t$.
+
+\begin{hypothese}[Logement]\label{hyp:logement}
+Le parc est un stock fixe $H$ de mètres carrés. Un logement acheté par un jeune adulte est illiquide : il est conservé jusqu'à la retraite, où il est revendu.
+\end{hypothese}
+
+\begin{hypothese}[Contrainte]\label{hyp:myopie}
+Le jeune adulte achète son logement pour son usage du moment, sans valoriser les enfants qu'il n'a pas encore décidé d'avoir.
+\end{hypothese}
+
+\begin{hypothese}[Enfants]\label{hyp:enfants}
+Chaque enfant coûte à l'adulte une fraction $\phi \in (0,1)$ de son temps et $\sigma > 0$ mètres carrés, prélevés sur le logement acquis. Les enfants de la cohorte $t$ naissent en $t+1$, vivent chez leurs parents pendant cette période et deviennent jeunes adultes en $t+2$, quand leurs parents revendent.
+\end{hypothese}
+
+L'hypothèse~\ref{hyp:myopie} est le cœur du modèle : elle exprime l'hypothèse de \emph{contrainte}. Si le jeune adulte anticipait sa fécondité, il choisirait sa surface en conséquence, et l'on retrouverait la lecture concurrente, celle du choix ; c'est précisément ce que nos tests chercheront à départager.
+
+En $t$, le jeune adulte perçoit $w_1$ et résout
+\begin{equation}\label{eq:P1}
+\max_{c_1,\,x}\ \ln c_1 + \gamma \ln x \quad \text{s.c.} \quad c_1 + p_t x = w_1,
+\qquad\text{d'où}\qquad x_t = \frac{\gamma\, w_1}{(1+\gamma)\, p_t}.
+\end{equation}
+En $t+1$, l'adulte perçoit $w_2$ et choisit sa consommation et sa fécondité à surface $x_t$ donnée :
+\begin{equation}\label{eq:P2}
+\max_{c_2,\,n}\ \ln c_2 + \gamma \ln(x_t - \sigma n) + \eta \ln n \quad \text{s.c.} \quad c_2 = w_2(1-\phi n).
+\end{equation}
+La condition du premier ordre,
+\begin{equation}\label{eq:foc}
+\frac{\eta}{n} = \frac{\phi}{1-\phi n} + \frac{\gamma\sigma}{x_t - \sigma n},
+\end{equation}
+égalise l'utilité marginale d'un enfant à son coût marginal, en temps et en espace. Elle définit une fonction de politique $n_t = \nu(x_t)$. Le retraité revend son logement au prix courant et consomme le produit de la vente. À chaque date, les jeunes achètent ce que les retraités revendent, $H = N_\tau x_\tau + N_{\tau-1} x_{\tau-1}$, et la démographie s'écrit $N_{t+2} = n_t N_t$.
+
+\subsection{Fécondité et surface}
+
+\begin{lemme}\label{lem:nu}
+$\nu$ est strictement croissante, et son élasticité $\eps(x) \equiv x\nu'(x)/\nu(x)$ est comprise strictement entre 0 et 1 :
+\[
+\eps(x) = \frac{E_1+E_2}{E_1+E_2+T_1+T_2}, \quad
+E_1 = \frac{\gamma\sigma}{x-\sigma n},\;
+E_2 = \frac{n\gamma\sigma^2}{(x-\sigma n)^2},\;
+T_1 = \frac{\phi}{1-\phi n},\;
+T_2 = \frac{n\phi^2}{(1-\phi n)^2}.
+\]
+\end{lemme}
+
+L'élasticité est la part du canal d'espace dans la courbure du coût marginal de l'enfant. Numériquement, elle décroît avec la surface sur l'ensemble des valeurs de paramètres que nous avons explorées : un mètre carré supplémentaire compte davantage dans un petit logement.
+
+\begin{proposition}[Contrainte d'espace]\label{prop:coeur}
+La fécondité de la cohorte $t$ décroît avec le prix qu'elle a affronté à l'achat et ne dépend pas du prix courant :
+\[
+\frac{dn_t}{dp_t} = \nu'(x_t)\,\frac{dx_t}{dp_t} < 0, \qquad \frac{\partial n_t}{\partial p_{t+1}} = 0.
+\]
+À surface donnée, le salaire de l'adulte $w_2$ n'a pas d'effet sur la fécondité, puisqu'il n'apparaît pas dans \eqref{eq:foc}.
+\end{proposition}
+
+\subsection{Équilibre, dynamique et chocs sur le parc}
+
+\begin{proposition}[État stationnaire]\label{prop:ss}
+Si la fécondité désirée sans contrainte d'espace, $\bar n = \eta/[\phi(1+\eta)]$, dépasse le remplacement, il existe un unique état stationnaire, de surface
+\[
+x^* = \sigma\left(1 + \frac{\gamma}{\eta - \phi/(1-\phi)}\right),
+\]
+de prix $p^* = \gamma w_1/[(1+\gamma)x^*]$ et de fécondité de remplacement.
+\end{proposition}
+
+La surface nécessaire au remplacement ne dépend que des préférences et de l'espace par enfant : une économie plus riche n'a pas une population stationnaire plus nombreuse, elle a un logement plus cher. L'effet de la surface sur la fécondité est donc, dans ce modèle, un phénomène de transition.
+
+Parce que les retraités vendent exactement à la cohorte de leurs enfants, le marché transmet le parc des parents aux enfants à l'intérieur de chaque lignée (cohortes des dates paires d'un côté, impaires de l'autre). Il en résulte deux propriétés, démontrées en annexe~\ref{app:preuves}. D'une part, la dynamique converge toujours, et de façon monotone, vers l'état stationnaire, puisque $\eps < 1$ exclut tout cycle engendré par la fécondité. D'autre part, une variation $\Delta H$ du parc est captée tout entière par la cohorte qui achète à cette date : sa surface augmente de $2\Delta H/H$ en proportion, sa fécondité de $\eps\cdot 2\Delta H/H$, et, à long terme, la population s'ajuste au parc sans que la surface par ménage change. Une construction laisse ainsi un écho permanent dans la taille des cohortes, une génération sur deux.
+
+\subsection{Deux régions}
+
+Supposons deux régions, une ville $u$ et une campagne $r$, de parcs fixes et de salaires $w_1^u > w_1^r$. Le jeune adulte choisit sa région en même temps que son logement, sur la seule utilité de \eqref{eq:P1}, qui vaut $(1+\gamma)\ln w_1^j - \gamma\ln p_j$ à une constante près.
+
+\begin{proposition}[Équilibre spatial]\label{prop:regions}
+L'égalisation des utilités entre régions donne
+\[
+\frac{p_u}{p_r} = \left(\frac{w_1^u}{w_1^r}\right)^{(1+\gamma)/\gamma}, \qquad
+\frac{x_u}{x_r} = \left(\frac{w_1^u}{w_1^r}\right)^{-1/\gamma}.
+\]
+Avec une prime urbaine, les logements urbains sont plus petits et la fécondité urbaine plus faible ; à surface donnée, la région n'a pas d'effet sur la fécondité.
+\end{proposition}
+
+Avec $\gamma = 0{,}43$, l'exposant $1/\gamma$ vaut 2,3 : une prime urbaine de 20\,\% suffit à rendre les logements urbains plus petits d'un tiers. La ville ne réduit la fécondité qu'à travers la surface, et une hausse de la prime, en attirant les jeunes là où la fécondité est basse, abaisse la fécondité moyenne.
+
+\subsection{Ordre de grandeur}\label{sec:calibrage}
+
+Le modèle n'a pas l'ambition d'un calibrage structurel, mais l'ordre de grandeur de l'élasticité $\eps$ sera utile pour lire les estimations. Chaque ménage s'y reproduisant seul, $n = 1$ est le remplacement, et une fécondité observée se rapporte au seuil de remplacement, soit environ ICF$/2{,}05$. Nous retenons $\gamma = 0{,}43$, qui correspond à une part du logement de 30\,\% dans la dépense du jeune adulte ; $\phi$ entre 0,10 et 0,15 ; $\eta$ tel que $\bar n = 2{,}3/2{,}05 \approx 1{,}12$, 2,3 étant l'ordre de grandeur du nombre d'enfants souhaité déclaré en France\footnote{Référence à compléter.} ; enfin $x^* = 100$ m², la surface moyenne des couples en âge d'avoir des enfants dans nos données (102,8 m² en 2014, 100,9 en 2025). La proposition~\ref{prop:ss} donne alors $\sigma \approx 3{,}4$ à $5{,}7$ m² par unité de $n$, et $\eps(x^*) \approx 0{,}11$ : à l'état stationnaire, une surface plus grande de 10\,\% élève la fécondité d'environ 1,1\,\%. Au même calibrage, une construction de 10\,\% du parc abaisse de 17\,\% le prix payé par la cohorte qui achète et relève sa fécondité de 1,9\,\% ; un retrait de même taille l'abaisse de 2,8\,\%. Le canal d'espace pur est donc lent et quantitativement modeste. La section~\ref{sec:discussion} confronte cet ordre de grandeur aux estimations.
+
+\subsection{Prédictions testables}
+
+Le tableau~\ref{tab:predictions} rassemble les prédictions du modèle et les tests qui leur correspondent. Les prédictions P1 à P3 portent sur la relation en coupe entre surface, prix, revenu et naissance ; P4 sur l'ordre temporel, qui est la seule à départager contrainte et choix ; P5 et P6 sur l'hétérogénéité et la géographie.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Prédictions du modèle et tests correspondants}\label{tab:predictions}
+\begin{tabular}{@{}p{0.06\linewidth}p{0.47\linewidth}p{0.37\linewidth}@{}}
+\toprule
+& Prédiction & Test \\
+\midrule
+P1 & La surface élève la probabilité de naissance & Probit en coupe, effet de +10 m² \\
+P2 & À surface donnée, le prix courant n'a pas d'effet & Effet du coût au m² \\
+P3 & Le revenu n'agit qu'à travers la surface & Effet du revenu sans puis avec la surface \\
+P4 & La surface acquise prédit les naissances \emph{à venir} & Panel : surface en $t$, naissance entre $t$ et $t+1$ \\
+P5 & L'effet de la surface est plus fort dans les petits logements, donc chez les ménages modestes & Surface en tranches ; effet par tercile de revenu \\
+P6 & Logements urbains plus petits et plus chers ; fécondité urbaine plus faible ; pas d'effet de la ville à surface donnée & Comparaisons par tranche d'unité urbaine \\
+\bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+% =====================================================================
+\section{Données et stratégie empirique}\label{sec:donnees}
+
+\subsection{L'enquête SRCV}
+
+L'enquête Statistiques sur les ressources et conditions de vie (SRCV) est le volet français du dispositif européen EU-SILC. Elle interroge chaque année un échantillon de ménages ordinaires, renouvelé par rotation, sur leurs revenus, leur logement et la composition du ménage. Nous en utilisons les vagues 2014, 2018, 2022, 2023, 2024 et 2025. Le champ est celui des couples dont la femme, personne de référence ou conjointe, a de 15 à 49 ans : 19\,645 observations, dont 1\,519 naissances. Les ménages étant réinterrogés d'une vague à l'autre, un même couple peut apparaître plusieurs fois ; les erreurs-types sont donc regroupées au niveau du ménage, et toutes les estimations sont pondérées.
+
+La naissance n'est pas mesurée de la même façon sur toute la période. Jusqu'en 2018, elle est lue dans le module « événements » du questionnaire ; ce module ayant disparu, nous la reconstruisons à partir de 2022 comme la présence dans le ménage d'un enfant né l'année d'enquête ou l'année précédente. Le taux de naissance passe de 10,9\,\% des couples sur les vagues 2014-2018 à 6,6\,\% sur les vagues 2022-2025, un écart qui mêle la baisse de la fécondité et le changement de définition et que des effets fixes d'année absorbent. Deux fragilités propres aux vagues récentes s'y ajoutent. Un enfant né en 2022 peut être compté dans la vague 2022, puis de nouveau dans la vague 2023 si le ménage est réinterrogé. Et les poids des vagues 2022 et 2023 présentent une anomalie qui touche précisément les ménages avec nouveau-né : le rapport du poids moyen des ménages déclarant une naissance à celui des autres, stable entre 1,21 et 1,30 dans les vagues antérieures, tombe à 0,73 en 2022 et 0,62 en 2023, avant de revenir à 1,23 en 2024. L'annexe~\ref{app:robustesse} reprend les principaux résultats sous cinq définitions alternatives de la naissance, dont une dédupliquée et deux qui écartent les vagues 2022 et 2023.
+
+\subsection{Logement et revenu}
+
+La surface est la surface habitable déclarée par le ménage. Le coût au mètre carré rapporte à cette surface la dépense mensuelle de logement — loyer ou charges, augmentés pour les accédants de la mensualité d'emprunt —, en euros constants de 2025. Les ménages déclarant une mensualité supérieure à 10\,000 € par mois, vraisemblablement un montant annuel ou un capital saisi à la place de la mensualité, sont écartés : dix couples du champ, tous dans les vagues 2022 à 2025. Le statut d'occupation distingue les locataires, les propriétaires accédants, qui remboursent un emprunt sur leur résidence principale, et les propriétaires non accédants.
+
+La mesure du revenu demande une précaution qui n'est pas toujours prise. Le niveau de vie usuel, revenu disponible par unité de consommation (UC), est un mauvais contrôle dans un modèle de naissance, pour deux raisons. Les UC comptent le nouveau-né, ce qui abaisse mécaniquement le niveau de vie mesuré des ménages qui viennent d'avoir un enfant ; et le revenu disponible inclut des transferts que la naissance déclenche, prestations familiales en tête. Nous mesurons donc le niveau de vie hors prestations familiales, minima sociaux et aides au logement, rapporté aux UC du ménage avant la naissance, en euros constants de 2025. La section~\ref{sec:revenu} montre que ce choix change le résultat.
+
+\subsection{Spécification}
+
+Nous estimons un probit pondéré de la probabilité $B_{it}$ qu'un couple $i$ déclare une naissance lors de la vague $t$ :
+\begin{equation}\label{eq:probit}
+\Pr(B_{it} = 1) = \Phi\big(\beta_S\, S_{it} + \beta_c\, c_{it} + \beta_y\, y_{it} + X_{it}'\delta + \tau_t\big),
+\end{equation}
+où $S$ est la surface, $c$ le coût au mètre carré, $y$ le niveau de vie et $\tau_t$ un effet fixe d'année. Les contrôles $X$ comprennent le statut d'occupation, l'âge de la femme et son carré, un déménagement dans l'année, la catégorie socioprofessionnelle, le degré d'urbanisation de la commune et la zone d'études et d'aménagement du territoire (ZEAT). Pour les naissances de rang deux ou plus, nous ajoutons le nombre d'enfants et la taille du ménage \emph{avant} la naissance, les variables des fichiers comptant le nouveau-né. Les résultats sont des effets marginaux moyens, en points de pourcentage.
+
+L'équation~\eqref{eq:probit} sépare les trois grandeurs que le modèle distingue : la quantité d'espace $x$, mesurée par la surface, son prix $p$, mesuré par le coût au mètre carré, et le revenu $w$, mesuré par le niveau de vie. Le taux d'effort, souvent utilisé, les combinerait en un seul ratio et les contraindrait à agir dans les mêmes proportions. Deux restrictions rapprochent en outre l'estimation du cadre du modèle. La première isole les couples installés dans leur logement depuis au moins trois ans : leur surface est prédéterminée au sens du modèle, acquise avant la décision d'enfant, et ne peut résulter d'un déménagement motivé par la naissance de l'année. La seconde exploite le panel : sur les vagues consécutives 2022 à 2025, nous suivons les couples d'une vague à la suivante et mettons en regard la surface en $t$ et la naissance survenue entre $t$ et $t+1$ (section~\ref{sec:panel}).
+
+\subsection{Ce qui a changé entre 2014 et 2025}
+
+Sur le champ des couples, la surface moyenne a peu varié entre 2014 et 2025, de 102,8 à 100,9 m², mais la médiane a reculé de 96 à 90 m², et la part des couples sans enfant logés sous 50 m² est passée de 14,6 à 19,1\,\%. Le recul se concentre dans le bas de la distribution et chez les jeunes locataires (graphique~\ref{fig:age}) : chez les ménages dont la personne de référence a de 20 à 39 ans, la surface moyenne des locataires a reculé de 1 à 6 m² selon l'âge, l'écart n'étant nettement distinct de zéro que chez les 35-39 ans ($-6{,}0$ m²) ; celle des accédants n'a pas varié de façon significative. La géographie de ce recul est nette (graphique~\ref{fig:age_densite}). Dans les unités urbaines de 200\,000 habitants ou plus, la surface des 30-39 ans a reculé de 5 à 10 m², locataires comme accédants ; dans les plus petites, celle des accédants du même âge a au contraire progressé de 8 à 10 m².
+
+Les autres conditions de logement des couples ont moins changé. Le coût au mètre carré n'a presque pas augmenté en termes réels (de 13,7 à 13,9 € par mois), la part des accédants est restée stable (52,6 puis 52,1\,\%), et celle des locataires a progressé de 34,4 à 38,0\,\% au détriment des propriétaires non accédants. Le niveau de vie a progressé de 27,7 à 31,1 milliers d'euros par UC.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\linewidth]{graph_age_ecart_surface}
+\caption{Évolution de la surface du logement des ménages de 20 à 39 ans entre 2014 et 2025, par classe d'âge}\label{fig:age}
+\par\vspace{0.2em}
+\begin{minipage}{0.88\linewidth}\scriptsize
+\textit{Champ} : ménages dont la personne de référence a de 20 à 39 ans, locataires et propriétaires accédants, France entière. \textit{Lecture} : entre 2014 et 2025, la surface moyenne des logements des locataires de 35-39 ans a reculé de 6,0 m² ; le trait représente plus ou moins un écart-type de cet écart. \textit{Méthode} : écart des moyennes pondérées des vagues 2014 et 2025, traitées comme deux échantillons indépendants. Moins de 30 observations : écart non calculé. Quatre ménages déclarant une mensualité supérieure à 10\,000 € sont écartés. \textit{Source} : Insee, SRCV 2014 et 2025 ; calculs de l'auteur.
+\end{minipage}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.88\linewidth]{graph_age_densite_ecart_surface}
+\caption{Évolution de la surface du logement entre 2014 et 2025, par classe d'âge et taille d'unité urbaine}\label{fig:age_densite}
+\par\vspace{0.2em}
+\begin{minipage}{0.88\linewidth}\scriptsize
+\textit{Champ, méthode et source} : voir graphique~\ref{fig:age}. Les cinq tranches d'unité urbaine sont regroupées en deux, faute d'effectifs suffisants par classe d'âge : moins de 200\,000 habitants (communes rurales comprises) et 200\,000 habitants ou plus (agglomération parisienne comprise).
+\end{minipage}
+\end{figure}
+
+% =====================================================================
+\section{Résultats}\label{sec:resultats}
+
+\subsection{La surface, pas son prix (P1 et P2)}\label{sec:surface}
+
+Le tableau~\ref{tab:surface} donne les effets de la surface, du coût au mètre carré et du niveau de vie. Dix mètres carrés supplémentaires sont associés à une probabilité de naissance supérieure de 0,34 point, sur un taux de référence de 8,2\,\% : une hausse relative de 4,1\,\%. L'effet relatif est le même pour le premier enfant (0,59 point sur 13,8\,\%, soit 4,3\,\%) et pour les naissances suivantes (0,30 point sur 6,3\,\%, soit 4,7\,\%). Le coût au mètre carré, en revanche, n'a d'effet dans aucun échantillon : à surface donnée, payer son mètre carré plus cher ne change pas la probabilité d'une naissance. Les prédictions P1 et P2 se vérifient.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Surface, coût au mètre carré et niveau de vie : effets marginaux moyens sur la probabilité de naissance}\label{tab:surface}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& Ensemble & Premier enfant & Rang 2 et plus \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{A. Tous les couples}} \\
+Surface (+10 m²)                 & 0,34\sym{***} & 0,59\sym{**} & 0,30\sym{***} \\
+                                 & (0,08) & (0,20) & (0,08) \\
+Coût au m² (+1 € par mois)       & $-$0,06 & $-$0,10 & 0,03 \\
+                                 & (0,04) & (0,09) & (0,05) \\
+Niveau de vie (+10\,000 € par an) & $-$0,28 & $-$0,16 & $-$0,44\sym{*} \\
+                                 & (0,18) & (0,46) & (0,21) \\
+Observations                     & 19\,645 & 4\,357 & 15\,288 \\
+Naissances                       & 1\,519 & 607 & 912 \\
+Taux de naissance (\%)           & 8,2 & 13,8 & 6,3 \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textit{B. Couples installés depuis au moins trois ans}} \\
+Surface (+10 m²)                 & 0,26\sym{***} & 0,35 & 0,26\sym{***} \\
+                                 & (0,08) & (0,24) & (0,08) \\
+Coût au m² (+1 € par mois)       & $-$0,02 & $-$0,04 & 0,04 \\
+                                 & (0,04) & (0,12) & (0,05) \\
+Niveau de vie (+10\,000 € par an) & $-$0,20 & $-$0,12 & $-$0,33\sym{\dag} \\
+                                 & (0,17) & (0,55) & (0,18) \\
+Observations                     & 16\,006 & 2\,645 & 13\,361 \\
+Naissances                       & 1\,063 & 368 & 695 \\
+Taux de naissance (\%)           & 7,0 & 13,6 & 5,4 \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textit{C. Couples installés depuis moins de trois ans}} \\
+Surface (+10 m²)                 & 0,67\sym{**} & & \\
+                                 & (0,21) & & \\
+Observations / naissances        & 3\,637 / 456 & & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \sym{***} $p<0{,}001$ ; \sym{**} $p<0{,}01$ ; \sym{*} $p<0{,}05$ ; \sym{\dag} $p<0{,}10$. Erreurs-types entre parenthèses, regroupées au niveau du ménage.
+\item \textit{Champ} : couples dont la femme a de 15 à 49 ans, France entière, vagues 2014, 2018 et 2022 à 2025. Le rang est défini avant la naissance.
+\item \textit{Modèle} : probit pondéré, effets marginaux moyens en points de pourcentage. Contrôles : statut d'occupation, âge de la femme et son carré, déménagement dans l'année, catégorie socioprofessionnelle, degré d'urbanisation, ZEAT, effets fixes d'année ; pour les rangs deux et plus et l'ensemble, nombre d'enfants et taille du ménage avant la naissance. Coût et niveau de vie en euros constants de 2025 ; niveau de vie hors prestations familiales, minima sociaux et aides au logement, par UC avant la naissance.
+\item \textit{Lecture} : dix mètres carrés supplémentaires sont associés à une probabilité de première naissance supérieure de 0,59 point, sur un taux de 13,8\,\%.
+\item \textit{Source} : Insee, SRCV ; calculs de l'auteur.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+L'association n'est pas qu'un effet de déménagements motivés par l'enfant, mais elle en porte la trace. Restreindre l'échantillon aux couples installés depuis au moins trois ans réduit l'effet d'un quart (0,26 contre 0,34 point), sans l'annuler (panneau B). Chez les couples arrivés depuis moins de trois ans, il atteint 0,67 point, plus de deux fois et demie celui des installés (panneau C). Parmi les couples déjà parents, 25,8\,\% de ceux qui déclarent une naissance ont emménagé depuis moins de trois ans, contre 13,5\,\% des autres. Pour le premier enfant, l'effet linéaire chez les installés n'est plus significatif (0,35 point, $p = 0{,}15$) ; la section suivante montre que c'est la forme linéaire qui est en cause, non l'association.
+
+Enfin, l'effet de la surface est plus fort pour le premier enfant que pour les suivants : dans un modèle unique où il varie selon le rang, il vaut 0,90 point pour le premier enfant et 0,20 pour les suivants, et l'écart est significatif ($p = 0{,}018$).
+
+\subsection{Un seuil plutôt qu'une pente (P5)}\label{sec:seuil}
+
+Le modèle prédit une relation concave : l'élasticité de la fécondité à la surface décroît avec la surface. Les données vont plus loin : la relation prend la forme d'une marche (tableau~\ref{tab:seuil}). Par rapport aux couples logés entre 70 et 89 m², ceux qui vivent dans moins de 50 m² ont une probabilité de première naissance inférieure de 9,1 points, deux tiers du taux de référence ; au-delà de 70 m², la surface ne départage plus rien. La marche concerne le premier enfant : pour les naissances suivantes, l'écart sous 50 m² n'est que de 1,7 point, et non significatif. Elle survit à la restriction aux couples installés ($-9{,}1$ points), ce qui explique l'effet linéaire non significatif de la section précédente : chez les couples sans enfant installés, l'association est tout entière concentrée sous le seuil.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Surface en tranches : écart de probabilité de naissance par rapport aux couples logés entre 70 et 89 m²}\label{tab:seuil}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& Ensemble & \multicolumn{2}{c}{Premier enfant} & Rang 2 et plus \\
+\cmidrule(lr){3-4}
+& & Tous & Installés & \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{A. Quatre tranches}} \\
+Moins de 50 m²  & $-$5,80\sym{***} & $-$9,06\sym{***} & $-$9,13\sym{***} & $-$1,68 \\
+                & (0,84) & (1,92) & (2,60) & (1,89) \\
+50 à 69 m²      & $-$2,23\sym{**} & $-$2,44 & $-$3,87 & $-$1,48\sym{\dag} \\
+                & (0,77) & (1,91) & (2,48) & (0,77) \\
+90 à 119 m²     & 0,77 & 3,69\sym{\dag} & 2,51 & 0,25 \\
+                & (0,80) & (2,20) & (2,84) & (0,75) \\
+120 m² et plus  & 0,59 & 2,08 & $-$1,68 & 0,62 \\
+                & (0,91) & (2,55) & (3,06) & (0,89) \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{B. Tranches fines sous 70 m²}} \\
+Moins de 40 m²  & $-$7,77\sym{***} & $-$12,04\sym{***} & $-$13,14\sym{***} & \\
+                & (0,69) & (1,91) & (2,47) & \\
+40 à 49 m²      & $-$4,82\sym{***} & $-$8,25\sym{***} & $-$8,06\sym{**} & \\
+                & (1,05) & (2,16) & (2,89) & \\
+50 à 59 m²      & $-$4,21\sym{***} & $-$6,69\sym{**} & $-$6,87\sym{*} & \\
+                & (0,92) & (2,19) & (3,02) & \\
+60 à 69 m²      & $-$1,27 & 0,20 & $-$2,38 & \\
+                & (0,89) & (2,24) & (2,78) & \\
+\addlinespace
+Observations    & 19\,645 & 4\,357 & 2\,645 & 15\,288 \\
+Taux de naissance (\%) & 8,2 & 13,8 & 13,6 & 6,3 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \sym{***} $p<0{,}001$ ; \sym{**} $p<0{,}01$ ; \sym{*} $p<0{,}05$ ; \sym{\dag} $p<0{,}10$. Erreurs-types entre parenthèses.
+\item \textit{Champ, modèle et source} : voir tableau~\ref{tab:surface} ; la surface entre en tranches à la place de la variable continue. Installés : couples dans leur logement depuis au moins trois ans. Dans le panneau B, les tranches de 90 m² et plus sont conservées dans le modèle et non reportées.
+\item \textit{Lecture} : les couples sans enfant logés dans moins de 50 m² ont une probabilité de première naissance inférieure de 9,06 points à celle des couples logés entre 70 et 89 m².
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Le panneau B situe la marche. Pour le premier enfant, l'écart est de 12 points sous 40 m², de 8 points entre 40 et 49 m², de 7 points entre 50 et 59 m², et nul entre 60 et 69 m². Une recherche systématique du point de rupture, qui estime le modèle avec une indicatrice « surface inférieure à $c$ » pour $c$ allant de 35 à 75 m², donne une déviance minimale à 55 m² sur l'ensemble des couples sans enfant et à 45 m² chez les installés, avec un profil presque plat entre 45 et 60 m². Le seuil se situe donc entre 45 et 60 m², sans qu'il soit possible de le localiser plus finement, et il ne tient pas au choix des bornes.
+
+La concavité prédite par le modèle se vérifie donc, sous une forme plus abrupte que la fonction lisse $\nu$ ne le permet. La seconde moitié de P5 ne se vérifie pas. Le modèle prédit que les ménages modestes, logés plus petit, sont les plus sensibles à la surface. Estimé par tercile de niveau de vie, l'effet de dix mètres carrés vaut au contraire 0,21 point dans le tercile le plus modeste ($p = 0{,}06$), 0,33 dans le deuxième et 0,40 dans le plus aisé, et l'égalité des trois ne peut être rejetée ($p = 0{,}31$) ; pour le premier enfant, 0,39, 0,53 et 0,68 point ($p = 0{,}71$). Par tranche d'unité urbaine, l'effet croît des communes rurales (0,18 point, non significatif) à l'agglomération parisienne (0,59 point, $p = 0{,}002$), là où les logements sont les plus petits, comme le voudrait la concavité, mais l'écart n'est pas significatif ($p = 0{,}40$).
+
+\subsection{Le revenu (P3)}\label{sec:revenu}
+
+Selon le modèle, le revenu n'agit sur la fécondité qu'à travers la surface : le salaire du jeune adulte détermine la surface achetée, et celui de l'adulte n'entre pas dans la décision d'enfant. À surface donnée, le revenu ne devrait donc pas avoir d'effet. Le tableau~\ref{tab:revenu} confronte cette prédiction à deux mesures du niveau de vie.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Effet du niveau de vie sans puis avec contrôle de la surface, selon la mesure du niveau de vie}\label{tab:revenu}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& \multicolumn{2}{c}{Ensemble} & \multicolumn{2}{c}{Premier enfant} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+& Sans surface & Avec surface & Sans surface & Avec surface \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{A. Niveau de vie avant la naissance, hors transferts}} \\
+Niveau de vie (+10\,000 €) & $-$0,09 & $-$0,28 & 0,05 & $-$0,16 \\
+                         & (0,17) & (0,18) & (0,44) & (0,46) \\
+Surface (+10 m²)         & & 0,34\sym{***} & & 0,59\sym{**} \\
+                         & & (0,08) & & (0,20) \\
+\addlinespace
+\multicolumn{5}{@{}l}{\textit{B. Niveau de vie usuel : revenu disponible par UC}} \\
+Niveau de vie (+10\,000 €) & $-$2,24\sym{***} & $-$2,59\sym{***} & $-$4,18\sym{***} & $-$4,49\sym{***} \\
+                         & (0,33) & (0,33) & (0,74) & (0,75) \\
+Surface (+10 m²)         & & 0,53\sym{***} & & 0,87\sym{***} \\
+                         & & (0,08) & & (0,21) \\
+\addlinespace
+Observations             & \multicolumn{2}{c}{19\,645} & \multicolumn{2}{c}{4\,357} \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \sym{***} $p<0{,}001$ ; \sym{**} $p<0{,}01$. Erreurs-types entre parenthèses.
+\item \textit{Champ, modèle et source} : voir tableau~\ref{tab:surface}. Toutes les spécifications contrôlent le coût au mètre carré. Panneau A : revenu disponible hors prestations familiales, minima sociaux et aides au logement, rapporté aux unités de consommation avant la naissance. Panneau B : revenu disponible rapporté aux unités de consommation du ménage telles qu'enregistrées, nouveau-né compris.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Mesuré avant la naissance, le niveau de vie n'a pas d'effet significatif, ni sans contrôle de la surface ($-0{,}09$ point pour 10\,000 €, $p = 0{,}59$), ni avec ($-0{,}28$ point, $p = 0{,}13$), et il n'en a aucun pour le premier enfant. L'introduction de la surface abaisse le coefficient du revenu de 0,19 point : c'est la part de l'effet du revenu qui passe par la surface, positive comme le prédit le modèle. Mais l'effet total n'est pas positif, ce qui suppose un effet direct légèrement négatif à surface donnée, non significatif sur l'ensemble et pour le premier enfant, à la limite de la significativité pour les naissances de rang deux ou plus ($-0{,}44$ point, $p = 0{,}04$ ; tableau~\ref{tab:surface}). P3 se vérifie pour l'essentiel : à surface donnée, le revenu ne compte guère.
+
+Ce résultat dépend entièrement de la mesure. Avec le niveau de vie usuel (panneau B), le revenu paraît peser fortement et négativement sur la natalité, neuf fois plus que dans le panneau A, et plus encore pour le premier enfant. Cet effet est fabriqué par la naissance elle-même : le nouveau-né ajoute des unités de consommation au dénominateur et déclenche des transferts au numérateur. Le biais se propage à la surface, dont l'effet est surestimé de plus de moitié (0,53 contre 0,34 point) lorsque le revenu est mal mesuré. Toute analyse qui rapproche fécondité et niveau de vie courant est exposée à ce mécanisme.
+
+\subsection{L'ordre temporel (P4)}\label{sec:panel}
+
+P4 est la seule prédiction qui départage les deux lectures du lien entre logement et naissances. Si le logement contraint la fécondité, la surface acquise doit prédire les naissances \emph{à venir}. Si le logement est choisi en vue d'un projet d'enfant, la surface est associée aux naissances récentes ou en cours, sans prédire nécessairement les suivantes.
+
+Le panel des vagues 2022 à 2025 permet de suivre 7\,184 observations de couples d'une vague à la suivante (de 2022 à 2023, de 2023 à 2024 et de 2024 à 2025). La naissance entre $t$ et $t+1$ est l'apparition dans le ménage, en $t+1$, d'un enfant né en $t$ ou $t+1$ et absent en $t$. Pour isoler l'effet de l'ordre temporel, nous estimons exactement la spécification de la coupe sur l'échantillon du panel, en ne changeant que la naissance expliquée (tableau~\ref{tab:panel}).
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Coupe et panel : effet de dix mètres carrés sur la naissance contemporaine et sur la naissance suivante}\label{tab:panel}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+& Tous les couples & Installés & \shortstack{Premier enfant,\\installés} \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{Coupe des vagues 2022 à 2024, naissance en $t$}} \\
+Surface (+10 m²) & 0,30\sym{***} & 0,23\sym{**} & 0,38 \\
+                 & (0,08) & (0,08) & (0,30) \\
+Observations / naissances & 10\,402 / 771 & 8\,549 / 545 & 1\,419 / 190 \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textit{(a) Échantillon du panel, naissance en $t$}} \\
+Surface (+10 m²) & 0,31\sym{**} & 0,26\sym{**} & 0,28 \\
+                 & (0,10) & (0,10) & (0,38) \\
+Observations / naissances & 7\,184 / 526 & 5\,963 / 378 & 1\,014 / 139 \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textit{(b) Échantillon du panel, naissance entre $t$ et $t+1$}} \\
+Surface (+10 m²) & 0,26\sym{*} & 0,09 & $-$0,36 \\
+                 & (0,11) & (0,12) & (0,35) \\
+Observations / naissances & 7\,184 / 395 & 5\,963 / 272 & 875 / 84 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \sym{***} $p<0{,}001$ ; \sym{**} $p<0{,}01$ ; \sym{*} $p<0{,}05$. Erreurs-types entre parenthèses.
+\item \textit{Champ} : couples dont la femme a de 15 à 49 ans, vagues 2022 à 2024 ; échantillon du panel : couples observés en $t$ et en $t+1$. Installés : dans leur logement depuis au moins trois ans en $t$.
+\item \textit{Modèle} : spécification du tableau~\ref{tab:surface}, identique dans les trois blocs ; seule change la naissance expliquée. En (b), le rang et les contrôles de composition sont ceux observés en $t$.
+\item \textit{Source} : Insee, SRCV 2022-2025 ; calculs de l'auteur.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+L'échantillon du panel n'a rien de particulier : la naissance en $t$ y est associée à la surface comme dans la coupe complète (bloc (a)). La naissance suivante ne l'est pas chez les couples installés : l'effet tombe à 0,09 point, le tiers de l'effet contemporain sur les mêmes observations, et n'est pas significatif ($p = 0{,}44$). Chez les couples sans enfant installés, le signe s'inverse ($-0{,}36$ point, non significatif). Sur l'ensemble des couples, l'effet prospectif subsiste (0,26 point, $p = 0{,}02$), mais il est porté par des couples arrivés récemment dans leur logement, ce qui est la signature d'un déménagement en vue de l'enfant.
+
+Le panel est court, et l'estimation imprécise. L'intervalle de confiance à 95\,\% de l'effet prospectif chez les installés, $[-0{,}14\,;\,0{,}31]$, contient l'effet contemporain de 0,26 point, et l'effet minimal détectable à 5\,\% avec une puissance de 80\,\% est de 0,32 point. Tester l'égalité de l'effet prospectif à l'effet contemporain, en traitant ce dernier comme connu, donne $p \approx 0{,}13$. La prédiction centrale du modèle n'est donc pas réfutée ; elle n'est pas vérifiée, et l'estimation ponctuelle penche contre elle sans que le panel permette de trancher.
+
+\subsection{La géographie (P6)}\label{sec:geo}
+
+Étendu à deux régions, le modèle prédit des logements urbains plus petits et plus chers, une fécondité urbaine plus faible, et aucun effet de la ville à surface donnée. Ses deux premières prédictions sont quantitatives : avec $\gamma = 0{,}43$, l'écart de niveau de vie entre une ville et la campagne détermine le rapport des surfaces, $(w_u/w_r)^{-1/\gamma}$, et celui des prix, $(w_u/w_r)^{(1+\gamma)/\gamma}$. Le tableau~\ref{tab:geo} les confronte aux données, par tranche d'unité urbaine, sur les vagues 2014, 2018, 2024 et 2025, les vagues 2022 et 2023 étant écartées des moyennes pondérées en raison de l'anomalie de pondération.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Surfaces, prix et naissances par tranche d'unité urbaine : observé et prédit par le modèle à deux régions}\label{tab:geo}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+& \shortstack{Niveau\\de vie (k€)} & \shortstack{Surface\\(m²)} & \shortstack{Surface\\relative} & \shortstack{Prix\\relatif} & \shortstack{Taux de\\naissance (\%)} & \shortstack{Taux de 1\textsuperscript{re}\\naissance (\%)} \\
+\midrule
+Communes rurales             & 27,5 & 121,9 & 1        & 1        & 9,0  & 18,9 \\
+Moins de 20\,000 hab.        & 28,6 & 109,8 & 0,90 [0,91] & 1,13 [1,15] & 9,6  & 17,3 \\
+20\,000 à 199\,999 hab.      & 26,7 & 100,5 & 0,82 [1,07] & 1,17 [0,91] & 10,3 & 15,8 \\
+200\,000 hab. à 2 millions   & 29,5 & 92,0  & 0,75 [0,85] & 1,39 [1,26] & 9,7  & 12,9 \\
+Agglomération de Paris       & 35,3 & 79,8  & 0,65 [0,56] & 2,05 [2,31] & 9,5  & 15,7 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \textit{Champ} : couples dont la femme a de 15 à 49 ans, vagues 2014, 2018, 2024 et 2025 ; moyennes pondérées.
+\item \textit{Lecture} : dans l'agglomération parisienne, la surface moyenne vaut 0,65 fois celle des communes rurales, et le coût au mètre carré 2,05 fois. Entre crochets, les rapports prédits par la proposition~\ref{prop:regions} avec $\gamma = 0{,}43$, à partir du rapport des niveaux de vie : 0,56 et 2,31.
+\item \textit{Source} : Insee, SRCV ; calculs de l'auteur.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Aux deux extrémités, le modèle restitue l'ordre de grandeur : dans l'agglomération parisienne, où le niveau de vie est supérieur de 29\,\% à celui des communes rurales, il prédit des surfaces de 0,56 fois et des prix de 2,31 fois ceux des communes rurales, pour 0,65 et 2,05 observés. Il ne restitue pas le profil intermédiaire : les villes de 20\,000 à 200\,000 habitants ont des logements plus petits que les communes rurales avec un niveau de vie légèrement inférieur, ce qu'un modèle où seule la prime salariale distingue les régions ne peut produire. Les aménités, la structure du parc et la distribution des emplois, absentes du modèle, y suffisent sans doute.
+
+La troisième prédiction échoue. Le taux de naissance ne décroît pas avec la taille de l'unité urbaine : 9,0\,\% dans les communes rurales, 9,5\,\% dans l'agglomération parisienne. Le taux de première naissance est plus faible dans les grandes agglomérations de province (12,9\,\% contre 18,9\,\%), mais l'écart disparaît une fois l'âge et les autres caractéristiques contrôlés : dans le modèle de l'équation~\eqref{eq:probit}, aucun effet de la tranche d'unité urbaine n'est significatif, que la surface soit contrôlée ou non (tests joints : $p = 0{,}96$ et $0{,}64$ sur l'ensemble des couples, $0{,}41$ et $0{,}47$ pour le premier enfant). Or, à l'effet estimé de la surface, les 42 m² qui séparent un logement parisien d'un logement rural devraient y abaisser la probabilité de naissance de 1,4 point. Cet écart ne se voit pas. À surface donnée, l'effet estimé de l'agglomération parisienne est d'ailleurs positif (0,8 point sur l'ensemble, 8,4 points pour le premier enfant), quoique très imprécis. L'absence d'effet de la ville à surface donnée se vérifie donc, mais trivialement : la ville n'a pas d'effet du tout.
+
+\subsection{Bilan}
+
+Le tableau~\ref{tab:bilan} résume la confrontation. Les prédictions en coupe se vérifient : la surface compte, son prix non, et le revenu ne compte qu'à travers elle. La forme de la relation est plus abrupte que dans le modèle, et concentrée sur le premier enfant. Les deux prédictions qui engagent le mécanisme de contrainte lui-même, l'ordre temporel et la géographie de la fécondité, ne se vérifient pas.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Les prédictions du modèle confrontées aux données}\label{tab:bilan}
+\begin{tabular}{@{}p{0.05\linewidth}p{0.36\linewidth}p{0.49\linewidth}@{}}
+\toprule
+& Prédiction & Résultat \\
+\midrule
+P1 & La surface élève la probabilité de naissance & Vérifiée : +4\,\% du taux de naissance pour dix mètres carrés, y compris chez les installés \\
+P2 & À surface donnée, le prix n'a pas d'effet & Vérifiée : coût au mètre carré sans effet \\
+P3 & Le revenu n'agit qu'à travers la surface & Vérifiée pour l'essentiel, à condition de mesurer le revenu avant la naissance \\
+P4 & La surface prédit les naissances à venir & Non vérifiée : effet prospectif trois fois plus faible que l'effet contemporain, non significatif \\
+P5 & Concavité ; ménages modestes plus sensibles & Concavité vérifiée, sous la forme d'un seuil entre 45 et 60 m² pour le premier enfant ; gradient de revenu non vérifié \\
+P6 & En ville, logements plus petits et plus chers, fécondité plus faible & Surfaces et prix : ordre de grandeur restitué aux extrêmes ; fécondité urbaine : non vérifiée \\
+\bottomrule
+\end{tabular}
+\end{threeparttable}
+\end{table}
+
+% =====================================================================
+\section{Quelle part de la baisse de la fécondité ?}\label{sec:decompo}
+
+L'indicateur conjoncturel de fécondité est passé de 2,00 enfants par femme en 2014 à 1,56 en 2025, soit un recul de 22\,\%. Quelle part de ce recul l'évolution du logement peut-elle porter, si l'on prend l'association estimée comme causale ? La question ne peut pas être posée directement dans SRCV, puisque la mesure de la naissance change entre 2018 et 2022. Nous construisons donc un contrefactuel à l'intérieur de la seule vague 2025 : chaque couple de 2025 reçoit la surface et le coût au mètre carré situés au même rang de la distribution pondérée de 2014, la structure par statut d'occupation est ramenée à celle de 2014 par repondération, et sa probabilité de naissance est recalculée avec le modèle estimé sur les couples installés, au même effet fixe d'année. L'écart relatif entre probabilité contrefactuelle et probabilité observée est rapporté au recul de l'ICF. Ce rapport suppose que la fécondité des femmes hors de notre champ, qui ne vivent pas en couple, a varié dans la même proportion que celle des couples : les « parts » qui suivent sont des ordres de grandeur.
+
+\begin{table}[htbp]
+\centering\small
+\begin{threeparttable}
+\caption{Part du recul de la fécondité entre 2014 et 2025 que reproduirait un retour aux conditions de 2014 (\%)}\label{tab:decompo}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+& Surface linéaire & Surface en tranches \\
+\midrule
+Surface de 2014                              & 3,8 & 19,0 \\
+Coût au m² de 2014                           & 0,3 & $-$0,1 \\
+Structure des statuts d'occupation de 2014   & $-$10,1 & $-$10,0 \\
+\textbf{Logement complet de 2014}            & $\mathbf{-6{,}2}$ & \textbf{7,8} \\
+\addlinespace
+\textit{Pour comparaison :} & & \\
+\quad structure par âge de 2014, à parité donnée & 3,5 & \\
+\quad niveau de vie de 2014                  & 5,0 & \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \textit{Champ} : couples de 2025 dont la femme a de 15 à 49 ans ; modèle estimé sur les couples installés depuis au moins trois ans, vagues 2014 à 2025.
+\item \textit{Méthode} : chaque couple de 2025 reçoit la surface et le coût au mètre carré de même rang dans la distribution pondérée de 2014 ; les statuts sont repondérés à leur structure de 2014. Variation relative de la probabilité de naissance prédite, rapportée au recul de l'ICF entre 2014 et 2025 ($-22\,\%$). Surface en tranches : bornes à 50, 70, 90 et 120 m² ; avec des bornes à 60, 90 et 120 m², la part de la surface est de 11,7\,\% ; à 40, 60, 90 et 120 m², de 15,7\,\%.
+\item \textit{Lecture} : si les couples de 2025 avaient disposé des surfaces de 2014, et si l'association estimée en seuil était causale, la probabilité de naissance aurait été supérieure de 4,2\,\%, soit 19,0\,\% du recul de l'ICF.
+\item \textit{Source} : Insee, SRCV ; Insee (2026) pour l'ICF ; calculs de l'auteur.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+Le tableau~\ref{tab:decompo} donne le résultat. La dégradation des surfaces depuis 2014 expliquerait 3,8\,\% du recul avec un effet linéaire, et 19,0\,\% avec le seuil : c'est la forme de la relation, plus que l'ampleur de l'effet, qui gouverne le résultat, parce que la dégradation s'est concentrée dans le bas de la distribution, là où la marche joue. La part des couples sans enfant logés sous 50 m² a progressé de 14,6 à 19,1\,\% ; le contrefactuel la ramène à 13,4\,\%. Le chiffre dépend des bornes retenues (de 11,7 à 19,0\,\%) et, plus encore, de l'année de base : 2014 marque un point haut des surfaces, et une décomposition analogue sur la période 2010-2025, dont le recul de l'ICF est un peu plus fort ($-23{,}2\,\%$), n'attribue à la surface que 0,8 à 7,7\,\% de la baisse. Il dépend enfin de la mesure de la naissance (annexe~\ref{app:robustesse}).
+
+Les autres canaux du logement compensent celui de la surface. Le coût au mètre carré ne porte rien. La structure des statuts d'occupation a évolué dans un sens favorable à la natalité, avec un poids de $-10\,\%$ ; mais ce chiffre tient au recul des propriétaires non accédants, dont l'écart de probabilité de naissance avec les locataires n'est pas significatif dans le modèle, et nous ne l'interprétons pas. Le logement pris dans son ensemble expliquerait entre $-6$ et $+8\,\%$ du recul. Tous ces chiffres sont des bornes hautes, au sens où ils supposent causale une association que le test d'ordre temporel ne confirme pas. Même ainsi, la surface n'explique qu'entre 4 et 19\,\% de la baisse de la fécondité depuis 2014 dans la spécification de référence, et vraisemblablement beaucoup moins.
+
+% =====================================================================
+\section{Discussion}\label{sec:discussion}
+
+\subsection{Contrainte ou choix}
+
+Le modèle formalise la lecture « contrainte » : un jeune adulte myope achète un logement sans penser aux enfants, puis décide de sa fécondité dans ce logement. Lever l'hypothèse~\ref{hyp:myopie} produit la lecture concurrente. Si le jeune adulte anticipe sa fécondité, il choisit sa surface en conséquence ; et si les ménages diffèrent par leur goût pour les enfants, $\eta$, ceux qui en veulent achètent grand et en ont, ceux qui n'en veulent pas achètent petit et n'en ont pas. Surface et fécondité sont alors corrélées en coupe sans que la surface contraigne quoi que ce soit, et déplacer exogènement la surface d'un ménage ne changerait pas sa fécondité.
+
+Quatre résultats penchent vers cette seconde lecture. L'association est plus de deux fois et demie plus forte chez les couples arrivés récemment dans leur logement. Les couples qui ont un enfant de rang deux ou plus ont deux fois plus souvent emménagé depuis moins de trois ans. La surface ne prédit pas la naissance suivante chez les couples installés. Et les grandes villes, où les logements sont les plus petits, n'ont pas une fécondité plus faible. Un cinquième argument est quantitatif. L'effet estimé en coupe, 0,34 point pour dix mètres carrés sur un taux de 8,2\,\% autour d'une surface moyenne de 100 m², correspond à une élasticité de la probabilité de naissance à la surface d'environ 0,4. Le calibrage de la section~\ref{sec:calibrage} donne une élasticité de 0,11 pour le canal de contrainte pur. Même en tenant compte de ce que l'élasticité d'une probabilité annuelle de naissance n'est pas celle d'une descendance finale, l'association observée est environ quatre fois plus forte que ce qu'une contrainte d'espace, calibrée sur des préférences plausibles, peut produire.
+
+Un résultat résiste à cette lecture : le seuil du premier enfant. Il survit à la restriction aux couples installés, et sa forme, une marche entre 45 et 60 m² plutôt qu'une pente, évoque une indivisibilité — une chambre de plus — que le modèle, avec son $\sigma$ continu, ignore. Une contrainte d'espace peut donc exister à cette marge, sans être le moteur de la relation d'ensemble. Elle peut aussi refléter une sélection : les couples qui ne projettent pas d'enfant à court terme choisissent de petits logements. Le test d'ordre temporel, réalisé ici sur la surface continue, n'a pas la puissance nécessaire pour être répété sur le seul seuil.
+
+\subsection{Ce que le modèle ne couvre pas}
+
+Le modèle n'a ni crédit ni statut d'occupation. Or, à surface et coût donnés, les propriétaires accédants ont une probabilité de première naissance supérieure de 5,2 points à celle des locataires ($p = 0{,}002$), un écart qui résiste à l'âge, au revenu, à la catégorie sociale et à la géographie, alors qu'ils ont une probabilité de naissance de rang deux ou plus inférieure de 1,7 point. L'accession accompagne le premier enfant, comme une étape d'un même projet familial ; c'est une forme d'anticipation que le modèle exclut et qu'il faudrait un marché du crédit pour décrire.
+
+Le modèle ignore aussi la formation des couples. Notre champ est celui des couples constitués ; si le logement freine la décohabitation des jeunes adultes ou la mise en couple, cette marge, qui est peut-être celle où il pèse le plus, échappe entièrement à nos données. Le modèle traite enfin la fécondité comme une variable continue, sans distinguer le premier enfant des suivants, alors que les résultats opposent nettement les deux.
+
+\subsection{Limites}
+
+Trois limites tiennent aux données. La rupture de mesure de la naissance entre 2018 et 2022, le double comptage des naissances dans les vagues récentes et l'anomalie de pondération de 2022-2023 imposent de lire les résultats sous plusieurs définitions ; l'annexe~\ref{app:robustesse} montre que les conclusions qualitatives n'en dépendent pas, mais que la part de la baisse attribuable à la surface en dépend. Le panel ne couvre que trois transitions annuelles, ce qui borne la précision du test d'ordre temporel. Enfin, nous estimons des probabilités annuelles de naissance : un logement exigu peut retarder une naissance sans réduire la descendance finale, et nos estimations ne distinguent pas le calendrier de l'intensité.
+
+% =====================================================================
+\section{Conclusion}
+
+Le logement est souvent invoqué pour expliquer la baisse de la fécondité. Nous avons formalisé l'hypothèse d'une contrainte d'espace dans un modèle à générations imbriquées dont les prédictions sont réfutables, et nous les avons confrontées aux données françaises de 2014 à 2025. Les prédictions en coupe se vérifient : la surface, et non son prix, est associée aux naissances, le revenu n'agit qu'à travers elle, et l'association se concentre sous un seuil de 45 à 60 m² pour le premier enfant. Les prédictions qui engagent le mécanisme lui-même ne se vérifient pas : la surface ne prédit pas la naissance suivante, et la fécondité urbaine n'est pas plus faible malgré des logements plus petits. Les données décrivent un logement choisi en vue d'un projet d'enfant plus qu'une contrainte qui l'empêche.
+
+Deux conséquences en découlent. D'abord, même lue comme causale, la dégradation des surfaces depuis 2014 n'explique qu'entre 4 et 19\,\% du recul de la fécondité dans la spécification de référence, environ un tiers sous la définition de la naissance la moins favorable, et le logement pris dans son ensemble beaucoup moins : les ordres de grandeur obtenus aux États-Unis, où la hausse des loyers expliquerait la moitié du recul de la fécondité entre les années 2000 et 2010 (Couillard, 2025), ne se retrouvent pas en France sur cette période. Ensuite, si le logement joue un rôle, c'est à une marge précise : celle des couples sans enfant logés sous 50 à 60 m², dont la part a augmenté. Une politique du logement qui viserait la natalité devrait porter sur l'offre de logements familiaux plutôt que sur le coût du logement en général. Trancher entre contrainte et choix demanderait une variation exogène de l'offre — un programme de construction, une réforme locale du zonage — et des données qui suivent les jeunes adultes avant la mise en couple.
+
+% =====================================================================
+\appendix
+\renewcommand{\theproposition}{A.\arabic{proposition}}
+\renewcommand{\thelemme}{A.\arabic{lemme}}
+\setcounter{proposition}{0}
+\setcounter{lemme}{0}
+
+\section{Preuves}\label{app:preuves}
+
+\paragraph{Lemme~\ref{lem:nu}.} Notons $\Psi(n;x)$ la différence entre les deux membres de \eqref{eq:foc}. On a $\Psi_x = \gamma\sigma/(x-\sigma n)^2 > 0$ et $\Psi_n = -\eta/n^2 - \phi^2/(1-\phi n)^2 - \gamma\sigma^2/(x-\sigma n)^2 < 0$, de sorte que
+\[
+\nu'(x) = -\frac{\Psi_x}{\Psi_n} = \frac{\gamma\sigma/(x-\sigma n)^2}{\eta/n^2 + \phi^2/(1-\phi n)^2 + \gamma\sigma^2/(x-\sigma n)^2} > 0 .
+\]
+D'où $\eps = x\nu'/n = \big[\gamma\sigma x/(x-\sigma n)^2\big]\big/\big[\eta/n + T_2 + E_2\big]$. Au numérateur, écrire $x = (x-\sigma n) + \sigma n$ donne $E_1 + E_2$ ; au dénominateur, \eqref{eq:foc} remplace $\eta/n$ par $T_1 + E_1$. Tous les termes étant positifs, $\eps \in (0,1)$.
+
+\paragraph{Proposition~\ref{prop:coeur}.} Par \eqref{eq:P1}, $x_t$ ne dépend que de $p_t$, avec $dx_t/dp_t = -x_t/p_t < 0$ ; par \eqref{eq:foc}, $n_t$ ne dépend que de $x_t$, ni de $p_{t+1}$ ni de $w_2$. Le lemme~\ref{lem:nu} conclut.
+
+\paragraph{Proposition~\ref{prop:ss}.} À l'état stationnaire, $n^* = 1$ ; poser $n = 1$ dans \eqref{eq:foc} et résoudre en $x$ donne $x^*$. La contrainte $n < x/\sigma$ impose $\nu(x) \to 0$ quand $x \to 0^+$ ; quand $x \to \infty$, le dernier terme de \eqref{eq:foc} s'annule et $\nu(x) \to \bar n$. Continue et strictement croissante, $\nu$ croise 1 une fois exactement si $\bar n > 1$, condition équivalente à $\eta > \phi/(1-\phi)$. Le prix suit de \eqref{eq:P1}.
+
+\begin{lemme}[Conservation par lignée]\label{lem:conservation}
+Notons $A_\tau \equiv N_\tau x_\tau$ la surface détenue par la cohorte $\tau$. À parc constant, $A_\tau = A_{\tau-2}$.
+\end{lemme}
+\begin{proof}
+L'apurement aux dates $\tau-1$ et $\tau$ donne $H = A_{\tau-1} + A_{\tau-2} = A_\tau + A_{\tau-1}$. À la date $\tau$, les seuls vendeurs sont les retraités de la cohorte $\tau-2$, les seuls acheteurs les jeunes de la cohorte $\tau$, qui sont leurs enfants : le marché transmet le parc à l'intérieur de chaque lignée, les cohortes des dates paires détenant une part $a$ du parc et celles des dates impaires $H - a$.
+\end{proof}
+
+\begin{proposition}[Dynamique]\label{prop:stab}
+Supposons $\bar n > 1$ et le parc constant. Dans chaque lignée, la taille des cohortes converge de façon monotone vers $a/x^*$ ou $(H-a)/x^*$ ; la surface, le prix et la fécondité convergent vers $x^*$, $p^*$ et 1. Si $a \neq H/2$, la taille des cohortes alterne indéfiniment d'une date à l'autre, avec un écart $|H-2a|/x^*$ qui ne s'amortit pas.
+\end{proposition}
+\begin{proof}
+Prenons la lignée paire et notons $N_k \equiv N_{2k}$. Avec $x = a/N_k$, la démographie s'écrit $N_{k+1} = G(N_k)$, où $G(N) \equiv N\,\nu(a/N)$. Le rapport $G(N)/N = \nu(a/N)$ est strictement décroissant en $N$ et vaut 1 en $N_a^* \equiv a/x^*$ : $G(N) > N$ si $N < N_a^*$ et $G(N) < N$ si $N > N_a^*$. Par ailleurs $G'(N) = \nu(x)\,[1-\eps(x)] > 0$ par le lemme~\ref{lem:nu}, donc $N < N_a^*$ entraîne $G(N) < N_a^*$. La suite est ainsi monotone et bornée par $N_a^*$ ; elle converge vers l'unique point fixe de $G$, puisque $G(N) = N$ équivaut à $a/N = x^*$. La lignée impaire se traite de même avec $H-a$. Les limites $a/x^*$ et $(H-a)/x^*$ alternent d'une date à l'autre. Au voisinage de l'état stationnaire, $G'(N_a^*) = 1 - \eps(x^*)$ mesure la contraction de l'écart par génération.
+\end{proof}
+
+\begin{proposition}[Variation du parc]\label{prop:choc}
+Partant de l'état stationnaire symétrique, une variation permanente $\Delta H$ du parc à la date $\tau_0$ est captée tout entière par la cohorte qui achète à cette date :
+\[
+x_{\tau_0} = x^*\Big(1 + \frac{2\Delta H}{H}\Big), \qquad n_{\tau_0} \approx 1 + \eps(x^*)\,\frac{2\Delta H}{H}.
+\]
+L'autre lignée n'est affectée à aucune date. À long terme, deux cohortes successives comptent $(H+\Delta H)/x^*$ ménages : la variation du parc est absorbée par le nombre de ménages, non par leur surface.
+\end{proposition}
+\begin{proof}
+Par l'apurement, la cohorte $\tau_0$ achète $H + \Delta H - H/2$, qu'elle partage entre $N^* = H/(2x^*)$ ménages ; la fécondité suit d'un développement au premier ordre de $\nu$ autour de $x^*$. La lignée de la date $\tau_0 - 1$ conserve $H/2$ par le lemme~\ref{lem:conservation}. La proposition~\ref{prop:stab}, appliquée avec $a = H/2 + \Delta H$, donne le long terme.
+\end{proof}
+
+\paragraph{Proposition~\ref{prop:regions}.} L'égalité $(1+\gamma)\ln w_1^u - \gamma\ln p_u = (1+\gamma)\ln w_1^r - \gamma\ln p_r$ donne le rapport des prix ; \eqref{eq:P1} donne $x_u/x_r = (w_1^u/w_1^r)(p_r/p_u)$. La fécondité urbaine est plus faible parce que $\nu$ est croissante, et la région n'a pas d'effet à surface donnée parce que \eqref{eq:foc} ne contient ni salaire ni prix.
+
+% =====================================================================
+\section{Robustesse}\label{app:robustesse}
+
+\paragraph{Mesure de la naissance.} Le tableau~\ref{tab:fpr} reprend les principaux résultats sous cinq définitions alternatives de la naissance : naissance limitée aux enfants nés l'année d'enquête, ou à ceux nés l'année précédente ; naissance dédupliquée, l'enfant né l'année précédente n'étant compté que si le ménage n'était pas déjà dans l'échantillon ; définition de référence sans les vagues 2022 et 2023 ; définition dédupliquée sans ces vagues. Le rang et les contrôles avant la naissance sont recalculés dans chaque variante. L'effet linéaire de la surface est significatif dans toutes les variantes, pour l'ensemble des couples comme pour le premier enfant ; le seuil sous 50 m² chez les couples sans enfant installés l'est aussi, entre $-5{,}5$ et $-11{,}7$ points. L'avantage des accédants au premier enfant disparaît lorsque la naissance est limitée à l'année d'enquête, et se maintient ailleurs. La part de la baisse attribuable à la surface en tranches varie de 18,0 à 22,4\,\% dans quatre variantes, et atteint 34,7\,\% lorsque la naissance est limitée à l'année d'enquête, une définition qui ne retient qu'une cohorte incomplète de naissances.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{threeparttable}
+\caption{Robustesse à la mesure de la naissance}\label{tab:fpr}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+& \multicolumn{3}{c}{Surface (+10 m²)} & \shortstack{Moins de\\50 m²} & \shortstack{Accédant vs\\locataire} & \shortstack{Part de la\\baisse (\%)} \\
+\cmidrule(lr){2-4}
+& Ensemble & 1\textsuperscript{er} enfant & \shortstack{1\textsuperscript{er} enfant,\\installés} & \shortstack{1\textsuperscript{er} enfant,\\installés} & 1\textsuperscript{er} enfant & \shortstack{Surface en\\tranches} \\
+\midrule
+Référence (né en N ou N$-$1)   & 0,34\sym{***} & 0,59\sym{**} & 0,35 & $-$9,13\sym{***} & 5,15\sym{**} & 19,0 \\
+Né en N seulement              & 0,22\sym{***} & 0,55\sym{***} & 0,31\sym{\dag} & $-$5,49\sym{**} & 1,41 & 34,7 \\
+Né en N$-$1 seulement          & 0,31\sym{***} & 0,47\sym{*} & 0,26 & $-$8,11\sym{**} & 5,69\sym{***} & 18,0 \\
+Dédupliqué                     & 0,27\sym{***} & 0,53\sym{**} & 0,24 & $-$7,05\sym{**} & 4,67\sym{**} & 22,4 \\
+Référence, hors 2022-2023      & 0,44\sym{***} & 0,78\sym{**} & 0,31 & $-$11,66\sym{***} & 4,80\sym{*} & 18,2 \\
+Dédupliqué, hors 2022-2023     & 0,35\sym{***} & 0,67\sym{**} & 0,13 & $-$8,99\sym{**} & 4,36\sym{*} & 22,0 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}\scriptsize
+\item \sym{***} $p<0{,}001$ ; \sym{**} $p<0{,}01$ ; \sym{*} $p<0{,}05$ ; \sym{\dag} $p<0{,}10$.
+\item \textit{Champ, modèle et source} : voir tableaux~\ref{tab:surface}, \ref{tab:seuil} et \ref{tab:decompo}. Moins de 50 m² : écart avec les couples logés entre 70 et 89 m². Accédant : écart de probabilité de première naissance avec les locataires, à surface, coût au mètre carré, âge, niveau de vie, catégorie sociale et géographie donnés. Les taux de naissance de référence diffèrent d'une variante à l'autre.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\paragraph{Période.} Estimé sur les seules vagues 2014 et 2018, où la naissance est lue dans le module « événements », l'effet de dix mètres carrés vaut 0,45 point ($p = 0{,}005$) ; sur les vagues 2022 à 2025, où elle est reconstruite, 0,29 point ($p < 0{,}001$). Rapportés au taux de naissance de chaque période, ces effets sont presque identiques : 4,1 et 4,3\,\%.
+
+\paragraph{Type de logement.} Ajouter le type de logement, maison ou appartement, réduit l'effet de la surface pour le premier enfant de 0,55 à 0,42 point ($p = 0{,}04$), et laisse le seuil sous 50 m² presque inchangé ($-8{,}5$ contre $-8{,}9$ points). Le type de logement fait cependant partie du même choix que la surface, et le contrôler retire peut-être une part légitime de son effet.
+
+\paragraph{Prix locaux.} Un indice de prix au mètre carré construit à partir des transactions immobilières (DVF+, par ZEAT, année et type de bien), indépendant du logement occupé par chaque ménage, ne modifie pas l'effet de la surface (0,24 contre 0,25 point sur l'ensemble, 0,27 contre 0,31 point pour le premier enfant). L'indice ne variant qu'au niveau de 96 cellules déjà largement absorbées par les effets fixes de ZEAT et d'année, nous n'interprétons pas son coefficient propre.
+
+% =====================================================================
+\section*{Références}
+\addcontentsline{toc}{section}{Références}
+\begin{list}{}{\leftmargin=1.2em \itemindent=-1.2em \itemsep=0.25em \parsep=0pt}\small
+\item Assemblée nationale (2026), \emph{Rapport d'information n\textsuperscript{o}~2474 fait au nom de la mission d'information sur les causes et conséquences de la baisse de la natalité en France}, présidente C. de Pélichy, rapporteur J. Patrier-Leitus, 11 février 2026.
+\item Atalay K., Li A., Whelan S. (2021), « Housing Wealth, Fertility Intentions and Fertility », \emph{Journal of Housing Economics}, 54, 101787.
+\item Barro R.~J., Becker G.~S. (1989), « Fertility Choice in a Model of Economic Growth », \emph{Econometrica}, 57(2), p.~481-501.
+\item Becker G.~S., Barro R.~J. (1988), « A Reformulation of the Economic Theory of Fertility », \emph{Quarterly Journal of Economics}, 103(1), p.~1-25.
+\item Clark J., Ferrer A. (2019), « The Effect of House Prices on Fertility: Evidence from Canada », \emph{Economics: The Open-Access, Open-Assessment E-Journal}, 13(2019-38), p.~1-32.
+\item Couillard B.~K. (2025), « Build, Baby, Build: How Housing Shapes Fertility », document de travail, Université de Toronto.
+\item de la Croix D., Doepke M. (2003), « Inequality and Growth: Why Differential Fertility Matters », \emph{American Economic Review}, 93(4), p.~1091-1113.
+\item Dettling L.~J., Kearney M.~S. (2014), « House Prices and Birth Rates: The Impact of the Real Estate Market on the Decision to Have a Baby », \emph{Journal of Public Economics}, 110, p.~82-100.
+\item Diamond P.~A. (1965), « National Debt in a Neoclassical Growth Model », \emph{American Economic Review}, 55(5), p.~1126-1150.
+\item Doepke M., Hannusch A., Kindermann F., Tertilt M. (2023), « The Economics of Fertility: A New Era », in \emph{Handbook of the Economics of the Family}, vol.~1, Elsevier, p.~151-254.
+\item Galor O., Weil D.~N. (2000), « Population, Technology, and Growth: From Malthusian Stagnation to the Demographic Transition and Beyond », \emph{American Economic Review}, 90(4), p.~806-828.
+\item Insee (2026), « Bilan démographique 2025 », \emph{Insee Première}, n\textsuperscript{o}~2087.
+\item Kulu H., Steele F. (2013), « Interrelationships between Childbearing and Housing Transitions in the Family Life Course », \emph{Demography}, 50(5), p.~1687-1714.
+\item Kulu H., Vikat A. (2007), « Fertility Differences by Housing Type: The Effect of Housing Conditions or of Selective Moves? », \emph{Demographic Research}, 17(26), p.~775-802.
+\item Lovenheim M.~F., Mumford K.~J. (2013), « Do Family Wealth Shocks Affect Fertility Choices? Evidence from the Housing Market », \emph{Review of Economics and Statistics}, 95(2), p.~464-475.
+\item Mulder C.~H. (2006), « Population and Housing: A Two-Sided Relationship », \emph{Demographic Research}, 15(13), p.~401-412.
+\end{list}
+
+\end{document}

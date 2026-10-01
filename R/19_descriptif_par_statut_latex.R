@@ -84,7 +84,7 @@ d <- bind_rows(imap(VAGUES[ANNEES], ~ preparer_donnees(.y, .x, restreindre = FAL
          # 5, et toutes les valeurs courtes se retrouvent loin de leur barre de
          # séparation, l'alignement à droite creusant l'écart à gauche.
          revenu_reel     = deflater(revenu,     an - 1, IPC, base = 2025) / 1000,
-         niveau_vie_reel = deflater(niveau_vie, an - 1, IPC, base = 2025) / 1000,
+         niveau_vie_reel = deflater(niveau_vie_insee, an - 1, IPC, base = 2025) / 1000,
          cout_log_reel   = deflater(cout_log,   an,     IPC, base = 2025),
          cout_m2_reel    = deflater(cout_m2,    an,     IPC, base = 2025),
          naiss_1000      = 1000 * (naissance == "Oui"))

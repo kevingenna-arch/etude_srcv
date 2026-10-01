@@ -113,7 +113,7 @@ res_a <- imap_dfr(ECH, function(x, lib) {
 expo_a <- map_dfr(LIB_FINS, function(l) tibble(
   bloc = "(a) Tranches fines", echantillon = "Exposition, couples sans enfant",
   contraste = l,
-  part_2010_pct = part("2010", function(s) tranche_fine(s) == l),
+  part_2010_pct = part(ANNEE_BASE, function(s) tranche_fine(s) == l),
   part_2025_pct = part("2025", function(s) tranche_fine(s) == l)))
 cat("\nEcart par tranche fine (points de %) :\n")
 print(as.data.frame(res_a %>% select(echantillon, contraste, ame_pts, conf.low, conf.high, p.value) %>%
@@ -139,7 +139,7 @@ res_b <- map_dfr(BORNES, function(b) {
     ligne("(b) Borne basse deplacee", l, d, ame(m, "surf_b"), borne = b) %>%
       filter(str_detect(contraste, "^Moins de|a 69 m2")) %>%
       mutate(part_2010_pct = if_else(str_detect(contraste, "^Moins de"),
-                                     part("2010", function(v) v < b), NA_real_),
+                                     part(ANNEE_BASE, function(v) v < b), NA_real_),
              part_2025_pct = if_else(str_detect(contraste, "^Moins de"),
                                      part("2025", function(v) v < b), NA_real_))
   })
@@ -176,7 +176,7 @@ print(as.data.frame(res_c %>% group_by(bloc, echantillon) %>%
         select(bloc, echantillon, borne, ame_pts, p.value) %>%
         mutate(across(where(is.numeric), ~ round(.x, 3)))), row.names = FALSE)
 
-write_csv(bind_rows(vide, res_a, expo_a, res_b, res_c), "Output/seuil_surface_sensibilite.csv")
+ecrire(bind_rows(vide, res_a, expo_a, res_b, res_c), "Output/seuil_surface_sensibilite.csv")
 
 # ============================================================================
 #  (d) LA DÉCOMPOSITION 2010-2025 DÉPEND-ELLE DE LA BORNE ?
@@ -187,8 +187,8 @@ write_csv(bind_rows(vide, res_a, expo_a, res_b, res_c), "Output/seuil_surface_se
 #  trois découpages, sur le modèle « logement prédéterminé ».
 # ============================================================================
 cat("\n\n########## (d) DECOMPOSITION SELON LES BORNES ##########\n")
-BAISSE_RELATIVE <- (ICF_2025 - ICF_2010) / ICF_2010      # ICF_* : 00_config.R
-d10 <- filter(df, annee == "2010"); d25 <- filter(df, annee == "2025")
+BAISSE_RELATIVE <- (ICF_2025 - ICF_BASE) / ICF_BASE      # ICF_* : 00_config.R
+d10 <- filter(df, annee == ANNEE_BASE); d25 <- filter(df, annee == "2025")
 di  <- filter(df, anciennete >= ANCIENNETE_MIN)
 part_statut <- function(x) prop.table(tapply(x$poids, droplevels(x$statut3), sum))
 p10 <- part_statut(d10); p25 <- part_statut(d25)
@@ -218,6 +218,6 @@ res_d <- imap_dfr(DECOUPAGES, function(s, nom) {
 })
 cat("\nPart de la baisse de l'ICF reproduite (%), selon les bornes :\n")
 print(as.data.frame(res_d %>% mutate(across(where(is.numeric), ~ round(.x, 2)))), row.names = FALSE)
-write_csv(res_d, "Output/seuil_surface_decomposition.csv")
+ecrire(res_d, "Output/seuil_surface_decomposition.csv")
 
 cat("\n=== 30 termine. ===\n")

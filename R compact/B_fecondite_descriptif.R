@@ -81,7 +81,8 @@ charger <- function(annee, cfg) {
          age_pr = num(raw[[v[["age_pr"]]]]), age_cj = num(raw[[v[["age_cj"]]]]),
          sx_pr  = trimws(as.character(raw[[v[["sexe_pr"]]]])),
          sx_cj  = trimws(as.character(raw[[v[["sexe_cj"]]]])),
-         poids  = num(raw[[v[["poids"]]]]))
+         poids  = num(raw[[v[["poids"]]]])) %>%
+    filter(remb <= MENSUALITE_MAX)      # mensualités aberrantes (00_config.R)
 }
 d <- imap_dfr(VAGUES[VAGUES_ACM], ~ charger(.y, .x))
 

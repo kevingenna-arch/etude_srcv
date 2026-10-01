@@ -167,7 +167,7 @@ res3 <- bind_rows(
 cat("\nEcart vs Locataire :\n")
 print(as.data.frame(res3 %>% mutate(across(where(is.numeric), ~ round(.x, 3)))), row.names = FALSE)
 
-write_csv(bind_rows(res1 %>% mutate(bloc = "Table5_surface"),
+ecrire(bind_rows(res1 %>% mutate(bloc = "Table5_surface"),
                     res2 %>% rename(ame_pts_ = ame_pts) %>% mutate(bloc = "Table12_seuil") %>%
                       rename(ame_pts = ame_pts_),
                     res3 %>% mutate(bloc = "Table6_escalier")),
@@ -247,7 +247,7 @@ if (file.exists("Output/dvf_zeat_annee.csv")) {
   cat("\nEffet propre de l'indice DVF+ (1er enfant), selon le niveau de regroupement :\n")
   print(as.data.frame(effet_dvf %>% mutate(across(where(is.numeric), ~ round(.x, 3)))), row.names = FALSE)
 
-  write_csv(bind_rows(res4, effet_dvf), "Output/robustesse_dvf.csv")
+  ecrire(bind_rows(res4, effet_dvf), "Output/robustesse_dvf.csv")
 } else {
   cat("Output/dvf_zeat_annee.csv absent -- lancer 26 d'abord.\n")
 }

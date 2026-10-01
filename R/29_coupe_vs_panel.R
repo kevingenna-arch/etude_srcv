@@ -3,8 +3,9 @@
 # ----------------------------------------------------------------------------
 #  L'effet de la surface sur la probabilité de naissance vaut +0,38 point pour
 #  +10 m² en coupe empilée chez les ménages installés depuis trois ans (script
-#  23), mais -0,007 point en panel (script 15 : logement en t, naissance entre
-#  t et t+1). Le §6 du script 23 a établi que la PARAMÉTRISATION (prix au m²
+#  23), mais +0,09 point, non significatif, en panel (script 15 : logement en
+#  t, naissance entre t et t+1 ; -0,007 avant le filtrage des surfaces
+#  aberrantes dans 06, le 2026-10-01). Le §6 du script 23 a établi que la PARAMÉTRISATION (prix au m²
 #  constant ou budget total constant) n'y est pour rien. Restait à savoir si
 #  l'écart vient du DESIGN (ordre temporel, échantillon chaîné) ou de la
 #  SPÉCIFICATION (probit contre logit, prix au m² contre coût total, jeu de
@@ -153,5 +154,5 @@ cat(if (a$p.value < 0.05 && b$p.value >= 0.05)
     else
       "-> L'effet subsiste dans les deux designs sur cet echantillon : l'ecart avec le script 15 tient a la SPECIFICATION.\n")
 
-write_csv(res, "Output/coupe_vs_panel.csv")
+ecrire(res, "Output/coupe_vs_panel.csv")
 cat("\n=== 29 termine. ===\n")

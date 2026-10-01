@@ -272,10 +272,13 @@ panel <- map_dfr(seq_len(length(waves) - 1), function(k) {
     left_join(bebes, by = "id") %>%
     mutate(naissance = coalesce(naissance, 0L), annee_t = t, annee_t1 = t1)
 }) %>%
+  filter(rembours <= MENSUALITE_MAX) %>%          # mensualités aberrantes en t (cf. 06)
   mutate(cout_log_reel = deflater(cout_log, annee_t, IPC, base = 2025),
          revenu_reel   = deflater(revenu, annee_t - 1, IPC, base = 2025),
          vfepp_reel    = deflater(vfepp, annee_t, IPC, base = 2025),
          parite = cut(nenf, c(-Inf, 0, 1, 2, Inf), labels = c("0","1","2","3+")),
+         # Surfaces implausibles -> NA (années saisies comme surfaces, cf. 06)
+         surface = if_else(surface >= 9 & surface <= 400, surface, NA_real_),
          surface_10 = surface / 10, cout_100 = cout_log_reel / 100,
          vfepp_100k = vfepp_reel / 100000, revenu_10k = revenu_reel / 10000,
          cout_m2 = cout_log_reel / if_else(surface >= 9 & surface <= 400,

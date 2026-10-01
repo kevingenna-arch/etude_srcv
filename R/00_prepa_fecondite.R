@@ -13,6 +13,16 @@
 #     une naissance implique mécaniquement nb_enfants >= 1 et taille +1
 #     (vérifié : sur 307 naissances 2006, 306 ont >= 1 enfant). On reconstruit
 #     donc des contrôles "AVANT NAISSANCE" (nb_enf_avant, taille_avant).
+#     Même piège pour le NIVEAU DE VIE : les UC (HX050) comptent le nouveau-né
+#     (+0,3 UC, soit -15 % de niveau de vie pour les ménages avec naissance), et
+#     HY020 inclut des transferts qui réagissent à la naissance (prestations
+#     familiales HY050N, minima sociaux HY060N, aides au logement HY070N).
+#     `niveau_vie` = revenu HORS ces transferts / UC AVANT naissance (variante E,
+#     spécification principale depuis le 2026-09-30) ; `niveau_vie_avant` =
+#     HY020 / UC avant naissance (variante D) ; `niveau_vie_insee` = HY020 / HX050
+#     (définition Insee, pour les tableaux descriptifs). Avec l'ancienne
+#     définition, l'effet du niveau de vie sur la naissance était négatif par
+#     construction (-1,64 pt pour +10 k€) ; en variante E il est nul (-0,04).
 #
 #  3) TAUX D'EFFORT en POINTS de % (0-100) -> OR lisible "par +1 point".
 #     ⚠️ CONVENTION UNIFIÉE (voir plus bas) : les valeurs extrêmes sont
@@ -52,6 +62,12 @@ preparer_donnees <- function(annee, cfg, restreindre = RESTREINDRE_FECONDITE) {
   # Naissance récente : EVENEMEN_C, ou reconstruction depuis le fichier
   # individus pour les vagues FPR. Logique commune -> 00_utils.R.
   raw <- ajouter_naissance(lire_srcv(cfg$men), cfg)
+  # Transferts du fichier ménages (casse variable selon la vague).
+  transfert <- function(v) {
+    k <- names(raw)[toupper(names(raw)) == v]
+    if (!length(k)) stop(v, " absent du millésime ", annee, call. = FALSE)
+    num(raw[[k[1]]])
+  }
 
   verifier_colonnes(raw, cfg$vars, paste0("(millésime ", annee, ")"))
 
@@ -65,6 +81,8 @@ preparer_donnees <- function(annee, cfg, restreindre = RESTREINDRE_FECONDITE) {
            # Unités de consommation : nécessaire au niveau de vie, mesure de
            # revenu comparable entre ménages de tailles différentes.
            uc = num(raw$HX050),
+           transferts = coalesce(transfert("HY050N"), 0) + coalesce(transfert("HY060N"), 0) +
+             coalesce(transfert("HY070N"), 0),
            # Nombre d'actifs occupés : utilisé par l'ACM et les prestations.
            nactocc = num(raw$NACTOCCUP),
            # tuu est lu en texte ("00".."10" pour TAU99) ou en numérique
@@ -86,7 +104,8 @@ preparer_donnees <- function(annee, cfg, restreindre = RESTREINDRE_FECONDITE) {
       cout_log_hors_emprunt = cout_log,
       cout_log              = cout_log + rembours
     ) %>%
-    filter(!is.na(revenu), revenu > 0, !is.na(cout_log), !is.na(poids), poids > 0) %>%
+    filter(!is.na(revenu), revenu > 0, !is.na(cout_log), !is.na(poids), poids > 0,
+           rembours <= MENSUALITE_MAX) %>%      # mensualités aberrantes (00_config.R)
     # ── TAUX D'EFFORT : convention UNIQUE du projet (00_utils.R) ────────────
     # Coût mensuel annualisé / revenu disponible annuel, CENSURÉ dans [0 ; 100]
     # points. Ce script supprimait auparavant les ménages au-delà de 100 % :
@@ -131,7 +150,12 @@ preparer_donnees <- function(annee, cfg, restreindre = RESTREINDRE_FECONDITE) {
       maison_appart = recode_typlog(typlog, cfg$typlog_type),
       # Tranche d'unite urbaine en 5 classes ; NA avant 2014 (cf. 00_utils.R)
       densite      = recode_densite(tuu, cfg$tuu_type),
-      niveau_vie   = if_else(!is.na(uc) & uc > 0, revenu / uc, revenu),
+      # Un enfant de moins de 14 ans compte 0,3 UC (échelle OCDE modifiée).
+      uc_avant     = pmax(uc - 0.3 * naiss01, 1),
+      revenu_hp    = revenu - transferts,
+      niveau_vie_insee = if_else(!is.na(uc) & uc > 0, revenu / uc, revenu),
+      niveau_vie_avant = if_else(!is.na(uc) & uc > 0, revenu / uc_avant, revenu),
+      niveau_vie   = if_else(!is.na(uc) & uc > 0, revenu_hp / uc_avant, revenu_hp),
       surf_pers    = surface / pmax(taille_avant, 1),
 
       # Déménagement l'année d'enquête (DATENT/EMMENAG = année d'emménagement).
@@ -167,6 +191,7 @@ VARS_INTERET <- c("annee", "id", "id_cluster", "naissance", "taux_effort", "taux
                   "revenu", "cout_log", "cout_log_hors_emprunt", "rembours", "poids",
                   "age_femme", "age_c", "age_pr", "urbain", "zeat",
                   "uc", "niveau_vie", "surf_pers", "taille", "nb_enf", "densite",
+                  "uc_avant", "transferts", "revenu_hp", "niveau_vie_insee", "niveau_vie_avant",
                   "nactocc", "diplome",
                   "surface", "cout_m2", "taux_effort_m2", "surface_piece", "maison_appart")
 
@@ -216,9 +241,13 @@ memo_rds <- function(nom, expr) {
 }
 
 # Versions mises en cache, à utiliser dans les scripts compacts.
-millesimes_prepares <- function(restreindre = RESTREINDRE_FECONDITE)
-  memo_rds(paste0("millesimes_", if (restreindre) "fecond" else "tous"),
-           charger_millesimes(restreindre = restreindre))
+#  Les vagues antérieures à ANNEE_DEBUT (00_config.R) sont écartées après la
+#  mise en cache, qui porte toujours sur les huit vagues.
+millesimes_prepares <- function(restreindre = RESTREINDRE_FECONDITE) {
+  m <- memo_rds(paste0("millesimes_", if (restreindre) "fecond" else "tous"),
+                charger_millesimes(restreindre = restreindre))
+  m[as.integer(names(m)) >= ANNEE_DEBUT]
+}
 
 # Âge moyen du ou des parents, toutes vagues, avec identifiant normalisé prêt
 # pour la jointure sur (annee, id).

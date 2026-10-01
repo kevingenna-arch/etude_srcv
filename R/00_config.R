@@ -161,6 +161,37 @@ chemin_men <- function(annee) VAGUES[[as.character(annee)]]$men
 #     Une première version de l'étude utilisait 2,02.
 ICF_2010 <- 2.03
 ICF_2025 <- 1.56
+#   - 2014 : 2,00 (France entière, série Insee révisée) — À VÉRIFIER sur la
+#     série publiée avant toute diffusion ; utilisé seulement avec SRCV_DEBUT=2014.
+ICF_2014 <- 2.00
+
+#  PÉRIODE D'ANALYSE des modèles de fécondité (scripts 23, 27-30, 32) :
+#  variable d'environnement SRCV_DEBUT, première vague retenue. Par défaut 2006
+#  (étude : 8 vagues, décomposition depuis 2010). Avec SRCV_DEBUT=2014 (article :
+#  vagues 2014-2025, décomposition depuis 2014), les sorties sont suffixées
+#  « _2014 » et l'année de base remplace 2010 dans leurs libellés.
+ANNEE_DEBUT     <- as.integer(Sys.getenv("SRCV_DEBUT", "2006"))
+ANNEE_BASE      <- if (ANNEE_DEBUT <= 2010) "2010" else as.character(ANNEE_DEBUT)
+ICF_BASE        <- get(paste0("ICF_", ANNEE_BASE))
+SUFFIXE_PERIODE <- if (ANNEE_DEBUT <= 2006) "" else paste0("_", ANNEE_DEBUT)
+libelle_periode <- function(x) {
+  x <- gsub("2010", ANNEE_BASE, x, fixed = TRUE)
+  gsub("2006-2018", paste0(max(ANNEE_DEBUT, 2006), "-2018"), x, fixed = TRUE)
+}
+ecrire <- function(x, fichier) {
+  x <- dplyr::rename_with(dplyr::mutate(x, dplyr::across(where(is.character), libelle_periode)),
+                          libelle_periode)
+  readr::write_csv(x, sub("(\\.[a-z]+)$", paste0(SUFFIXE_PERIODE, "\\1"), fichier))
+}
+
+#  MENSUALITÉS D'EMPRUNT ABERRANTES : les ménages déclarant plus de
+#  MENSUALITE_MAX € par mois (REMP/REMPR) sont SUPPRIMÉS, dans tous les
+#  chargeurs (00_utils.R, 00_prepa_fecondite.R, 06, 10 et leurs copies dans
+#  R compact/). Vérifié le 2026-10-01 : aucun avant 2022, puis 8, 7, 8 et 15
+#  ménages en 2022-2025, tous accédants, de 11 200 à 95 860 € par mois pour
+#  9 900 à 345 000 € de revenu annuel — vraisemblablement un montant annuel ou
+#  un capital saisi comme mensualité.
+MENSUALITE_MAX <- 10000
 
 #  Fichiers DVF+ (Cerema), HORS DÉPÔT : ~8,3 Go, 97 fichiers départementaux.
 #  Utilisé par le script 26 uniquement ; le chemin est propre à ce poste.
