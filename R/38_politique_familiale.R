@@ -201,3 +201,79 @@ decompo <- map_dfr(BAREMES_CF, function(b) {
 cat("\nContrefactuel : couples de 2025 sous les barèmes de 2010 et 2014 (€ constants) :\n")
 print(as.data.frame(decompo), row.names = FALSE)
 ecrire(decompo, "Output/politique_familiale_decomposition.csv")
+
+# ── §4 Par instrument : prestations monétaires ou avantage fiscal ──────────
+#  On ne rend aux couples de 2025 que la composante de 2014 (ou de 2010) d'un
+#  instrument, les autres restant au barème de 2025, et on re-prédit. Les
+#  services en nature (crèches, assistantes maternelles) ne sont pas dans
+#  SRCV : ils ne figurent pas ici.
+INSTRUMENTS <- list(
+  "Prestations monetaires (AF, CF, PAJE)" = c("af", "cf", "paje_base", "paje_naissance"),
+  "  dont PAJE (allocation de base et prime)" = c("paje_base", "paje_naissance"),
+  "  dont allocations familiales et complement familial" = c("af", "cf"),
+  "Avantage fiscal (quotient familial)" = "ir")
+m <- modeles[["Ensemble"]]
+a <- ame %>% filter(specification == "Avec gain a bareme fixe (retenu)", echantillon == "Ensemble")
+par_instrument <- map_dfr(BAREMES_CF, function(b) {
+  comp <- c("af", "cf", "paje_base", "paje_naissance", "ir")
+  cf_b <- gains %>% filter(cle %in% paste0(d25$cle, "_bareme", b)) %>%
+    transmute(cle = sub("_bareme[0-9]+$", "", cle),
+              across(all_of(paste0(comp, "_reel")), ~ .x, .names = "b_{.col}"))
+  d <- d25 %>% left_join(cf_b, by = "cle")
+  baisse <- (ICF_2025 - get(paste0("ICF_", b))) / get(paste0("ICF_", b))
+  p0 <- predire(m, d)
+  imap_dfr(INSTRUMENTS, function(vars, lib) {
+    dg <- rowSums(as.matrix(d[paste0("b_", vars, "_reel")])) -
+      rowSums(as.matrix(d[paste0(vars, "_reel")]))
+    d_cf <- d %>% mutate(gain_1k = gain_1k + dg / 1000)
+    rel <- predire(m, d_cf) / p0 - 1
+    tibble(bareme = b, instrument = lib,
+           gain_2025 = weighted.mean(rowSums(as.matrix(d[paste0(vars, "_reel")])), d$poids),
+           gain_bareme = weighted.mean(rowSums(as.matrix(d[paste0("b_", vars, "_reel")])), d$poids),
+           ecart_relatif_pct = 100 * rel,
+           part_de_la_baisse_pct = 100 * rel / -baisse,
+           part_ic_bas  = a$conf.low  / 100 * weighted.mean(dg / 1000, d$poids) / p0 / -baisse * 100,
+           part_ic_haut = a$conf.high / 100 * weighted.mean(dg / 1000, d$poids) / p0 / -baisse * 100)
+  })
+}) %>% mutate(ecart_gain = gain_bareme - gain_2025, .after = gain_bareme) %>%
+  mutate(across(where(is.double), ~ round(.x, 2)))
+cat("\nPar instrument : couples de 2025, une seule composante rendue au barème de référence :\n")
+print(as.data.frame(par_instrument), row.names = FALSE)
+ecrire(par_instrument, "Output/politique_familiale_par_instrument.csv")
+
+# ── §5 Par quartile de niveau de vie : qui a perdu ? ───────────────────────
+#  Quartiles de niveau de vie (avant la naissance, hors prestations) dans
+#  chaque vague. Pour les couples de 2025 : gain sous le barème de référence
+#  et sous celui de 2025, et natalité supplémentaire prédite si l'on rendait
+#  le barème de référence (même modèle qu'au §3).
+quartile <- df %>% group_by(annee) %>%
+  mutate(q = cut(niveau_vie_reel,
+                 c(-Inf, wquantile(niveau_vie_reel, poids, c(.25, .5, .75)), Inf),
+                 labels = c("Q1", "Q2", "Q3", "Q4"))) %>%
+  ungroup() %>% select(cle, q)
+comp <- c("af", "cf", "paje_base", "paje_naissance", "ir")
+ref_comp <- gains %>% filter(cle %in% paste0(d25$cle, "_bareme", BAREME_REF)) %>%
+  transmute(cle = sub("_bareme[0-9]+$", "", cle),
+            across(all_of(paste0(comp, "_reel")), ~ .x, .names = "r_{.col}"))
+ecart_moyen <- function(d, v) weighted.mean(rowSums(as.matrix(d[paste0(v, "_reel")])) -
+                                              rowSums(as.matrix(d[paste0("r_", v, "_reel")])), d$poids)
+par_quartile <- d25 %>% left_join(quartile, by = "cle") %>% left_join(ref_comp, by = "cle") %>%
+  group_by(q) %>%
+  group_modify(function(d, k) {
+    d_cf <- d %>% mutate(gain_1k = gain_ref_1k)
+    tibble(n = nrow(d),
+           gain_bareme_ref = 1000 * weighted.mean(d$gain_ref_1k, d$poids),
+           gain_2025 = 1000 * weighted.mean(d$gain_1k, d$poids),
+           paje_2025 = weighted.mean(d$paje_base_reel + d$paje_naissance_reel, d$poids),
+           # Écart par instrument (barème 2025 - barème de référence), € de 2025
+           ecart_paje = ecart_moyen(d, c("paje_base", "paje_naissance")),
+           ecart_af_cf = ecart_moyen(d, c("af", "cf")),
+           ecart_qf = ecart_moyen(d, "ir"),
+           natalite_supplementaire_pct = 100 * (predire(m, d_cf) / predire(m, d) - 1))
+  }) %>% ungroup() %>%
+  mutate(ecart = gain_2025 - gain_bareme_ref,
+         ecart_pct = 100 * (gain_2025 / gain_bareme_ref - 1), bareme_ref = BAREME_REF,
+         across(where(is.double), ~ round(.x, 2)))
+cat("\nPar quartile de niveau de vie, couples de 2025 :\n")
+print(as.data.frame(par_quartile), row.names = FALSE)
+ecrire(par_quartile, "Output/politique_familiale_par_quartile.csv")

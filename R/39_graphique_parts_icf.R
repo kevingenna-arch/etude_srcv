@@ -8,7 +8,7 @@
 #     donné et taux de 2014 ; 33 avec les taux de 2024-2025).
 #   - Logement, canal des surfaces : seuil à 60 m², estimation centrale
 #     (seuil_surface_decomposition_2014.csv) ; de 4 (linéaire) à 19 (seuil à
-#     50 m²). L'accession à la propriété a joué EN SENS INVERSE (−10) : elle
+#     50 m²). La structure des statuts d'occupation a joué EN SENS INVERSE (−10) : elle
 #     n'est pas dans la barre, la note du graphique le dit.
 #   - Âge des couples : structure par âge de 2014, modèle retenu
 #     (poids_relatif_canaux_2014.csv).
