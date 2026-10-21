@@ -173,9 +173,13 @@ recode_typlog <- function(x, type) {
 #     2014 elle ne l'est pas -> modalité explicite "Non renseigne".
 #
 #  ⚠️ CODE 6 — 2014 porte 403 ménages codés "6", modalité absente de la
-#     nomenclature officielle (Insee 2025 : 0,1,2,3,4,5,7,8,9). Conservée comme
-#     niveau distinct plutôt que fusionnée arbitrairement : à élucider dans la
-#     documentation 2014 avant toute publication par ZEAT.
+#     nomenclature officielle et du dictionnaire des codes SRCV 2014. C'est le
+#     SUD-OUEST (vérifié le 2026-10-21 par le panel P1418) : des 222 ménages
+#     retrouvés en 2018, 220 y sont codés 7, dont les 197 qui n'ont pas
+#     déménagé. Le niveau distinct est conservé pour ne pas déplacer les
+#     résultats publiés ; le fusionner avec le Sud-Ouest ne change l'effet de
+#     la surface qu'à la quatrième décimale (R/36). Seul le gradient par ZEAT
+#     de R/23 §4, qui écarte ces ménages, gagnerait à la fusion.
 ZEAT_LIB <- c("0" = "DOM",           "1" = "Region parisienne",
               "2" = "Bassin parisien","3" = "Nord",
               "4" = "Est",            "5" = "Ouest",

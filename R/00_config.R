@@ -161,8 +161,8 @@ chemin_men <- function(annee) VAGUES[[as.character(annee)]]$men
 #     Une première version de l'étude utilisait 2,02.
 ICF_2010 <- 2.03
 ICF_2025 <- 1.56
-#   - 2014 : 2,00 (France entière, série Insee révisée) — À VÉRIFIER sur la
-#     série publiée avant toute diffusion ; utilisé seulement avec SRCV_DEBUT=2014.
+#   - 2014 : 2,00 (France entière, série Insee révisée) — vérifié le 2026-10-21
+#     sur la série publiée ; utilisé seulement avec SRCV_DEBUT=2014.
 ICF_2014 <- 2.00
 
 #  PÉRIODE D'ANALYSE des modèles de fécondité (scripts 23, 27-30, 32) :
