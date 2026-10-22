@@ -116,12 +116,25 @@ VARIANTES <- list(
   "Reference, hors 2022-2023"    = list(var = "naiss_ref",
                                         vagues = setdiff(names(VAGUES), c("2022", "2023"))),
   "Deduplique, hors 2022-2023"   = list(var = "naiss_dd",
-                                        vagues = setdiff(names(VAGUES), c("2022", "2023"))))
+                                        vagues = setdiff(names(VAGUES), c("2022", "2023"))),
+  # Poids 2022 et 2023 recalés par le script 47 (calage sur l'état civil)
+  "Reference, poids 2022-2023 recales" = list(var = "naiss_ref", vagues = names(VAGUES),
+                                              poids_corriges = TRUE))
+POIDS_CORRIGES <- if (file.exists("Output/poids_corriges_2022_2023.csv"))
+  read_csv("Output/poids_corriges_2022_2023.csv", show_col_types = FALSE,
+           col_types = cols(annee = col_character(), id = col_character(), .default = col_double()))
 
 # Applique une variante : outcome, contrôles pré-naissance et rang recalculés,
 # puis exactement les transformations et filtres du script 23.
 preparer <- function(v) {
-  base %>% filter(annee %in% v$vagues) %>%
+  d <- base %>% filter(annee %in% v$vagues)
+  if (isTRUE(v$poids_corriges)) {
+    stopifnot("Lancer d'abord le script 47" = !is.null(POIDS_CORRIGES))
+    d <- d %>% mutate(id_n = normaliser_id(id)) %>%
+      left_join(POIDS_CORRIGES %>% select(annee, id_n = id, poids_corrige), by = c("annee", "id_n")) %>%
+      mutate(poids = coalesce(poids_corrige, poids)) %>% select(-id_n, -poids_corrige)
+  }
+  d %>%
     mutate(naiss01      = .data[[v$var]],
            nb_enf_avant = pmax(nb_enf - naiss01, 0),
            taille_avant = taille - naiss01,

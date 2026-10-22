@@ -196,3 +196,7 @@ MENSUALITE_MAX <- 10000
 #  Fichiers DVF+ (Cerema), HORS DÉPÔT : ~8,3 Go, 97 fichiers départementaux.
 #  Utilisé par le script 26 uniquement ; le chemin est propre à ce poste.
 DIR_DVF <- "C:/Users/kgenn/Documents/TDTE/Immobilier/données Immo fécondité/1_DONNEES_LIVRAISON"
+
+#  Recensement : fichiers détail Insee « individus localisés au canton-ou-ville »
+#  (FD_INDCVI_2019.csv, FD_INDCVI_2023.csv, ~4,7 Go chacun). Scripts 48-49.
+DIR_RP <- file.path("Data", "recensement")
