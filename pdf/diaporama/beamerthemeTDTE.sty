@@ -1,0 +1,194 @@
+% beamerthemeTDTE.sty -- theme Beamer aux couleurs de la Chaire TDTE (2026)
+% Compiler avec LuaLaTeX (polices Fira Sans via fontspec).
+\ProvidesPackage{beamerthemeTDTE}[2026/10/19 Chaire TDTE]
+
+\RequirePackage{tikz}
+\usetikzlibrary{calc,positioning,shapes.geometric}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins}
+\RequirePackage{fontawesome5}
+\RequirePackage{fontspec}
+
+\mode<presentation>
+
+% ---------------------------------------------------------------- couleurs
+\definecolor{tdtenavy}{HTML}{33495E}   % encre du logo
+\definecolor{tdtenavydark}{HTML}{22313F}
+\definecolor{tdteorange}{HTML}{F49C16} % sable du sablier
+\definecolor{tdtegrey}{HTML}{7F8C8D}
+\definecolor{tdtelight}{HTML}{F3F5F7}
+\definecolor{tdteink}{HTML}{1F2A36}
+\definecolor{tdtered}{HTML}{C0392B}
+
+% ---------------------------------------------------------------- polices
+\usefonttheme{professionalfonts}
+\setsansfont{Fira Sans}[
+  BoldFont       = {Fira Sans SemiBold},
+  ItalicFont     = {Fira Sans Italic},
+  BoldItalicFont = {Fira Sans SemiBold Italic},
+  Numbers        = Lining]
+\newfontfamily\tdtelight{Fira Sans Light}[Numbers=Lining]
+\newfontfamily\tdtebold{Fira Sans Bold}[Numbers=Lining]
+
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{title}{size=\huge,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{footline}{size=\tiny}
+\setbeamerfont{caption}{size=\scriptsize}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+
+\setbeamercolor{normal text}{fg=tdteink,bg=white}
+\setbeamercolor{structure}{fg=tdtenavy}
+\setbeamercolor{alerted text}{fg=tdteorange}
+\setbeamercolor{frametitle}{fg=tdtenavy}
+\setbeamercolor{caption}{fg=tdtegrey}
+\setbeamercolor{caption name}{fg=tdtegrey}
+\setbeamercolor{button}{bg=tdteorange,fg=white}
+\setbeamercolor{itemize item}{fg=tdteorange}
+\setbeamercolor{itemize subitem}{fg=tdtenavy}
+\setbeamercolor{enumerate item}{fg=tdteorange}
+
+\setbeamertemplate{navigation symbols}{}
+% texte en drapeau, sans cesure (plus lisible a l'ecran)
+\RequirePackage{ragged2e}
+\RequirePackage{adjustbox}
+\AtBeginDocument{\RaggedRight\lefthyphenmin=62 \righthyphenmin=62 }
+\setbeamertemplate{frame begin}{\RaggedRight}
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\setbeamersize{text margin left=0.9cm,text margin right=0.9cm}
+
+% puces
+\setbeamertemplate{itemize item}{\raisebox{0.18em}{\tikz\fill[tdteorange] (0,0) rectangle (0.15,0.15);}}
+\setbeamertemplate{itemize subitem}{\raisebox{0.22em}{\tikz\fill[tdtenavy] (0,0) rectangle (0.17,0.035);}}
+\setbeamertemplate{enumerate item}{%
+  \tikz[baseline=(n.base)]\node[circle,fill=tdteorange,text=white,inner sep=1.2pt,
+    minimum size=1.15em,font=\scriptsize\bfseries](n){\insertenumlabel};}
+\setlength{\leftmargini}{1.4em}
+
+% boutons de navigation (annexes)
+\setbeamertemplate{button}{%
+  \tikz[baseline=(b.base)]\node[fill=tdteorange,text=white,rounded corners=2pt,
+    inner xsep=4pt,inner ysep=2pt,font=\tiny\bfseries](b){\insertbuttontext};}
+
+% ---------------------------------------------------------------- titre de frame
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip\vspace*{0.35cm}%
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=0.9cm,rightskip=0.9cm]{frametitle}%
+    \begin{minipage}[b]{\dimexpr\paperwidth-1.8cm-1.9cm\relax}
+      \usebeamerfont{frametitle}\strut\insertframetitle\strut
+      \ifx\beamer@framesubtitle\@empty\else
+        \par{\normalsize\mdseries\color{tdtegrey}\insertframesubtitle}\fi
+    \end{minipage}\hfill
+    \includegraphics[height=0.62cm]{logos/Logo2.png}\par\vspace{0.12cm}%
+    {\color{tdteorange}\rule{1.4cm}{2.2pt}}%
+  \end{beamercolorbox}\vspace{0.1cm}}
+
+% ---------------------------------------------------------------- pied de page
+\newcommand{\tdte@progress}{%
+  \pgfmathsetlengthmacro{\tdte@w}{%
+    \paperwidth/max(\inserttotalframenumber,1)*min(\insertframenumber,\inserttotalframenumber)}%
+  \begin{tikzpicture}
+    \fill[tdtelight] (0,0) rectangle (\paperwidth,1.6pt);
+    \fill[tdteorange] (0,0) rectangle (\tdte@w,1.6pt);
+  \end{tikzpicture}}
+\setbeamertemplate{footline}{%
+  \usebeamerfont{footline}%
+  \hspace*{0.9cm}{\color{tdtegrey}\insertshortauthor\enspace\textbar\enspace\insertshortinstitute
+    \enspace\textbar\enspace\insertshorttitle}\hfill
+  {\color{tdtenavy}\bfseries\insertframenumber}{\color{tdtegrey}\,/\,\inserttotalframenumber}%
+  \hspace*{0.9cm}\par\vspace{0.18cm}\nointerlineskip
+  \tdte@progress}
+
+% ---------------------------------------------------------------- page de titre
+\setbeamertemplate{title page}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[tdtenavy] (current page.south west) rectangle (current page.north east);
+    \fill[tdtenavydark] ($(current page.north east)+(-4.6,0)$) -- (current page.north east)
+       -- (current page.south east) -- ($(current page.south east)+(-7.4,0)$) -- cycle;
+    % sablier stylise, en filigrane
+    \begin{scope}[shift={($(current page.east)+(-2.9,0.1)$)},line width=3pt,tdtegrey!60]
+      \draw (-1.25,2.1) -- (1.25,2.1);
+      \draw (-1.25,-2.1) -- (1.25,-2.1);
+      \draw (-1,2.1) .. controls (-1,0.6) and (-0.15,0.35) .. (-0.15,0)
+                     .. controls (-0.15,-0.35) and (-1,-0.6) .. (-1,-2.1);
+      \draw (1,2.1) .. controls (1,0.6) and (0.15,0.35) .. (0.15,0)
+                    .. controls (0.15,-0.35) and (1,-0.6) .. (1,-2.1);
+      \fill[tdteorange,draw=none] (-0.72,0.95) .. controls (-0.4,0.55) and (0.4,0.55) .. (0.72,0.95) -- cycle;
+      \fill[tdteorange,draw=none] (-0.85,-2.0) -- (0.85,-2.0) .. controls (0.5,-1.3) and (0.1,-1.1) .. (0,-0.9)
+         .. controls (-0.1,-1.1) and (-0.5,-1.3) .. cycle;
+    \end{scope}
+    \node[anchor=north west,inner sep=0] at ($(current page.north west)+(0.75,-0.4)$)
+      {\includegraphics[height=1.1cm]{logos/logo_tdte_blanc.png}};
+    \node[anchor=south west,text width=0.66\paperwidth,align=left,inner sep=0]
+      at ($(current page.west)+(0.9,-0.4)$)
+      {{\color{tdteorange}\small\bfseries\MakeUppercase{\insertsubtitle}}\\[0.25cm]
+       {\color{white}\usebeamerfont{title}\hyphenpenalty=10000\exhyphenpenalty=10000 \inserttitle}};
+    \fill[tdteorange] ($(current page.west)+(0.9,-0.75)$) rectangle ++(1.6,0.07);
+    \node[anchor=north west,text width=0.6\paperwidth,align=left,inner sep=0]
+      at ($(current page.west)+(0.9,-1.05)$)
+      {\color{white}\large\bfseries\insertauthor\\[0.1cm]
+       \color{white!75!tdtenavy}\normalsize\mdseries\insertinstitute\\[0.05cm]
+       \insertdate};
+  \end{tikzpicture}}
+
+% ---------------------------------------------------------------- pages de section
+% fond sombre pleine page (pages de section, page de fin), avec un grand numero en filigrane
+\newcommand{\tdte@darkcanvas}[1]{%
+  \setbeamertemplate{background canvas}{%
+    \begin{tikzpicture}
+      \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+      \clip (0,0) rectangle (\paperwidth,\paperheight);
+      \fill[tdtenavy] (0,0) rectangle (\paperwidth,\paperheight);
+      \node[anchor=east,inner sep=0,text=tdtenavydark,font=\tdtebold\fontsize{230}{230}\selectfont]
+        at (\paperwidth+0.3cm,0.45\paperheight) {#1};
+    \end{tikzpicture}}}
+\newcommand{\darkcanvas}[1][]{\tdte@darkcanvas{#1}}
+
+\setbeamertemplate{section page}{%
+  \begin{minipage}{0.75\paperwidth}\raggedright
+    {\color{tdteorange}\small\bfseries PARTIE \insertsectionnumber}\par\vspace{0.15cm}
+    {\color{tdteorange}\rule{1.2cm}{1.8pt}}\par\vspace{0.3cm}
+    {\color{white}\LARGE\bfseries\hyphenpenalty=10000 \insertsectionhead\par}
+  \end{minipage}}
+\AtBeginSection{{\setbeamertemplate{footline}{}\tdte@darkcanvas{\insertsectionnumber}%
+  \begin{frame}[noframenumbering]\sectionpage\end{frame}}}
+
+% ---------------------------------------------------------------- sommaire
+\setbeamertemplate{section in toc}{%
+  \tikz[baseline=(n.base)]\node[fill=tdteorange,text=white,inner sep=2pt,
+     minimum width=1.5em,font=\small\bfseries](n){\inserttocsectionnumber};%
+  \hspace{0.6em}{\color{tdtenavy}\inserttocsection}\par\vspace{0.15em}}
+
+% ---------------------------------------------------------------- boites
+% \kpi[couleur]{chiffre}{legende}
+\newcommand{\kpi}[3][tdtenavy]{%
+  \begin{tcolorbox}[enhanced,colback=tdtelight,colframe=tdtelight,boxrule=0pt,arc=3pt,
+      left=6pt,right=6pt,top=6pt,bottom=6pt,
+      borderline west={3pt}{0pt}{#1},height=2.4cm,valign=center,halign=flush left]
+    {\color{#1}\tdtebold\fontsize{20}{22}\selectfont #2}\par\vspace{3pt}
+    {\scriptsize\color{tdteink}\hyphenpenalty=10000 #3}
+  \end{tcolorbox}}
+
+% \begin{callout}[couleur]{titre} ... \end{callout}
+\newtcolorbox{callout}[2][tdteorange]{enhanced,colback=#1!8,colframe=#1!8,boxrule=0pt,arc=3pt,
+  borderline west={3pt}{0pt}{#1},left=8pt,right=8pt,top=5pt,bottom=5pt,
+  fonttitle=\bfseries\small,coltitle=#1!80!black,title={#2},attach title to upper={\par\vspace{2pt}},
+  fontupper=\small}
+
+% \card{icone}{titre}{texte}
+\newcommand{\card}[3]{%
+  \begin{tcolorbox}[enhanced,colback=white,colframe=tdtelight,boxrule=0.8pt,arc=4pt,
+      left=8pt,right=8pt,top=9pt,bottom=7pt,height=3.3cm,halign=flush left,
+      overlay={\fill[tdteorange] (frame.north west) rectangle ([yshift=-2.5pt]frame.north east);}]
+    {\color{tdteorange}\LARGE #1}\par\vspace{5pt}
+    {\color{tdtenavy}\bfseries #2}\par\vspace{4pt}
+    {\footnotesize\hyphenpenalty=10000 #3}
+  \end{tcolorbox}}
+
+% source sous une figure
+\newcommand{\source}[1]{\par\vspace{2pt}{\tiny\color{tdtegrey}\textit{Source :} #1}}
+
+% espacement aere des listes
+\newenvironment{aere}{\begin{itemize}\setlength{\itemsep}{0.6em}}{\end{itemize}}
+
+\mode<all>

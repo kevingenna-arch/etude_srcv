@@ -17,6 +17,8 @@ output/
 Rplots.pdf
 # LaTeX : fichiers auxiliaires et PDF compilés (le .tex et les figures sont suivis)
 pdf/**/*.aux
+pdf/**/*.nav
+pdf/**/*.snm
 pdf/**/*.log
 pdf/**/*.out
 pdf/**/*.toc
