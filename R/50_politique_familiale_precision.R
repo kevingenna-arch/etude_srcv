@@ -253,7 +253,65 @@ par_rang <- imap_dfr(MESURES[1:2], function(vars, mes) {
 cat("\nPart de la baisse de l'ICF 2014-2025, effets par rang :\n")
 print(as.data.frame(par_rang %>% mutate(across(where(is.double), ~ round(.x, 3)))), row.names = FALSE)
 
+# ── §7 Classes moyennes : l'effet dans les quartiles 2 et 3 ────────────────
+#  Les quartiles 2 et 3 ont perdu le plus (PAJE). Quartiles de niveau de vie
+#  des couples (avant la naissance, hors prestations), calculés dans chaque
+#  vague comme au §5 du script 38 ; Q1 et Q4 pour comparaison.
+df <- df %>% group_by(annee) %>%
+  mutate(quartile = cut(niveau_vie_reel, c(-Inf, wquantile(niveau_vie_reel, poids, c(.25, .5, .75)), Inf),
+                        labels = c("Q1", "Q2", "Q3", "Q4"))) %>%
+  ungroup() %>% mutate(classes_moy = as.integer(quartile %in% c("Q2", "Q3")))
+GROUPES_Q <- list("Q2 et Q3" = c("Q2", "Q3"), "Q1 et Q4" = c("Q1", "Q4"))
+ECH_Q <- ECHANTILLONS[c("Ensemble", "1er enfant", "Rang 2 et plus")]
+quartiles_modeles <- imap_dfr(PERIODES, function(ans, per) imap_dfr(MESURES[1:2], function(vars, mes)
+  imap_dfr(GROUPES_Q, function(qs, gq) imap_dfr(ECH_Q, function(fe, ech)
+    modele_gain(fe(filter(df, annee %in% ans, quartile %in% qs)), vars, ech) %>%
+      mutate(periode = per, mesure = mes, quartiles = gq, echantillon = ech, .before = 1)))))
+recul_q <- df %>% filter(annee == "2025") %>% group_by(quartiles = if_else(classes_moy == 1, "Q2 et Q3", "Q1 et Q4")) %>%
+  summarise(recul_gain_euros = 1000 * weighted.mean(g1_ref_1k - g1_1k, poids), .groups = "drop")
+cat("\nClasses moyennes : effet de 1 000 € de gain annuel (points) :\n")
+print(as.data.frame(quartiles_modeles %>% mutate(across(where(is.double), ~ round(.x, 3)))), row.names = FALSE)
+cat("\nRecul du gain entre les barèmes 2014 et 2025, couples de 2025 (€ de 2025) :\n"); print(as.data.frame(recul_q))
+
+# Écart d'effet entre Q2-Q3 et Q1-Q4 (interaction, 2014-2025)
+d1425 <- filter(df, annee %in% PERIODES[["2014-2025"]])
+ecart_q <- imap_dfr(MESURES[1:2], function(vars, mes) {
+  f <- update(update(F_CTRL, as.formula(paste("naiss01 ~ . +", vars[1], "* classes_moy +", vars[2], "* classes_moy"))), F_PAR)
+  m <- svyglm(elaguer(f, droplevels(d1425)), design = des(d1425), family = quasibinomial(link = "probit"))
+  co <- summary(m)$coefficients
+  tibble(mesure = mes, terme = paste0(vars[1], ":classes_moy"),
+         coef_indice = co[paste0(vars[1], ":classes_moy"), 1], p = co[paste0(vars[1], ":classes_moy"), 4])
+})
+cat("\nÉcart d'effet entre Q2-Q3 et Q1-Q4 (interaction, indice probit) :\n")
+print(as.data.frame(ecart_q %>% mutate(across(where(is.double), ~ round(.x, 4)))), row.names = FALSE)
+
+# Part de la baisse de l'ICF si l'effet n'existait que dans Q2-Q3 : recul
+# relatif de la natalité des couples Q2-Q3 de 2025 (modèle Q2-Q3), pondéré
+# par leur part des naissances de 2025.
+part_q <- imap_dfr(MESURES[1:2], function(vars, mes) {
+  d <- filter(df, annee %in% PERIODES[["2014-2025"]], classes_moy == 1)
+  f <- update(update(F_CTRL, as.formula(paste("naiss01 ~ . +", paste(vars, collapse = " + ")))), F_PAR)
+  m <- svyglm(elaguer(f, droplevels(d)), design = des(d), family = quasibinomial(link = "probit"))
+  a <- as_tibble(avg_slopes(m, variables = vars[1], wts = m$prior.weights))
+  o <- df %>% filter(annee == "2025", quartile %in% c("Q2", "Q3")) %>%
+    filter(if_all(all_of(setdiff(all.vars(f), c("naiss01", "annee"))), ~ !is.na(.x)))
+  c1 <- o %>% mutate(!!vars[1] := .data[[vars[2]]])
+  p0 <- predire(m, o); dg <- weighted.mean(c1[[vars[1]]] - o[[vars[1]]], o$poids)
+  rel <- predire(m, c1) / p0 - 1; se_rel <- a$std.error * dg / p0
+  n25 <- df %>% filter(annee == "2025")
+  w <- sum(n25$poids * n25$naiss01 * n25$classes_moy) / sum(n25$poids * n25$naiss01)
+  baisse <- (ICF_2025 - ICF_2014) / ICF_2014
+  tibble(mesure = mes, part_naissances_q23 = w, ecart_gain_euros = 1000 * dg, rel_q23_pct = 100 * rel,
+         part_de_la_baisse_pct = 100 * w * rel / -baisse,
+         part_ic_bas = 100 * w * (rel - 1.96 * se_rel) / -baisse, part_ic_haut = 100 * w * (rel + 1.96 * se_rel) / -baisse)
+})
+cat("\nPart de la baisse de l'ICF si l'effet n'existait que dans Q2-Q3 :\n")
+print(as.data.frame(part_q %>% mutate(across(where(is.double), ~ round(.x, 3)))), row.names = FALSE)
+
 ecrire(bind_rows(desc %>% mutate(bloc = "Gains par vague", .before = 1),
+                 quartiles_modeles %>% mutate(bloc = "Classes moyennes Q2-Q3", .before = 1),
+                 ecart_q %>% mutate(bloc = "Ecart Q2-Q3 / Q1-Q4", .before = 1),
+                 part_q %>% mutate(bloc = "Part de la baisse si effet limite a Q2-Q3", .before = 1),
                  egalite %>% mutate(bloc = "Egalite premier enfant / rangs suivants", .before = 1),
                  par_rang %>% mutate(bloc = "Part de la baisse par rang", .before = 1),
                  gains_modeles %>% mutate(bloc = "Modeles de gain", .before = 1),

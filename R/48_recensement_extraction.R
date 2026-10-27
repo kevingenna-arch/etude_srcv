@@ -1,9 +1,9 @@
 # ============================================================================
-#  SRCV — 48. Recensement 2019 et 2023 : extraction des couples féconds
+#  SRCV — 48. Recensement 2014, 2019 et 2023 : extraction des couples féconds
 # ----------------------------------------------------------------------------
 #  Fichiers détail Insee « individus localisés au canton-ou-ville » (INDCVI) :
-#  RP 2019 (collectes 2017 à 2021) et RP 2023 (collectes 2021 à 2025), environ
-#  19,6 millions de lignes chacun. On en tire, pour chaque ménage ordinaire dont
+#  RP 2014 (collectes 2012 à 2016), RP 2019 (2017 à 2021) et RP 2023 (2021 à 2025), environ
+#  18 à 20 millions de lignes chacun. On en tire, pour chaque ménage ordinaire dont
 #  la famille principale est un couple où la femme a de 15 à 49 ans :
 #   - la naissance : un enfant de la famille âgé de moins d'un an (AGEREV = 0),
 #     né dans les douze mois précédant la collecte ;
@@ -17,7 +17,7 @@
 #     habitants environ) forment une classe à part.
 #  Couples de même sexe écartés (la femme du couple n'est pas définie).
 #  Sorties (dans Data/, non versionné) :
-#    Data/recensement/_extrait/couples_RP2019.rds et couples_RP2023.rds
+#    Data/recensement/_extrait/couples_RP2014.rds, couples_RP2019.rds, couples_RP2023.rds
 # ============================================================================
 
 source("R/00_utils.R")
@@ -25,28 +25,39 @@ source("R/00_config.R")
 source("R/00_norme_peuplement.R")
 suppressPackageStartupMessages(library(data.table))
 
-FICHIERS <- c("2019" = "FD_INDCVI_2019.csv", "2023" = "FD_INDCVI_2023.csv")
-CS       <- c("2019" = "CS1", "2023" = "GS")        # catégorie sociale : 8 postes en 2019, 6 en 2023
+FICHIERS <- c("2014" = "FD_INDCVI_2014.txt", "2019" = "FD_INDCVI_2019.csv", "2023" = "FD_INDCVI_2023.csv")
+CS       <- c("2014" = "CS1", "2019" = "CS1", "2023" = "GS")   # catégorie sociale : 8 postes en 2014-2019, 6 en 2023
+DIPLV    <- c("2014" = "DIPL_15", "2019" = "DIPL", "2023" = "DIPL")
 COLS <- c("CANTVILLE", "NUMMI", "AGEREV", "SEXE", "LPRF", "NUMF", "TYPFC", "CATL", "NBPI",
-          "SURF", "STOCD", "TYPL", "ANEMR", "IRAN", "IPONDI", "DIPL", "TACT", "DEPT",
+          "SURF", "STOCD", "TYPL", "ANEMR", "IRAN", "IPONDI", "TACT", "DEPT",
           "METRODOM", "IRIS", "STAT_CONJ", "HLML", "INPER")
 DIR_EXTRAIT <- file.path(DIR_RP, "_extrait")
 dir.create(DIR_EXTRAIT, showWarnings = FALSE)
 
-# Diplôme harmonisé : codes 01-19 en 2019, 101-111 en 2023 (pas de recouvrement)
+# Diplôme en 5 postes : codes 01-19 en 2019, 101-111 en 2023 (pas de recouvrement) ;
+# non disponible en 2014 (DIPL_15 n'a que 4 postes).
 diplome5 <- function(x) {
-  x <- as.integer(x)
+  x <- suppressWarnings(as.integer(x))
   factor(case_when(x %in% c(1:3, 11, 12, 101:103) ~ "Infra CAP", x %in% c(13, 104) ~ "CAP-BEP",
                    x %in% c(14, 15, 105, 106) ~ "Bac", x %in% c(16, 108) ~ "Bac+2",
                    x %in% c(17:19, 109:111) ~ "Bac+3 et plus"),
          levels = c("Bac", "Infra CAP", "CAP-BEP", "Bac+2", "Bac+3 et plus"))
 }
+# Diplôme en 4 postes, commun aux trois millésimes (DIPL_15 de 2014 : A à D)
+diplome4 <- function(x) {
+  x <- trimws(as.character(x)); n <- suppressWarnings(as.integer(x))
+  factor(case_when(x == "A" | n %in% c(1:3, 11, 12, 101:103) ~ "Infra CAP",
+                   x == "B" | n %in% c(13, 104) ~ "CAP-BEP",
+                   x == "C" | n %in% c(14, 15, 105, 106) ~ "Bac",
+                   x == "D" | n %in% c(16:19, 108:111) ~ "Superieur"),
+         levels = c("Bac", "Infra CAP", "CAP-BEP", "Superieur"))
+}
 
 extraire <- function(an) {
   t0 <- Sys.time()
-  x <- fread(file.path(DIR_RP, FICHIERS[[an]]), sep = ";", select = c(COLS, CS[[an]]),
+  x <- fread(file.path(DIR_RP, FICHIERS[[an]]), sep = ";", select = c(COLS, CS[[an]], DIPLV[[an]]),
              colClasses = "character", showProgress = FALSE)
-  setnames(x, CS[[an]], "cs")
+  setnames(x, c(CS[[an]], DIPLV[[an]]), c("cs", "DIPL"))
   x[, IPONDI := as.numeric(IPONDI)]
   cat(an, ":", nrow(x), "individus lus en", round(difftime(Sys.time(), t0, units = "secs")), "s\n")
 
@@ -82,6 +93,7 @@ extraire <- function(an) {
                       adultes = sum(age >= 19)), by = hh]
 
   d <- femmes[, .(hh, annee = an, poids = IPONDI, age_femme = age, diplome = diplome5(DIPL),
+                  diplome4 = diplome4(DIPL),
                   tact = TACT, cs, stat_conj = STAT_CONJ, iran = IRAN, pieces = as.integer(NBPI),
                   surf = SURF, stocd = STOCD, typl = TYPL, anemr = ANEMR, hlml = HLML,
                   dept = DEPT, metrodom = METRODOM, commune, inper = as.integer(INPER))]
