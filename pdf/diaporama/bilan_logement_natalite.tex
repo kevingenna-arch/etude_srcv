@@ -1,3 +1,4 @@
+
 % Logement et natalité -- diaporama du bilan au 22 octobre 2026
 % Compiler avec LuaLaTeX, deux passes :  lualatex bilan_logement_natalite.tex
 % Thème : beamerthemeTDTE.sty (copie de celui du cours d'Angers 2026) et logos/.
@@ -59,7 +60,7 @@
 \subtitle{Bilan du projet SRCV, 2014-2025}
 \author[Kévin Genna]{Kévin Genna}
 \institute[Chaire TDTE]{Chaire Transitions Démographiques, Transitions Économiques}
-\date[22 octobre 2026]{Point d'étape au 22 octobre 2026}
+\date[28 octobre 2026]{Point d'étape au 28 octobre 2026}
 
 \begin{document}
 
@@ -71,16 +72,17 @@
 \begin{frame}{Au programme}
   \begin{columns}[T]
     \begin{column}{0.44\textwidth}
-      \small\tableofcontents[hideallsubsections]
+      \footnotesize\tableofcontents[hideallsubsections]
     \end{column}
     \begin{column}{0.52\textwidth}
       \begin{callout}{En bref}
+        \footnotesize
         \begin{itemize}\setlength{\itemsep}{2pt}
-          \item ICF $-$22\,\% de 2014 à 2025 ; les facteurs mesurés en couvrent les deux tiers.
-          \item Vie en couple : un tiers de la baisse.
-          \item Petites surfaces : de 4 à 19\,\% ; une contrainte à la marge d'une pièce.
-          \item Recensement : résultats confirmés ; moins de premières naissances en ville, faute de pièces.
-          \item Politique familiale : de l'ordre de 18\,\%, imprécis.
+          \item Logement : surtout un choix, et une contrainte à la marge d'une pièce.
+          \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
+          \item Fluidité : déménager est plus difficile depuis 2022 ; un canal mineur pour les naissances.
+          \item Politique familiale : effet sur les rangs 2 et plus, imprécis.
+          \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, 14 à 25\,\%.
         \end{itemize}
       \end{callout}
     \end{column}
@@ -88,7 +90,578 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{La baisse de la fécondité et ses causes}
+\section{Logement et naissance dans l'enquête SRCV}
+
+\begin{frame}{Les conditions de logement des couples}
+  \begin{columns}[T]
+    \begin{column}{0.235\textwidth}\kpi{$-$6 m²}{de surface médiane des couples, à moyenne presque inchangée}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdteorange]{19\,\%}{des couples sans enfant logés sous 50 m², contre 15\,\% en 2014}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdteorange]{27\,\%}{des couples sans enfant sans place pour un enfant, contre 24\,\%}\end{column}
+    \begin{column}{0.235\textwidth}\kpi{$-$6 pts}{de taux d'effort des accédants (de $-$4 à $-$8 selon l'âge)}\end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{itemize}\setlength{\itemsep}{0.35em}
+    \item Les jeunes locataires ont perdu de la place à taux d'effort stable, jusqu'à $-$8\,\% à 35-39 ans.
+    \item Le recul se concentre dans le bas de la distribution et dans les grandes agglomérations.
+    \item Les parents à qui une pièce manque passent de 5,6 à 10,5\,\%, ce que le recensement ne confirme pas pour 2019-2023.
+  \end{itemize}
+  \source{Insee, SRCV 2014 et 2025 ; couples dont la femme a de 15 à 49 ans.}
+\end{frame}
+
+\begin{frame}{La surface compte, pas son prix ni le revenu}
+  \begin{columns}[T]
+    \begin{column}{0.30\textwidth}
+      \kpi[tdteorange]{+4\,\%}{de probabilité de naissance pour dix m² de plus (+0,34 point sur un taux de 8,2\,\%)}
+      \vspace{0.2cm}
+      \kpi{1\,519}{naissances observées dans SRCV, 2014-2025, sur 19\,645 couples}
+    \end{column}
+    \begin{column}{0.66\textwidth}
+      \begin{itemize}\setlength{\itemsep}{0.45em}
+        \item \textbf{La surface} est associée à la naissance, davantage pour le premier enfant (+0,59 point).
+        \item \textbf{Le coût au mètre carré} n'a aucun effet à surface donnée.
+        \item \textbf{Le revenu} non plus, s'il est mesuré avant la naissance : le niveau de vie usuel compte le nouveau-né et les prestations qu'il déclenche.
+        \item \textbf{Les accédants} gardent un avantage d'environ 5 points au premier enfant.
+        \item Chez les couples arrivés depuis moins de trois ans, l'effet est deux fois et demie plus fort : un premier indice d'anticipation.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, SRCV 2014-2025 ; probits pondérés, effets marginaux moyens.}
+\end{frame}
+
+\begin{frame}{Un seuil en pièces pour le premier enfant}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, ybar, bar width=0.5cm, height=5.4cm, ymin=-15, ymax=6,
+            symbolic x coords={a,b,c,d,e,f}, xtick=data,
+            xticklabels={{<\,40 m²},{40-49},{50-59},{60-69},{90-119},{120+}},
+            x tick label style={font=\scriptsize,color=tdteink}, xticklabel pos=lower,
+            ylabel={écart avec 70-89 m² (points)}, ymajorgrids, axis x line*=bottom,
+            nodes near coords={\pgfmathprintnumber[fixed,precision=1]{\pgfplotspointmeta}},
+            every node near coord/.append style={font=\tiny,color=tdteink},
+            title={Probabilité de première naissance}, enlarge x limits=0.1,
+            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey}}]
+          \addplot[fill=tdtenavy,draw=none] coordinates {(a,-12.04) (b,-8.25) (c,-6.69) (d,0.20) (e,3.69) (f,2.08)};
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.5em}
+        \item La relation est une \alert{marche} entre 45 et 60 m², concentrée sur le premier enfant.
+        \item Selon la \textbf{norme de peuplement} de l'Insee, ne pas avoir la place d'un enfant abaisse la probabilité de première naissance de \textbf{10 points} ($-$73\,\% du taux).
+        \item À place donnée, la surface ne compte plus : il faut un \textbf{trois-pièces}. Un quart des couples sans enfant ne l'ont pas.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, SRCV 2014-2025 ; tranches de surface en m², couples sans enfant ; probit pondéré.}
+\end{frame}
+
+\begin{frame}{Contrainte ou choix, trois tests d'ordre temporel}
+  \begin{columns}[T]
+    \begin{column}{0.315\textwidth}
+      \card{\faHourglassHalf}{Horizon long}{Sur quatre ans, la surface ne prédit pas les naissances suivantes des couples installés.}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \card{\faHome}{Place en pièces}{Sans la place d'un enfant, un tiers de naissances en moins ensuite ($-$35\,\%, $p = 0{,}01$).}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \card{\faTruck}{Ordre des événements}{Après un agrandissement, deux fois plus de premières naissances ; l'inverse est rare.}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{callout}{Verdict}
+    Une partie de l'association est de l'anticipation, puisqu'on s'agrandit avant l'enfant. L'autre, environ la moitié de l'écart observé en coupe, est une \textbf{contrainte d'indivisibilité}, la pièce qui manque.
+  \end{callout}
+\end{frame}
+
+\begin{frame}{Le modèle, acheter avant d'avoir des enfants}
+  \centering
+  \begin{tikzpicture}[
+      phase/.style={draw=tdtelight, line width=0.8pt, fill=white, rounded corners=3pt,
+        text width=3.75cm, minimum height=1.75cm, align=left, inner sep=5pt, font=\footnotesize},
+      quand/.style={font=\scriptsize\bfseries, text=tdteorange, anchor=south west, inner sep=1pt},
+      fleche/.style={->, >=stealth, line width=1pt, tdteorange}]
+    \node[phase] (a) {{\color{tdtenavy}\bfseries Jeune adulte}\\[1pt]
+      Achète $x_t = \gamma w_1/[(1+\gamma)p_t]$ m² au prix $p_t$, pour son usage du moment.};
+    \node[phase, right=0.75cm of a] (b) {{\color{tdtenavy}\bfseries Adulte}\\[1pt]
+      Choisit $n$ enfants à surface $x_t$ donnée ; chacun coûte $\phi$ de son temps et $\sigma$ m².};
+    \node[phase, right=0.75cm of b] (c) {{\color{tdtenavy}\bfseries Retraité}\\[1pt]
+      Revend son logement à la cohorte de ses enfants.};
+    \node[quand] at (a.north west) {date $t$};
+    \node[quand] at (b.north west) {date $t+1$};
+    \node[quand] at (c.north west) {date $t+2$};
+    \draw[fleche] (a) -- (b);
+    \draw[fleche] (b) -- (c);
+  \end{tikzpicture}
+
+  \vspace{0.2cm}
+  \raggedright
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \footnotesize L'adulte maximise $\ln c_2 + \gamma\ln(x_t-\sigma n) + \eta\ln n$ sous $c_2 = w_2(1-\phi n)$, d'où
+      \[ \frac{\eta}{n} = \underbrace{\frac{\phi}{1-\phi n}}_{\text{coût en temps}}
+         + \underbrace{\frac{\gamma\sigma}{x_t-\sigma n}}_{\text{coût en espace}} \]
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \begin{callout}{Le cœur du modèle}
+        Le jeune adulte achète sans tenir compte des enfants à venir, d'où la \textbf{contrainte}. S'il les anticipait, la surface serait un \textbf{choix}.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{Article, section 3 ; générations imbriquées, parc fixe de $H$ m², logement illiquide jusqu'à la retraite.}
+\end{frame}
+
+\begin{frame}{Ce que le modèle implique}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.35em}
+        \item \textbf{La surface élève la fécondité}, avec une élasticité entre 0 et 1, plus forte dans les petits logements. {\color{tdtegrey}P1, P5}
+        \item \textbf{Le prix payé à l'achat compte, pas le prix courant.} À surface donnée, ni prix ni salaire ; la surface acquise prédit les naissances à venir. {\color{tdtegrey}P2 à P4}
+        \item \textbf{À long terme, la population s'ajuste au parc.} Une économie plus riche a des logements plus chers, pas plus d'enfants.
+        \item \textbf{En ville, des logements plus petits.} Avec une prime salariale de 20\,\%, ils sont plus petits d'un tiers, et la fécondité y est plus faible. {\color{tdtegrey}P6}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \kpi{0,11}{élasticité calibrée de la fécondité à la surface, soit +1,1\,\% de fécondité pour 10\,\% de surface}
+      \vspace{0.15cm}
+      \kpi[tdteorange]{+1,9\,\%}{de fécondité pour la cohorte qui achète quand le parc s'accroît de 10\,\% (prix $-$17\,\%)}
+    \end{column}
+  \end{columns}
+  \source{Article, section 3. Calibrage : $\gamma = 0{,}43$ (logement à 30\,\% de la dépense), $\phi$ de 0,10 à 0,15, 2,3 enfants souhaités, $x^* = 100$ m², d'où $\sigma$ de 3,4 à 5,7 m².}
+\end{frame}
+
+\begin{frame}{Le modèle face aux données}
+  \centering\small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Prédiction & Verdict & Détail \\
+    \midrule
+    P1\enspace La surface élève la natalité & \vok{Vérifiée} & +4\,\% du taux pour dix m² \\
+    P2\enspace Le prix ne joue pas à surface donnée & \vok{Vérifiée} & Coût au m² sans effet \\
+    P3\enspace Le revenu n'agit que par la surface & \vok{Vérifiée} & Revenu mesuré avant la naissance \\
+    P4\enspace La surface prédit les naissances à venir & \vpart{En partie} & Pas la surface, mais la place ($-$35\,\%) \\
+    P5\enspace Concavité, modestes plus sensibles & \vpart{En partie} & Seuil en pièces ; pas de gradient de revenu \\
+    P6\enspace Moins de naissances en ville & \vpart{En partie} & Premières naissances, faute de pièces \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.3cm}
+
+  \raggedright\small L'élasticité observée en coupe, environ 0,4, est quatre fois celle que produit la contrainte d'espace calibrée (0,11) : l'association dépasse ce que le canal d'espace pur peut expliquer.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Le recensement, contre-épreuve des résultats}
+
+\begin{frame}{Cent fois plus de naissances que dans SRCV}
+  \begin{columns}[T]
+    \begin{column}{0.235\textwidth}\kpi{2,3 M}{couples du champ en 2014, 2,2 M en 2019, 1,8 M en 2023}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdteorange]{202\,000}{naissances dans l'année en 2014, 183\,000 en 2019, 143\,000 en 2023}\end{column}
+    \begin{column}{0.235\textwidth}\kpi{3}{millésimes : enquêtes 2012-2016, 2017-2021 et 2021-2025}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdtegrey]{1\,519}{naissances dans SRCV sur toute la période}\end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{callout}[tdteok]{Ce qu'il mesure}
+        Pièces, surface en tranches, statut d'occupation, ancienneté d'emménagement, composition exacte du ménage.
+      \end{callout}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{callout}[tdtered]{Ce qu'il ne mesure pas}
+        Ni le revenu ni le coût du logement ; pas de suivi des ménages, donc pas de test d'ordre temporel.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014, 2019 et 2023, fichiers détail ; femme de 15 à 49 ans, France métropolitaine.}
+\end{frame}
+
+\begin{frame}{Le seuil apparaît sans bruit}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, ybar, bar width=0.16cm, height=5.3cm, ymin=0, ymax=17,
+            symbolic x coords={a,b,c,d,e,f,g}, xtick={a,b,c,d,e,f,g},
+            xticklabels={{<\,30},{30-39},{40-59},{60-79},{80-99},{100-119},{120+}},
+            x tick label style={font=\scriptsize,color=tdteink},
+            ylabel={taux de première naissance (\%)}, ymajorgrids, enlarge x limits=0.08,
+            title={Couples sans enfant, par surface (m²)},
+            legend style={at={(0.5,-0.2)},anchor=north,legend columns=3,/tikz/every even column/.append style={column sep=8pt}},
+            legcarre]
+          \addplot[fill=tdtegrey!60,draw=none] coordinates {(a,6.4) (b,6.7) (c,9.6) (d,15.4) (e,14.8) (f,14.3) (g,13.5)};
+          \addplot[fill=tdtenavy,draw=none] coordinates {(a,6.4) (b,6.3) (c,8.9) (d,14.7) (e,14.4) (f,14.3) (g,14.0)};
+          \addplot[fill=tdteorange,draw=none] coordinates {(a,6.2) (b,5.2) (c,7.6) (d,12.3) (e,13.2) (f,14.1) (g,14.2)};
+          \legend{RP 2014, RP 2019, RP 2023}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.5em}
+        \item Aux trois millésimes, le taux de première naissance \alert{bondit à 60 m²}, puis ne varie plus : la marche de SRCV, au même endroit.
+        \item Comme dans SRCV, 73 à 75\,\% des couples sans enfant ont la place d'un enfant.
+        \item Sans cette place, la probabilité de première naissance baisse de \textbf{10,1 points} en 2014, 9,3 en 2019, 7,3 en 2023 (SRCV : 10,2).
+        \item Place et surface gardent chacune un effet propre.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014, 2019 et 2023 ; naissance dans les douze mois précédant la collecte.}
+\end{frame}
+
+\begin{frame}{SRCV et recensement, les résultats comparés}
+  \centering\scriptsize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    & SRCV 2014-2025 & RP 2014 & RP 2019 & RP 2023 \\
+    \midrule
+    Couples sans enfant sans place pour un enfant & 26,5\,\% & 26,6\,\% & 26,9\,\% & 24,5\,\% \\
+    Pas de place, premier enfant, points (\% du taux) & $-$10,2 ($-$73) & $-$10,1 ($-$79) & $-$9,3 ($-$76) & $-$7,3 ($-$65) \\
+    Pas de place, rang 2 et plus & $-$2,1 ($-$34) & $-$1,8 ($-$27) & $-$1,8 ($-$29) & $-$1,7 ($-$29) \\
+    Premier enfant, logement de 40 à 59 m² & $-$8,3 / $-$6,7 & $-$8,6 & $-$8,4 & $-$7,2 \\
+    Premier enfant, couples installés, petit logement & $-$9,1 & $-$7,4 & $-$7,4 & $-$6,7 \\
+    Arrivés récemment, parents avec / sans naissance & 25,8 / 13,5\,\% & & 19,7 / 10,5\,\% & 17,3 / 9,2\,\% \\
+    Premier enfant, propriétaires contre locataires & +5,2 & +3,7 & +3,9 & +4,0 \\
+    Premier enfant, HLM contre parc privé & & +4,6 & +4,9 & +4,7 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.2cm}
+
+  \raggedright\small
+  Confirmé aux trois millésimes, souvent à quelques dixièmes de point près. Au premier enfant, c'est le parc locatif privé qui se distingue.
+  \source{Probits (SRCV) et modèles linéaires de probabilité (recensement, diplôme en quatre postes pour 2014) ; correspondances dans l'annexe C de l'article.}
+\end{frame}
+
+\begin{frame}{Le manque de place pèse aussi chez les installés}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, ybar, bar width=0.27cm, height=5.3cm, ymin=0, ymax=97,
+            symbolic x coords={a,b,c,d}, xtick={a,b,c,d},
+            xticklabels={{Tous},{Installés\\$\geq$ 2 ans},{Installés\\$\geq$ 5 ans},{Arrivés\\< 2 ans}},
+            x tick label style={font=\scriptsize,color=tdteink,align=center},
+            ylabel={premier enfant, baisse (\% du taux)}, ymajorgrids, enlarge x limits=0.15,
+            nodes near coords, every node near coord/.append style={font=\tiny,color=tdteink},
+            legend style={at={(0.5,1.03)},anchor=south,legend columns=3,/tikz/every even column/.append style={column sep=8pt}},
+            legcarre]
+          \addplot[fill=tdtegrey!60,draw=none] coordinates {(a,79) (b,71) (c,66) (d,89)};
+          \addplot[fill=tdtenavy,draw=none] coordinates {(a,76) (b,68) (c,62) (d,86)};
+          \addplot[fill=tdteorange,draw=none] coordinates {(a,65) (b,58) (c,57) (d,77)};
+          \legend{RP 2014, RP 2019, RP 2023}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.5em}
+        \item Installé depuis deux ans, un couple a conçu son enfant de l'année dans ce logement.
+        \item L'effet est le plus fort chez les \alert{arrivés récents} ($-$77 à $-$89\,\% du taux) : la trace de l'anticipation.
+        \item Il garde plus des \textbf{quatre cinquièmes} de son ampleur chez les couples installés depuis cinq ans ou plus, aux trois millésimes.
+        \item Comme dans SRCV, les parents qui viennent d'avoir un enfant sont deux fois plus souvent arrivés récemment.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014, 2019 et 2023 ; effet rapporté au taux de chaque sous-population.}
+\end{frame}
+
+\begin{frame}{Moins de premières naissances en ville}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, ybar, bar width=0.3cm, height=5.3cm, ymin=-5.6, ymax=3,
+            symbolic x coords={a,b,c,d,e}, xtick=data,
+            xticklabels={{< 20\,000\\hab.},{20\,000 à\\99\,999},{100\,000\\ou plus},{Petite\\couronne},{Paris}},
+            x tick label style={font=\tiny,color=tdteink,align=center},
+            ylabel={premier enfant, écart (points)}, ymajorgrids, axis x line=bottom,
+            enlarge x limits=0.13,
+            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey,thin}},
+            legend style={at={(0.5,1.03)},anchor=south,legend columns=2,/tikz/every even column/.append style={column sep=8pt}},
+            legcarre]
+          \addplot[fill=tdtenavy,draw=none] coordinates {(a,-0.64) (b,-1.58) (c,-3.37) (d,-1.26) (e,-4.96)};
+          \addplot[fill=tdteorange,draw=none] coordinates {(a,0.08) (b,-0.12) (c,-1.46) (d,2.44) (e,-0.04)};
+          \legend{Sans contrôle de la place, Place contrôlée}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.45em}
+        \item La natalité d'ensemble n'est pas plus faible en ville (8,2\,\% à Paris, 7,0\,\% dans les petites communes).
+        \item Mais les \alert{premières naissances} y sont plus rares : $-$5,0 points à Paris.
+        \item Sept couples sans enfant parisiens sur dix n'ont pas la place d'un enfant, un sur dix dans les petites communes.
+        \item À place donnée, l'écart parisien disparaît. Même profil en 2014 et en 2023.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensement 2019 ; écart avec les communes non découpées en IRIS, à caractéristiques données.}
+\end{frame}
+
+\begin{frame}{Évolution de 2014 à 2023, et limites}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{callout}[tdtenavy]{Une baisse uniforme}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item Taux de naissance des couples : 8,3, puis 8,0, puis 7,4\,\% ($-$10\,\%), presque autant dans chaque situation de logement.
+          \item Premier enfant : de 14,9 à 12,9\,\% avec la place d'un enfant, de 6,8 à 5,8\,\% sans.
+          \item Les situations bougent peu : la recomposition n'explique \textbf{rien} de la baisse.
+        \end{itemize}
+      \end{callout}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{callout}[tdtered]{Limites}
+        \begin{itemize}\setlength{\itemsep}{2pt}
+          \item Ni panel, ni revenu, ni coût du logement.
+          \item 2019 et 2023 partagent l'enquête de 2021.
+          \item Taille de commune et non unité urbaine.
+          \item Diplôme en quatre postes pour comparer 2014.
+        \end{itemize}
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \vspace{0.15cm}
+  \small L'\textbf{annexe C de l'article} (2019 et 2023) peut passer à trois millésimes.
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{La fluidité résidentielle}
+
+\begin{frame}{La mobilité a reculé, surtout dans le locatif}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, ybar, bar width=0.27cm, height=5.3cm, ymin=0, ymax=36,
+            symbolic x coords={a,b,c,d}, xtick={a,b,c,d},
+            xticklabels={{Locataires\\du privé},{Locataires\\HLM},{Proprié-\\taires},{Ensemble}},
+            x tick label style={font=\scriptsize,color=tdteink,align=center},
+            ylabel={arrivés dans l'année (\%)}, ymajorgrids, enlarge x limits=0.15,
+            nodes near coords={\pgfmathprintnumber[fixed,precision=0]{\pgfplotspointmeta}},
+            every node near coord/.append style={font=\tiny,color=tdteink},
+            legend style={at={(0.5,1.03)},anchor=south,legend columns=3,/tikz/every even column/.append style={column sep=8pt}},
+            legcarre]
+          \addplot[fill=tdtegrey!60,draw=none] coordinates {(a,30.6) (b,15.2) (c,9.2) (d,15.6)};
+          \addplot[fill=tdtenavy,draw=none] coordinates {(a,28.8) (b,13.8) (c,9.9) (d,15.3)};
+          \addplot[fill=tdteorange,draw=none] coordinates {(a,26.0) (b,11.1) (c,9.3) (d,13.8)};
+          \legend{RP 2014, RP 2019, RP 2023}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.45em}
+        \item Part des couples qui ont changé de logement depuis le 1\textsuperscript{er} janvier de l'année précédente.
+        \item Stable de 2014 à 2019, puis \alert{$-$1,4 point en 2023} à caractéristiques données ($-$9\,\%).
+        \item La rotation recule dans le parc privé et plus encore en HLM ; elle est stable chez les propriétaires.
+        \item La chute mesurée par SRCV après 2018 (de 16 à 10\,\%) tient surtout à la refonte de l'enquête.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014, 2019 et 2023 ; statut d'occupation actuel ; script R/53.}
+\end{frame}
+
+\begin{frame}{Ceux qui doivent s'agrandir sont les plus touchés}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lrr@{}}
+        \toprule
+        Couples & \shortstack{Mobilité\\en 2014} & \shortstack{Écart en 2023,\\points (\%)} \\
+        \midrule
+        Ensemble & 15,6\,\% & $-$1,4 ($-$9) \\
+        Sans enfant & 30,2\,\% & $-$2,8 ($-$9) \\
+        \quad sans la place d'un enfant & 34,2\,\% & $-$4,3 ($-$12) \\
+        Parents & 10,3\,\% & $-$1,0 ($-$10) \\
+        \quad à qui il manque une pièce & 9,7\,\% & $-$2,1 ($-$21) \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.3cm}
+
+      \small Ceux qui déménagent vont plus souvent vers la propriété (28 à 34\,\% des couples sans enfant) et moins souvent en HLM (10 à 7\,\%).
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \kpi[tdtered]{31 \% / 26 \%}{loyer rapporté au revenu des nouveaux locataires et des locataires en place en 2025 (30 et 29\,\% en 2014)}
+      \vspace{0.2cm}
+      \kpi{+9 \%}{de loyer au m² pour un nouveau locataire à logement comparable, en 2022 et 2025 ; pas d'écart net avant}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements (écarts à caractéristiques données) ; SRCV pour les loyers ; scripts R/51 et R/53.}
+\end{frame}
+
+\begin{frame}{Le crédit a fait le cycle de la capacité d'achat}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, height=5.4cm, xmin=2014, xmax=2025, ymin=80, ymax=230,
+            xtick={2014,2016,2018,2020,2022,2024}, xticklabel={\pgfmathprintnumber[assume math mode=true,set thousands separator={}]{\tick}},
+            ylabel={indice 2014 = 100}, ymajorgrids,
+            legend style={at={(0.02,0.98)},anchor=north west,fill=white,fill opacity=0.85,text opacity=1}]
+          \addplot[tdtenavy,very thick] coordinates {(2014,100) (2015,104.6) (2016,111.2) (2017,110.6) (2018,110.2) (2019,111.5) (2020,111.0) (2021,109.7) (2022,105.9) (2023,95.1) (2024,96.1) (2025,98.6)};
+          \addplot[tdteorange,very thick] coordinates {(2014,100) (2015,123.7) (2016,140.7) (2017,159.2) (2018,168.6) (2019,191.3) (2020,191.2) (2021,219.9) (2022,201.0) (2023,113.1) (2024,95.3) (2025,125.5)};
+          \addplot[tdtegrey,very thick,dashed] coordinates {(2014,100) (2015,110.0) (2016,114.6) (2017,130.3) (2018,129.8) (2019,141.3) (2020,131.3) (2021,152.5) (2022,153.0) (2023,125.1) (2024,110.6) (2025,123.7)};
+          \legend{m² achetables, Crédits nouveaux, Transactions}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lrrrr@{}}
+        \toprule
+        & 2014 & 2021 & 2024 & 2025 \\
+        \midrule
+        Taux (\%) & 3,0 & 1,1 & 3,4 & 3,0 \\
+        m² achetables & 69 & 76 & 66 & 68 \\
+        Effort pour 60 m² (\%) & 29 & 26 & 30 & 29 \\
+        \quad Île-de-France & 51 & 51 & 55 & 54 \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small En euros constants, les prix ont peu bougé : la hausse des prix compense l'inflation des revenus, et c'est le \alert{taux} qui fait le cycle.
+    \end{column}
+  \end{columns}
+  \source{Banque de France (Webstat, MIR1) ; DVF+ ; SRCV. Appartement au prix médian, revenu médian des couples de 2014 en euros constants, un tiers du revenu sur 25 ans, 7,5\,\% de frais ; script R/54.}
+\end{frame}
+
+\begin{frame}{Ce que cela dit de l'hypothèse}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{callout}[tdteok]{Oui}
+        Déménager est devenu plus difficile depuis 2022, par le coût du crédit et de la relocation plutôt que par le prix au m², et d'abord pour les couples qui doivent s'agrandir.
+      \end{callout}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{callout}[tdtered]{Mais}
+        Le taux de première naissance baisse presque autant avec ou sans la place d'un enfant, de 14 et 16\,\% entre 2014 et 2023. Ce canal pèse donc peu dans la baisse des naissances.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{callout}[tdtenavy]{Suite}
+    Avec l'ERFS, mesurer la mobilité à revenu fiscal donné, si l'enquête permet de la repérer, et suivre les naissances des couples qui n'ont pas pu s'agrandir.
+  \end{callout}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{La politique familiale, l'étude qui en découle}
+
+\begin{frame}{Ce que rapporte un enfant de plus}
+  \begin{columns}[T]
+    \begin{column}{0.28\textwidth}
+      \kpi{4\,866\,€}{par an pour un enfant de plus, barème de 2014 indexé}
+      \vspace{0.2cm}
+      \kpi[tdtered]{3\,772\,€}{barème de 2025 : $-$22\,\%, et $-$33\,\% au premier enfant}
+    \end{column}
+    \begin{column}{0.68\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lrrr@{}}
+        \toprule
+        Instrument & 2014 & 2025 & Part de la baisse \\
+        \midrule
+        Prestations monétaires & 3\,666\,€ & 2\,635\,€ & 16\,\% \\
+        \quad dont PAJE & 2\,211\,€ & 1\,378\,€ & 14\,\% \\
+        \quad dont AF et complément familial & 1\,455\,€ & 1\,257\,€ & 2\,\% \\
+        Quotient familial & 1\,200\,€ & 1\,137\,€ & 1\,\% \\
+        Crèches, assistantes maternelles & \multicolumn{2}{c}{offre en hausse} & non chiffré \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.3cm}
+
+      \small Le gain d'un enfant de plus est simulé avec \textbf{OpenFisca}, en local, selon le revenu du couple, l'activité des parents et l'âge des enfants déjà nés.
+    \end{column}
+  \end{columns}
+  \source{Insee, SRCV 2025 ; OpenFisca-France, barèmes 2014 et 2025 ; calculs de l'auteur.}
+\end{frame}
+
+\begin{frame}{Qui a perdu, et avec quel effet}
+  \begin{columns}[T]
+    \begin{column}{0.56\textwidth}
+      \footnotesize\setlength{\tabcolsep}{4pt}
+      \begin{tabular}{@{}lrl@{}}
+        \toprule
+        Quartile & Recul du gain & Instrument en cause \\
+        \midrule
+        Q1 (modestes) & $-$512\,€ ($-$11\,\%) & PAJE, en partie \\
+        Q2 & $-$1\,583\,€ ($-$25\,\%) & PAJE, quotient familial \\
+        Q3 & $-$1\,798\,€ ($-$35\,\%) & PAJE, plafonds abaissés \\
+        Q4 (aisés) & $-$483\,€ ($-$14\,\%) & Modulation des AF \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \small
+      \begin{aere}
+        \item Mille euros de gain en plus : +0,29 point de probabilité de naissance, \alert{non significatif} ($p = 0{,}26$).
+        \item L'imprécision vient du petit nombre de naissances ; il en faudrait environ 9\,300.
+        \item D'où une étude à part, fondée sur l'\textbf{ERFS 2010-2023} : demande à adresser à l'ADISP.
+      \end{aere}
+    \end{column}
+  \end{columns}
+  \source{Insee, SRCV 2014-2025 ; OpenFisca-France ; quartiles de niveau de vie des couples.}
+\end{frame}
+
+\begin{frame}{Affiner l'effet, trois pistes testées}
+  \begin{columns}[T]
+    \begin{column}{0.315\textwidth}
+      \card{\faCalculator}{Mieux mesurer}{Statut conjugal et partage des revenus réels, gain sur trois ans : l'effet ne bouge pas (+0,23 point).}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \card{\faHistory}{Les réformes}{De 2014 à 2018, 900\,€ perdus par an pour trois couples sur quatre ; effets trop imprécis.}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \card{\faBaby}{Les rangs}{Effet nul au premier enfant, positif aux suivants (+0,43 point, $p = 0{,}08$).}
+    \end{column}
+  \end{columns}
+  \vspace{0.3cm}
+  \begin{callout}{Bilan}
+    La précision ne vient pas de la mesure. Avec des vagues espacées de quatre ans, les réformes ne se laissent pas isoler (placebos de 2006 et 2010 nuls, effets après réforme de signe instable).
+  \end{callout}
+\end{frame}
+
+\begin{frame}{L'effet par rang, et ce qu'il pèse}
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, ybar, bar width=0.6cm, height=5.3cm, ymin=-1.5, ymax=2.1,
+            symbolic x coords={a,b,c,d}, xtick={a,b,c,d},
+            xticklabels={{1\textsuperscript{er} enfant},{2\textsuperscript{e} enfant},{3\textsuperscript{e} ou plus},{Ensemble}},
+            x tick label style={font=\scriptsize,color=tdteink}, xticklabel pos=lower,
+            ylabel={effet de 1\,000\,€ par an (points)}, ymajorgrids, axis x line*=bottom,
+            enlarge x limits=0.18, title={Effet du gain, intervalle à 95\,\%},
+            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey}},
+            error bars/y dir=both, error bars/y explicit,
+            error bars/error bar style={tdteink,thick},
+            error bars/error mark options={rotate=90,mark size=3pt,tdteink}]
+          \addplot[fill=tdtenavy,draw=none] coordinates
+            {(a,0.068) +- (0,1.370) (b,0.706) +- (0,1.203) (c,0.449) +- (0,0.439) (d,0.231) +- (0,0.492)};
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lrr@{}}
+        \toprule
+        Part de la baisse de l'ICF & Part & IC à 95\,\% \\
+        \midrule
+        Référence (script 38) & 18\,\% & $-$14 à 52\,\% \\
+        Mesure affinée & 14\,\% & $-$17 à 47\,\% \\
+        Effets par rang & 25\,\% & $-$8 à 59\,\% \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.35em}
+        \item Cohérent avec Laroque et Salanié (troisième enfant) et Elmallakh (enfant supplémentaire).
+        \item L'écart avec le premier enfant n'est pas significatif ($p = 0{,}31$).
+        \item Pour conclure : vagues SRCV annuelles, ERFS, naissances par commune.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, SRCV 2014-2025 ; mesure affinée du gain ; probits, effets marginaux moyens.}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Premières décompositions de la baisse de l'ICF}
 
 \begin{frame}{Ce qui explique la baisse de l'ICF entre 2014 et 2025}
   \begin{columns}[T]
@@ -101,7 +674,6 @@
   \begin{aere}
     \item Aucun facteur n'explique la baisse à lui seul ; ensemble, les facteurs mesurés en couvrent environ \alert{les deux tiers}.
     \item La vie en couple recule à âge donné, surtout à 25-29 ans (de 58,3 à 53,4\,\% des femmes de 15 à 49 ans), dans tous les milieux.
-    \item Les parts sont des bornes hautes : elles lisent comme causales des associations, et ne s'additionnent qu'approximativement.
   \end{aere}
 \end{frame}
 
@@ -113,8 +685,8 @@
     \midrule
     Recul de la vie en couple & 34\,\% & 33 à 34\,\% & Moins de femmes en couple à âge donné \\
     Logement, petites surfaces & 12\,\% & 4 à 19\,\% & IC à 95\,\% de 0 à 33\,\% ; en partie de l'anticipation \\
-    Logement, statuts d'occupation & $-$10\,\% & & Recul des propriétaires non accédants, les moins féconds \\
-    Politique familiale (barème) & 18\,\% & $-$14 à 52\,\% & Non significatif ; presque entièrement la PAJE \\
+    {\color{blue} Logement, statuts d'occupation} & $-$10\,\% & & Recul des propriétaires non accédants, les moins féconds \\
+    Politique familiale (barème) & 18\,\% & {$-$\color{red}14 à 52\,\%}& Non significatif ; 14 à 25\,\% selon le calcul \\
     Âge des couples & 4\,\% & 2 à 4\,\% & Les couples ont vieilli d'un demi-an \\
     Prix au m², revenu, ville & $\approx$\,0 & & Aucun effet à surface donnée \\
     Non expliqué & 33\,\% & & Moins de naissances à situation donnée \\
@@ -393,338 +965,6 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Logement et naissance dans l'enquête SRCV}
-
-\begin{frame}{Les conditions de logement des couples}
-  \begin{columns}[T]
-    \begin{column}{0.235\textwidth}\kpi{$-$6 m²}{de surface médiane des couples, à moyenne presque inchangée}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdteorange]{19\,\%}{des couples sans enfant logés sous 50 m², contre 15\,\% en 2014}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdteorange]{27\,\%}{des couples sans enfant sans place pour un enfant, contre 24\,\%}\end{column}
-    \begin{column}{0.235\textwidth}\kpi{$-$6 pts}{de taux d'effort des accédants (de $-$4 à $-$8 selon l'âge)}\end{column}
-  \end{columns}
-  \vspace{0.3cm}
-  \begin{itemize}\setlength{\itemsep}{0.35em}
-    \item Les jeunes locataires ont perdu de la place à taux d'effort stable, jusqu'à $-$8\,\% à 35-39 ans.
-    \item Le recul se concentre dans le bas de la distribution et dans les grandes agglomérations.
-    \item Les parents à qui une pièce manque passent de 5,6 à 10,5\,\%, ce que le recensement ne confirme pas pour 2019-2023.
-  \end{itemize}
-  \source{Insee, SRCV 2014 et 2025 ; couples dont la femme a de 15 à 49 ans.}
-\end{frame}
-
-\begin{frame}{La surface compte, pas son prix ni le revenu}
-  \begin{columns}[T]
-    \begin{column}{0.30\textwidth}
-      \kpi[tdteorange]{+4\,\%}{de probabilité de naissance pour dix m² de plus (+0,34 point sur un taux de 8,2\,\%)}
-      \vspace{0.2cm}
-      \kpi{1\,519}{naissances observées dans SRCV, 2014-2025, sur 19\,645 couples}
-    \end{column}
-    \begin{column}{0.66\textwidth}
-      \begin{itemize}\setlength{\itemsep}{0.45em}
-        \item \textbf{La surface} est associée à la naissance, davantage pour le premier enfant (+0,59 point).
-        \item \textbf{Le coût au mètre carré} n'a aucun effet à surface donnée.
-        \item \textbf{Le revenu} non plus, s'il est mesuré avant la naissance : le niveau de vie usuel compte le nouveau-né et les prestations qu'il déclenche.
-        \item \textbf{Les accédants} gardent un avantage d'environ 5 points au premier enfant.
-        \item Chez les couples arrivés depuis moins de trois ans, l'effet est deux fois et demie plus fort : un premier indice d'anticipation.
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025 ; probits pondérés, effets marginaux moyens.}
-\end{frame}
-
-\begin{frame}{Un seuil en pièces pour le premier enfant}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[tdte, ybar, bar width=0.5cm, height=5.4cm, ymin=-15, ymax=6,
-            symbolic x coords={a,b,c,d,e,f}, xtick=data,
-            xticklabels={{<\,40 m²},{40-49},{50-59},{60-69},{90-119},{120+}},
-            x tick label style={font=\scriptsize,color=tdteink}, xticklabel pos=lower,
-            ylabel={écart avec 70-89 m² (points)}, ymajorgrids, axis x line*=bottom,
-            nodes near coords={\pgfmathprintnumber[fixed,precision=1]{\pgfplotspointmeta}},
-            every node near coord/.append style={font=\tiny,color=tdteink},
-            title={Probabilité de première naissance}, enlarge x limits=0.1,
-            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey}}]
-          \addplot[fill=tdtenavy,draw=none] coordinates {(a,-12.04) (b,-8.25) (c,-6.69) (d,0.20) (e,3.69) (f,2.08)};
-        \end{axis}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.47\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.5em}
-        \item La relation est une \alert{marche} entre 45 et 60 m², concentrée sur le premier enfant.
-        \item Selon la \textbf{norme de peuplement} de l'Insee, ne pas avoir la place d'un enfant abaisse la probabilité de première naissance de \textbf{10 points} ($-$73\,\% du taux).
-        \item À place donnée, la surface ne compte plus : il faut un \textbf{trois-pièces}. Un quart des couples sans enfant ne l'ont pas.
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025 ; tranches de surface en m², couples sans enfant ; probit pondéré.}
-\end{frame}
-
-\begin{frame}{Contrainte ou choix, trois tests d'ordre temporel}
-  \begin{columns}[T]
-    \begin{column}{0.315\textwidth}
-      \card{\faHourglassHalf}{Horizon long}{Sur quatre ans, la surface ne prédit pas les naissances suivantes des couples installés.}
-    \end{column}
-    \begin{column}{0.315\textwidth}
-      \card{\faHome}{Place en pièces}{Sans la place d'un enfant, un tiers de naissances en moins ensuite ($-$35\,\%, $p = 0{,}01$).}
-    \end{column}
-    \begin{column}{0.315\textwidth}
-      \card{\faTruck}{Ordre des événements}{Après un agrandissement, deux fois plus de premières naissances ; l'inverse est rare.}
-    \end{column}
-  \end{columns}
-  \vspace{0.3cm}
-  \begin{callout}{Verdict}
-    Une partie de l'association est de l'anticipation, puisqu'on s'agrandit avant l'enfant. L'autre, environ la moitié de l'écart observé en coupe, est une \textbf{contrainte d'indivisibilité}, la pièce qui manque.
-  \end{callout}
-\end{frame}
-
-\begin{frame}{Le modèle face aux données}
-  \centering\small
-  \begin{tabular}{@{}lll@{}}
-    \toprule
-    Prédiction & Verdict & Détail \\
-    \midrule
-    P1\enspace La surface élève la natalité & \vok{Vérifiée} & +4\,\% du taux pour dix m² \\
-    P2\enspace Le prix ne joue pas à surface donnée & \vok{Vérifiée} & Coût au m² sans effet \\
-    P3\enspace Le revenu n'agit que par la surface & \vok{Vérifiée} & Revenu mesuré avant la naissance \\
-    P4\enspace La surface prédit les naissances à venir & \vpart{En partie} & Pas la surface, mais la place ($-$35\,\%) \\
-    P5\enspace Concavité, modestes plus sensibles & \vpart{En partie} & Seuil en pièces ; pas de gradient de revenu \\
-    P6\enspace Moins de naissances en ville & \vpart{En partie} & Premières naissances, faute de pièces \\
-    \bottomrule
-  \end{tabular}
-  \vspace{0.3cm}
-
-  \raggedright\small Calibré, le canal d'espace pur est faible : une élasticité d'environ 0,11, contre 0,4 dans les données. À long terme, la population s'ajuste au parc de logements, pas la surface par ménage.
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Le recensement, contre-épreuve des résultats}
-
-\begin{frame}{Cent fois plus de naissances que dans SRCV}
-  \begin{columns}[T]
-    \begin{column}{0.235\textwidth}\kpi{2,2 M}{couples du champ dans le recensement de 2019 (enquêtes 2017-2021)}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdteorange]{183\,000}{naissances dans l'année en 2019, 143\,000 en 2023}\end{column}
-    \begin{column}{0.235\textwidth}\kpi{1,8 M}{couples dans le recensement de 2023 (enquêtes 2021-2025)}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdtegrey]{1\,519}{naissances dans SRCV sur toute la période}\end{column}
-  \end{columns}
-  \vspace{0.3cm}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{callout}[tdteok]{Ce qu'il mesure}
-        Pièces, surface en tranches, statut d'occupation, ancienneté d'emménagement, composition exacte du ménage.
-      \end{callout}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{callout}[tdtered]{Ce qu'il ne mesure pas}
-        Ni le revenu ni le coût du logement ; pas de suivi des ménages, donc pas de test d'ordre temporel.
-      \end{callout}
-    \end{column}
-  \end{columns}
-  \source{Insee, recensements 2019 et 2023, fichiers détail ; femme de 15 à 49 ans, France métropolitaine.}
-\end{frame}
-
-\begin{frame}{Le seuil apparaît sans bruit}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[tdte, ybar, bar width=0.22cm, height=5.3cm, ymin=0, ymax=17,
-            symbolic x coords={a,b,c,d,e,f,g}, xtick=data,
-            xticklabels={{<\,30},{30-39},{40-59},{60-79},{80-99},{100-119},{120+}},
-            x tick label style={font=\scriptsize,color=tdteink},
-            ylabel={taux de première naissance (\%)}, ymajorgrids, enlarge x limits=0.08,
-            title={Couples sans enfant, par surface (m²)},
-            legend style={at={(0.5,-0.2)},anchor=north,legend columns=2,/tikz/every even column/.append style={column sep=8pt}},
-            legcarre]
-          \addplot[fill=tdtenavy,draw=none] coordinates {(a,6.4) (b,6.3) (c,8.9) (d,14.7) (e,14.4) (f,14.3) (g,14.0)};
-          \addplot[fill=tdteorange,draw=none] coordinates {(a,6.2) (b,5.2) (c,7.6) (d,12.3) (e,13.2) (f,14.1) (g,14.2)};
-          \legend{RP 2019, RP 2023}
-        \end{axis}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.41\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.5em}
-        \item Le taux de première naissance \alert{bondit à 60 m²}, puis ne varie plus : la marche de SRCV, au même endroit.
-        \item Comme dans SRCV, 73\,\% des couples sans enfant ont la place d'un enfant.
-        \item Sans cette place, la probabilité de première naissance baisse de \textbf{9,3 points} en 2019, 7,3 en 2023 (SRCV : 10,2).
-        \item Place et surface gardent chacune un effet propre.
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \source{Insee, recensements 2019 et 2023 ; naissance dans les douze mois précédant la collecte.}
-\end{frame}
-
-\begin{frame}{SRCV et recensement, les résultats comparés}
-  \centering\footnotesize
-  \begin{tabular}{@{}lccc@{}}
-    \toprule
-    & SRCV 2014-2025 & RP 2019 & RP 2023 \\
-    \midrule
-    Couples sans enfant sans place pour un enfant & 26,5\,\% & 26,9\,\% & 24,5\,\% \\
-    Pas de place, premier enfant, points (\% du taux) & $-$10,2 ($-$73) & $-$9,3 ($-$76) & $-$7,3 ($-$65) \\
-    Pas de place, rang 2 et plus & $-$2,1 ($-$34) & $-$1,8 ($-$28) & $-$1,7 ($-$29) \\
-    Premier enfant, logement de 40 à 59 m² & $-$8,3 / $-$6,7 & $-$8,4 & $-$7,2 \\
-    Premier enfant, couples installés, petit logement & $-$9,1 & $-$7,4 & $-$6,7 \\
-    Arrivés récemment, parents avec / sans naissance & 25,8 / 13,5\,\% & 19,7 / 10,5\,\% & 17,3 / 9,2\,\% \\
-    Premier enfant, propriétaires contre locataires & +5,2 & +3,9 & +4,0 \\
-    Premier enfant, HLM contre parc privé & & +4,9 & +4,7 \\
-    \bottomrule
-  \end{tabular}
-  \vspace{0.2cm}
-
-  \raggedright\small
-  Confirmé, souvent à quelques dixièmes de point près. Au premier enfant, c'est le parc locatif privé qui se distingue.
-  \source{Probits (SRCV) et modèles linéaires de probabilité (recensement) ; correspondances dans l'annexe C de l'article.}
-\end{frame}
-
-\begin{frame}{Le manque de place pèse aussi chez les installés}
-  \begin{columns}[T]
-    \begin{column}{0.55\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[tdte, ybar, bar width=0.38cm, height=5.3cm, ymin=0, ymax=95,
-            symbolic x coords={a,b,c,d}, xtick=data,
-            xticklabels={{Tous},{Installés\\$\geq$ 2 ans},{Installés\\$\geq$ 5 ans},{Arrivés\\< 2 ans}},
-            x tick label style={font=\scriptsize,color=tdteink,align=center},
-            ylabel={premier enfant, baisse (\% du taux)}, ymajorgrids, enlarge x limits=0.15,
-            nodes near coords, every node near coord/.append style={font=\tiny,color=tdteink},
-            legend style={at={(0.5,1.03)},anchor=south,legend columns=2,/tikz/every even column/.append style={column sep=8pt}},
-            legcarre]
-          \addplot[fill=tdtenavy,draw=none] coordinates {(a,76) (b,68) (c,62) (d,86)};
-          \addplot[fill=tdteorange,draw=none] coordinates {(a,65) (b,58) (c,57) (d,77)};
-          \legend{RP 2019, RP 2023}
-        \end{axis}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.42\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.5em}
-        \item Installé depuis deux ans, un couple a conçu son enfant de l'année dans ce logement.
-        \item L'effet est le plus fort chez les \alert{arrivés récents} ($-$86\,\% du taux) : la trace de l'anticipation.
-        \item Il garde plus des \textbf{quatre cinquièmes} de son ampleur chez les couples installés depuis cinq ans ou plus.
-        \item Comme dans SRCV, les parents qui viennent d'avoir un enfant sont deux fois plus souvent arrivés récemment.
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \source{Insee, recensements 2019 et 2023 ; effet rapporté au taux de chaque sous-population.}
-\end{frame}
-
-\begin{frame}{Moins de premières naissances en ville}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[tdte, ybar, bar width=0.3cm, height=5.3cm, ymin=-5.6, ymax=3,
-            symbolic x coords={a,b,c,d,e}, xtick=data,
-            xticklabels={{< 20\,000\\hab.},{20\,000 à\\99\,999},{100\,000\\ou plus},{Petite\\couronne},{Paris}},
-            x tick label style={font=\tiny,color=tdteink,align=center},
-            ylabel={premier enfant, écart (points)}, ymajorgrids, axis x line=bottom,
-            enlarge x limits=0.13,
-            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey,thin}},
-            legend style={at={(0.5,1.03)},anchor=south,legend columns=2,/tikz/every even column/.append style={column sep=8pt}},
-            legcarre]
-          \addplot[fill=tdtenavy,draw=none] coordinates {(a,-0.64) (b,-1.58) (c,-3.37) (d,-1.26) (e,-4.96)};
-          \addplot[fill=tdteorange,draw=none] coordinates {(a,0.08) (b,-0.12) (c,-1.46) (d,2.44) (e,-0.04)};
-          \legend{Sans contrôle de la place, Place contrôlée}
-        \end{axis}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.41\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.45em}
-        \item La natalité d'ensemble n'est pas plus faible en ville (8,2\,\% à Paris, 7,0\,\% dans les petites communes).
-        \item Mais les \alert{premières naissances} y sont plus rares : $-$5,0 points à Paris.
-        \item Sept couples sans enfant parisiens sur dix n'ont pas la place d'un enfant, un sur dix dans les petites communes.
-        \item À place donnée, l'écart parisien disparaît ($-$1,4 point en 2023).
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \source{Insee, recensement 2019 ; écart avec les communes non découpées en IRIS, à caractéristiques données.}
-\end{frame}
-
-\begin{frame}{Évolution entre 2019 et 2023, et limites}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{callout}[tdtenavy]{Une baisse uniforme}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Taux de naissance des couples : $-$6,9\,\%, presque autant dans chaque situation de logement.
-          \item Premier enfant : de 14,4 à 12,9\,\% avec la place d'un enfant, de 6,5 à 5,8\,\% sans.
-          \item Les couples sans place passent de 26,9 à 24,5\,\% : la recomposition n'explique \textbf{rien} de la baisse.
-        \end{itemize}
-      \end{callout}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{callout}[tdtered]{Limites}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Ni panel, ni revenu, ni coût du logement.
-          \item Les deux millésimes partagent l'enquête de 2021.
-          \item Taille de commune et non unité urbaine.
-          \item Le RP 2014 couvrirait la période de l'article.
-        \end{itemize}
-      \end{callout}
-    \end{column}
-  \end{columns}
-  \vspace{0.15cm}
-  \small Le tout est repris dans l'\textbf{annexe C de l'article} (six tableaux).
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{La politique familiale, une étude à part}
-
-\begin{frame}{Ce que rapporte un enfant de plus}
-  \begin{columns}[T]
-    \begin{column}{0.28\textwidth}
-      \kpi{4\,866\,€}{par an pour un enfant de plus, barème de 2014 indexé}
-      \vspace{0.2cm}
-      \kpi[tdtered]{3\,772\,€}{barème de 2025 : $-$22\,\%, et $-$33\,\% au premier enfant}
-    \end{column}
-    \begin{column}{0.68\textwidth}
-      \footnotesize
-      \begin{tabular}{@{}lrrr@{}}
-        \toprule
-        Instrument & 2014 & 2025 & Part de la baisse \\
-        \midrule
-        Prestations monétaires & 3\,666\,€ & 2\,635\,€ & 16\,\% \\
-        \quad dont PAJE & 2\,211\,€ & 1\,378\,€ & 14\,\% \\
-        \quad dont AF et complément familial & 1\,455\,€ & 1\,257\,€ & 2\,\% \\
-        Quotient familial & 1\,200\,€ & 1\,137\,€ & 1\,\% \\
-        Crèches, assistantes maternelles & \multicolumn{2}{c}{offre en hausse} & non chiffré \\
-        \bottomrule
-      \end{tabular}
-      \vspace{0.3cm}
-
-      \small Le gain d'un enfant de plus est simulé avec \textbf{OpenFisca}, en local, selon le revenu du couple, l'activité des parents et l'âge des enfants déjà nés.
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2025 ; OpenFisca-France, barèmes 2014 et 2025 ; calculs de l'auteur.}
-\end{frame}
-
-\begin{frame}{Qui a perdu, et avec quel effet}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \footnotesize\setlength{\tabcolsep}{4pt}
-      \begin{tabular}{@{}lrl@{}}
-        \toprule
-        Quartile & Recul du gain & Instrument en cause \\
-        \midrule
-        Q1 (modestes) & $-$512\,€ ($-$11\,\%) & PAJE, en partie \\
-        Q2 & $-$1\,583\,€ ($-$25\,\%) & PAJE, quotient familial \\
-        Q3 & $-$1\,798\,€ ($-$35\,\%) & PAJE, plafonds abaissés \\
-        Q4 (aisés) & $-$483\,€ ($-$14\,\%) & Modulation des AF \\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-    \begin{column}{0.40\textwidth}
-      \small
-      \begin{aere}
-        \item Mille euros de gain en plus : +0,29 point de probabilité de naissance, \alert{non significatif} ($p = 0{,}26$).
-        \item L'imprécision vient du petit nombre de naissances ; il en faudrait environ 9\,300.
-        \item D'où une étude à part, fondée sur l'\textbf{ERFS 2010-2023} : demande à adresser à l'ADISP.
-      \end{aere}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025 ; OpenFisca-France ; quartiles de niveau de vie des couples.}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Données, pistes et suite}
 
 \begin{frame}{Les pistes explorées en octobre}
@@ -745,13 +985,15 @@
 \end{frame}
 
 \begin{frame}{Les anomalies trouvées dans les données}
-  \begin{aere}
+  \small
+  \begin{itemize}\setlength{\itemsep}{0.35em}
     \item \textbf{Pondération 2022-2023} faussée pour les ménages avec nouveau-né. Recalée sur les naissances de l'état civil : aucun résultat ne change.
     \item \textbf{Double comptage} : dans les vagues 2022-2025, la moitié des naissances est comptée deux fois ; le niveau de natalité mesuré chute avec la refonte de 2022.
     \item \textbf{Valeurs aberrantes} : surfaces du fichier de panel, 38 mensualités d'emprunt, type de logement qui change de nomenclature sous le même nom, tous corrigés.
-    \item \textbf{Code géographique} absent de la nomenclature en 2014 : il s'agit du Sud-Ouest.
-  \end{aere}
-  \vspace{0.2cm}
+    \item \textbf{Code géographique} : absent de la nomenclature en 2014, c'est le Sud-Ouest ; non renseigné en 2010 et 2014, il signale des arrivés récents, sans effet sur les résultats.
+    \item \textbf{Date d'emménagement} : la mobilité mesurée par SRCV chute avec la refonte de 2022 ; le recensement sert de référence.
+  \end{itemize}
+  \vspace{0.1cm}
   \begin{callout}{À signaler}
     Un courrier à l'ADISP sur l'anomalie de pondération est prêt, en brouillon.
   \end{callout}
@@ -762,8 +1004,8 @@
     \begin{column}{0.31\textwidth}
       \begin{callout}{Avant diffusion}
         \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Fusionner et pousser la branche de travail.
           \item Envoyer le courrier à l'ADISP.
+          \item Annexe sur le recensement à étendre à 2014.
           \item Deux études : l'article sur le logement, la politique familiale à part.
         \end{itemize}
       \end{callout}
@@ -780,8 +1022,8 @@
     \begin{column}{0.31\textwidth}
       \begin{callout}[tdteok]{Données}
         \begin{itemize}\setlength{\itemsep}{2pt}
-          \item ERFS 2010-2023 pour la politique familiale (naissances repérables, pas de surface).
-          \item RP 2014 pour couvrir la période de l'article.
+          \item Politique familiale : ERFS 2005-2023, vagues SRCV annuelles manquantes, naissances par commune.
+          \item Fluidité : mobilité à revenu fiscal donné avec l'ERFS.
         \end{itemize}
       \end{callout}
     \end{column}
@@ -799,18 +1041,21 @@
     Synthèse Word, 2014-2025 & 9 & 21 octobre \\
     Note de synthèse & 4 & 21 octobre \\
     Note de modélisation & 10 & 1er octobre \\
-    Ce diaporama & \inserttotalframenumber & 22 octobre \\
+    Ce diaporama & \inserttotalframenumber & 27 octobre \\
     \bottomrule
   \end{tabular}
 \end{frame}
 
 \begin{frame}{À retenir}
-  \begin{enumerate}\setlength{\itemsep}{0.7em}
-    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; un tiers reste inexpliqué.
-    \item Le logement en porte une part limitée, de \textbf{4 à 19\,\%} au plus, et la plupart de l'association est un logement choisi en vue d'un enfant.
+  \small
+  \begin{enumerate}\setlength{\itemsep}{0.3em}
+    \item Le logement pèse peu dans la baisse de la fécondité, de \textbf{4 à 19\,\%} au plus, et la plupart de l'association est un logement choisi en vue d'un enfant.
     \item Une contrainte existe pourtant, \textbf{à la marge d'une pièce} : sans la place d'un enfant, un tiers de naissances en moins dans les années suivantes.
-    \item Le recensement le confirme, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
+    \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
+    \item Déménager est devenu plus difficile depuis 2022, par le \textbf{crédit et la relocation} plus que par le prix au m² ; ce canal pèse peu dans la baisse des naissances.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
+    \item La \textbf{politique familiale} pèserait de 14 à 25\,\% de la baisse, sur les naissances de rang 2 et plus ; l'estimation reste trop imprécise, d'où une étude à part.
+    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; un tiers reste inexpliqué.
   \end{enumerate}
 \end{frame}
 
