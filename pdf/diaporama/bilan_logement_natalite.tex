@@ -80,7 +80,7 @@
         \begin{itemize}\setlength{\itemsep}{2pt}
           \item Logement : surtout un choix, et une contrainte à la marge d'une pièce.
           \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
-          \item Fluidité : déménager est plus difficile depuis 2022 ; un canal mineur pour les naissances.
+          \item Fluidité : déménager est plus difficile ; le premier enfant est repoussé plus que perdu.
           \item Politique familiale : effet sur les rangs 2 et plus, imprécis.
           \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, 14 à 25\,\%.
         \end{itemize}
@@ -106,6 +106,155 @@
     \item Les parents à qui une pièce manque passent de 5,6 à 10,5\,\%, ce que le recensement ne confirme pas pour 2019-2023.
   \end{itemize}
   \source{Insee, SRCV 2014 et 2025 ; couples dont la femme a de 15 à 49 ans.}
+\end{frame}
+
+\subsection{Un modèle à générations imbriquées}
+
+
+\begin{frame}{Le modèle, acheter avant d'avoir des enfants}
+	\centering
+	\begin{tikzpicture}[
+		phase/.style={draw=tdtelight, line width=0.8pt, fill=white, rounded corners=3pt,
+			text width=3.75cm, minimum height=1.6cm, align=left, inner sep=5pt, font=\footnotesize},
+		quand/.style={font=\scriptsize\bfseries, text=tdteorange, anchor=south west, inner sep=1pt},
+		fleche/.style={->, >=stealth, line width=1pt, tdteorange}]
+		\node[phase] (a) {{\color{tdtenavy}\bfseries Jeune adulte}\\[1pt]
+			Perçoit $w_1$ et achète $x_t$ m² au prix $p_t$, pour son usage du moment.};
+		\node[phase, right=0.75cm of a] (b) {{\color{tdtenavy}\bfseries Adulte}\\[1pt]
+			Perçoit $w_2$ et choisit $n_t$ enfants à surface $x_t$ donnée. Les enfants vivent chez lui.};
+		\node[phase, right=0.75cm of b] (c) {{\color{tdtenavy}\bfseries Retraité}\\[1pt]
+			Revend au prix courant à la cohorte de ses enfants et consomme le produit.};
+		\node[quand] at (a.north west) {date $t$};
+		\node[quand] at (b.north west) {date $t+1$};
+		\node[quand] at (c.north west) {date $t+2$};
+		\draw[fleche] (a) -- (b);
+		\draw[fleche] (b) -- (c);
+	\end{tikzpicture}
+
+	\vspace{0.2cm}
+	\raggedright
+	\begin{columns}[T]
+		\begin{column}{0.315\textwidth}
+			\begin{callout}[tdtenavy]{Logement}
+				\footnotesize Parc fixe de $H$ m². Acheté jeune, le logement est illiquide jusqu'à la retraite.
+			\end{callout}
+		\end{column}
+		\begin{column}{0.315\textwidth}
+			\begin{callout}{Contrainte}
+				\footnotesize Le jeune achète sans valoriser les enfants à venir ; s'il les anticipait, la surface serait un \textbf{choix}.
+			\end{callout}
+		\end{column}
+		\begin{column}{0.315\textwidth}
+			\begin{callout}[tdtenavy]{Enfants}
+				\footnotesize Chaque enfant coûte une part $\phi$ du temps de l'adulte et $\sigma$ m² de son logement.
+			\end{callout}
+		\end{column}
+	\end{columns}
+
+	\vspace{0.15cm}
+	\footnotesize Démographie, $N_{t+2} = n_t N_t$. Marché, les jeunes achètent ce que les retraités revendent, et $H = N_t x_t + N_{t-1} x_{t-1}$ à chaque date.
+	\source{Article, section 3 ; modèle à générations imbriquées, la cohorte $t$ compte $N_t$ ménages.}
+\end{frame}
+
+\begin{frame}{Deux décisions, la surface puis les enfants}
+	\begin{columns}[T]
+		\begin{column}{0.56\textwidth}
+			\footnotesize
+			{\color{tdtenavy}\bfseries Jeune adulte}, en $t$
+			\[ \max_{c_1,\,x}\ \ln c_1 + \gamma\ln x \quad \text{s.c.} \quad c_1 + p_t x = w_1
+			   \;\Longrightarrow\; x_t = \frac{\gamma\, w_1}{(1+\gamma)\, p_t} \]
+			{\color{tdtenavy}\bfseries Adulte}, en $t+1$, à surface $x_t$ donnée
+			\[ \max_{c_2,\,n}\ \ln c_2 + \gamma\ln(x_t-\sigma n) + \eta\ln n \quad \text{s.c.} \quad c_2 = w_2(1-\phi n) \]
+			d'où la condition du premier ordre
+			\[ \frac{\eta}{n} = \underbrace{\frac{\phi}{1-\phi n}}_{\text{coût en temps}}
+			   + \underbrace{\frac{\gamma\sigma}{x_t-\sigma n}}_{\text{coût en espace}} \]
+		\end{column}
+		\begin{column}{0.40\textwidth}
+			\small
+			\begin{itemize}\setlength{\itemsep}{0.45em}
+				\item Le jeune consacre une part $\gamma/(1+\gamma)$ de son revenu au logement : sa surface baisse avec le prix qu'il affronte.
+				\item L'adulte égalise l'utilité marginale d'un enfant à son coût marginal, en temps et en espace.
+				\item Ni le salaire $w_2$ ni le prix courant n'entrent dans la condition : la fécondité ne dépend que de la surface acquise, $n_t = \nu(x_t)$.
+			\end{itemize}
+		\end{column}
+	\end{columns}
+	\source{Article, section 3 ; $\gamma$ pondère le logement, $\eta$ les enfants, dans des préférences logarithmiques.}
+\end{frame}
+
+\begin{frame}{Fécondité, surface et prix}
+	\begin{columns}[T]
+		\begin{column}{0.55\textwidth}
+			\footnotesize
+			{\color{tdtenavy}\bfseries Lemme.} $\nu$ est strictement croissante, d'élasticité
+			\[ \varepsilon(x) = \frac{x\,\nu'(x)}{\nu(x)} = \frac{E_1+E_2}{E_1+E_2+T_1+T_2} \in (0,1), \]
+			où $E_1, E_2$ sont les termes d'espace du coût marginal de l'enfant et $T_1, T_2$ ses termes de temps. Elle décroît avec la surface : un m² compte plus dans un petit logement. {\color{tdtegrey}P1, P5}
+
+			\medskip
+			{\color{tdtenavy}\bfseries Proposition, contrainte d'espace.}
+			\[ \frac{dn_t}{dp_t} = \nu'(x_t)\,\frac{dx_t}{dp_t} < 0, \qquad \frac{\partial n_t}{\partial p_{t+1}} = 0 \]
+			La fécondité dépend du prix payé à l'achat, pas du prix courant ; à surface donnée, le salaire ne joue pas. {\color{tdtegrey}P2 à P4}
+		\end{column}
+		\begin{column}{0.41\textwidth}
+			\begin{callout}[tdtenavy]{Deux régions}
+				\footnotesize\RaggedRight Le jeune choisit sa région avec son logement, et l'égalité des utilités donne
+				\[ \frac{p_u}{p_r} = \Big(\frac{w_1^u}{w_1^r}\Big)^{\frac{1+\gamma}{\gamma}}, \quad
+				   \frac{x_u}{x_r} = \Big(\frac{w_1^u}{w_1^r}\Big)^{-\frac{1}{\gamma}} \]
+				Avec $\gamma = 0{,}43$, une prime urbaine de 20\,\% rend les logements urbains plus petits d'un tiers, et la fécondité y est plus faible. À surface donnée, la région ne joue pas. {\color{tdtegrey}P6}
+			\end{callout}
+		\end{column}
+	\end{columns}
+	\source{Article, section 3 et annexe A ; $u$ la ville, $r$ la campagne.}
+\end{frame}
+
+\begin{frame}{Équilibre, dynamique et ordre de grandeur}
+	\begin{columns}[T]
+		\begin{column}{0.58\textwidth}
+			\footnotesize
+			\begin{itemize}\setlength{\itemsep}{0.4em}
+				\item \textbf{État stationnaire.} Si la fécondité désirée sans contrainte d'espace, $\bar n = \eta/[\phi(1+\eta)]$, dépasse le remplacement, il est unique :
+				\[ x^* = \sigma\Big(1 + \frac{\gamma}{\eta - \phi/(1-\phi)}\Big), \qquad p^* = \frac{\gamma\, w_1}{(1+\gamma)\, x^*} \]
+				Une économie plus riche a des logements plus chers, pas plus d'enfants.
+				\item \textbf{Dynamique.} Les retraités vendent à leurs enfants, et le parc se transmet dans chaque lignée. Comme $\varepsilon < 1$, la convergence est monotone, sans cycle.
+				\item \textbf{Choc sur le parc.} Une variation $\Delta H$ revient tout entière à la cohorte qui achète, $x_{\tau} = x^*(1 + 2\Delta H/H)$ et $n_{\tau} \approx 1 + \varepsilon\, 2\Delta H/H$. À long terme, le nombre de ménages s'ajuste, pas leur surface.
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.38\textwidth}
+			\kpi{0,11}{élasticité de la fécondité à la surface à l'état stationnaire, soit +1,1\,\% de fécondité pour 10\,\% de surface}
+			\vspace{0.15cm}
+			\kpi[tdteorange]{+1,9\,\%}{de fécondité pour la cohorte qui achète si le parc augmente de 10\,\% ; $-$2,8\,\% s'il diminue d'autant}
+		\end{column}
+	\end{columns}
+	\source{Article, section 3 et annexe A. Calibrage : $\gamma = 0{,}43$, $\phi$ de 0,10 à 0,15, $\bar n = 2{,}3/2{,}05$, $x^* = 100$ m², d'où $\sigma$ de 3,4 à 5,7 m².}
+\end{frame}
+
+\subsection{Le modèle à l'épreuve des données}
+
+\begin{frame}{Données et stratégie empirique}
+  \centering\footnotesize
+  Probit pondéré de la naissance $B_{it}$ du couple $i$ à la vague $t$, qui sépare les trois grandeurs du modèle
+  \[ \Pr(B_{it}=1) = \Phi\big(\underbrace{\beta_S\, S_{it}}_{\text{surface } (x)}
+     + \underbrace{\beta_c\, c_{it}}_{\text{coût au m² } (p)}
+     + \underbrace{\beta_y\, y_{it}}_{\text{niveau de vie } (w)}
+     + X_{it}'\delta + \tau_t\big) \]
+  \raggedright
+  \begin{columns}[T]
+    \begin{column}{0.315\textwidth}
+      \begin{callout}[tdtenavy]{SRCV, 2014-2025}
+        \footnotesize\RaggedRight Volet français d'EU-SILC, vagues 2014, 2018, 2022 à 2025. Couples, femme de 15 à 49 ans, \textbf{19\,645} observations et \textbf{1\,519} naissances.
+      \end{callout}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \begin{callout}[tdtenavy]{Mesures}
+        \footnotesize\RaggedRight Naissance dans l'année ou la précédente. Coût au m² avec la mensualité d'emprunt. Niveau de vie \textbf{hors prestations}, par UC avant la naissance.
+      \end{callout}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \begin{callout}{Au plus près du modèle}
+        \footnotesize\RaggedRight Couples \textbf{installés} depuis trois ans, à surface prédéterminée. \textbf{Panel}, surface en $t$ et naissances sur un à quatre ans.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{Article, section 4. Effets marginaux moyens ; effets fixes d'année ; contrôles, statut d'occupation, âge, déménagement, catégorie sociale, urbanisation, ZEAT ; erreurs-types regroupées par ménage.}
 \end{frame}
 
 \begin{frame}{La surface compte, pas son prix ni le revenu}
@@ -175,62 +324,6 @@
   \end{callout}
 \end{frame}
 
-\begin{frame}{Le modèle, acheter avant d'avoir des enfants}
-  \centering
-  \begin{tikzpicture}[
-      phase/.style={draw=tdtelight, line width=0.8pt, fill=white, rounded corners=3pt,
-        text width=3.75cm, minimum height=1.75cm, align=left, inner sep=5pt, font=\footnotesize},
-      quand/.style={font=\scriptsize\bfseries, text=tdteorange, anchor=south west, inner sep=1pt},
-      fleche/.style={->, >=stealth, line width=1pt, tdteorange}]
-    \node[phase] (a) {{\color{tdtenavy}\bfseries Jeune adulte}\\[1pt]
-      Achète $x_t = \gamma w_1/[(1+\gamma)p_t]$ m² au prix $p_t$, pour son usage du moment.};
-    \node[phase, right=0.75cm of a] (b) {{\color{tdtenavy}\bfseries Adulte}\\[1pt]
-      Choisit $n$ enfants à surface $x_t$ donnée ; chacun coûte $\phi$ de son temps et $\sigma$ m².};
-    \node[phase, right=0.75cm of b] (c) {{\color{tdtenavy}\bfseries Retraité}\\[1pt]
-      Revend son logement à la cohorte de ses enfants.};
-    \node[quand] at (a.north west) {date $t$};
-    \node[quand] at (b.north west) {date $t+1$};
-    \node[quand] at (c.north west) {date $t+2$};
-    \draw[fleche] (a) -- (b);
-    \draw[fleche] (b) -- (c);
-  \end{tikzpicture}
-
-  \vspace{0.2cm}
-  \raggedright
-  \begin{columns}[T]
-    \begin{column}{0.55\textwidth}
-      \footnotesize L'adulte maximise $\ln c_2 + \gamma\ln(x_t-\sigma n) + \eta\ln n$ sous $c_2 = w_2(1-\phi n)$, d'où
-      \[ \frac{\eta}{n} = \underbrace{\frac{\phi}{1-\phi n}}_{\text{coût en temps}}
-         + \underbrace{\frac{\gamma\sigma}{x_t-\sigma n}}_{\text{coût en espace}} \]
-    \end{column}
-    \begin{column}{0.41\textwidth}
-      \begin{callout}{Le cœur du modèle}
-        Le jeune adulte achète sans tenir compte des enfants à venir, d'où la \textbf{contrainte}. S'il les anticipait, la surface serait un \textbf{choix}.
-      \end{callout}
-    \end{column}
-  \end{columns}
-  \source{Article, section 3 ; générations imbriquées, parc fixe de $H$ m², logement illiquide jusqu'à la retraite.}
-\end{frame}
-
-\begin{frame}{Ce que le modèle implique}
-  \begin{columns}[T]
-    \begin{column}{0.58\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.35em}
-        \item \textbf{La surface élève la fécondité}, avec une élasticité entre 0 et 1, plus forte dans les petits logements. {\color{tdtegrey}P1, P5}
-        \item \textbf{Le prix payé à l'achat compte, pas le prix courant.} À surface donnée, ni prix ni salaire ; la surface acquise prédit les naissances à venir. {\color{tdtegrey}P2 à P4}
-        \item \textbf{À long terme, la population s'ajuste au parc.} Une économie plus riche a des logements plus chers, pas plus d'enfants.
-        \item \textbf{En ville, des logements plus petits.} Avec une prime salariale de 20\,\%, ils sont plus petits d'un tiers, et la fécondité y est plus faible. {\color{tdtegrey}P6}
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.38\textwidth}
-      \kpi{0,11}{élasticité calibrée de la fécondité à la surface, soit +1,1\,\% de fécondité pour 10\,\% de surface}
-      \vspace{0.15cm}
-      \kpi[tdteorange]{+1,9\,\%}{de fécondité pour la cohorte qui achète quand le parc s'accroît de 10\,\% (prix $-$17\,\%)}
-    \end{column}
-  \end{columns}
-  \source{Article, section 3. Calibrage : $\gamma = 0{,}43$ (logement à 30\,\% de la dépense), $\phi$ de 0,10 à 0,15, 2,3 enfants souhaités, $x^* = 100$ m², d'où $\sigma$ de 3,4 à 5,7 m².}
-\end{frame}
 
 \begin{frame}{Le modèle face aux données}
   \centering\small
@@ -522,23 +615,95 @@
   \source{Banque de France (Webstat, MIR1) ; DVF+ ; SRCV. Appartement au prix médian, revenu médian des couples de 2014 en euros constants, un tiers du revenu sur 25 ans, 7,5\,\% de frais ; script R/54.}
 \end{frame}
 
+\begin{frame}{Le manque de place pèse surtout avant 35 ans}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, xbar, bar width=0.18cm, height=4.7cm, xmin=-16, xmax=3,
+            symbolic y coords={e,d,c,b,a}, ytick={a,b,c,d,e},
+            yticklabels={{15-24 ans},{25-29 ans},{30-34 ans},{35-39 ans},{40-49 ans}},
+            y tick label style={font=\scriptsize,color=tdteink}, enlarge y limits=0.14,
+            xlabel={écart avec les couples qui ont la place (points)}, xmajorgrids,
+            point meta=x, nodes near coords={\pgfmathprintnumber[fixed,zerofill,precision=1,use comma]{\pgfplotspointmeta}},
+            nodes near coords align={horizontal},
+            every node near coord/.append style={font=\tiny,color=tdteink},
+            title={Probabilité d'un premier enfant sans la place},
+            extra x ticks={0}, extra x tick labels={}, extra x tick style={grid style={tdtegrey}},
+            legend style={at={(0.5,-0.32)},anchor=north,legend columns=2,/tikz/every even column/.append style={column sep=8pt}},
+            legcarre, reverse legend]
+          \addplot[fill=tdteorange,draw=none] coordinates {(-5.9,a) (-11.3,b) (-11.4,c) (-5.2,d) (0.2,e)};
+          \addplot[fill=tdtenavy,draw=none] coordinates {(-7.0,a) (-11.6,b) (-13.0,c) (-7.6,d) (-1.2,e)};
+          \legend{Installés depuis 2 ans ou plus, Couples sans enfant}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.5em}
+        \item Sans la place d'un enfant, la probabilité d'un premier enfant est inférieure de \alert{11 à 13 points} à 25-34 ans, la moitié aux deux tiers du taux.
+        \item L'écart se réduit à 35-39 ans, à un tiers du taux chez les installés, et \textbf{s'annule après 40 ans}, où les premières naissances sont rares.
+        \item Le rattrapage après un déménagement n'apparaît pas ici : le couple est alors compté avec place.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014, 2019 et 2023 réunis ; couples sans enfant ; modèles linéaires, contrôles du script 53 ; script R/55.}
+\end{frame}
+
+\begin{frame}{En zone tendue, le premier enfant vient plus tard}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lr@{}}
+        \toprule
+        En 2023, pour 10 points de tension en 2014 & Effet \\
+        \midrule
+        Âge de la mère au premier enfant & \textbf{+0,4 an} \\
+        Premières naissances, femmes de 25-34 ans & $-$0,9 pt \\
+        Premières naissances, femmes de 35-44 ans & \textbf{+0,5 pt} \\
+        Deuxièmes naissances, mères de 35-44 ans & +0,6 pt \\
+        Femmes de 40-44 ans sans enfant au foyer & +0,5 pt\textsuperscript{a} \\
+        Mères de 40-44 ans avec un seul enfant & non significatif \\
+        Nombre d'enfants à 40-44 ans & non significatif \\
+        \bottomrule
+      \end{tabular}
+      \par\vspace{3pt}
+      {\scriptsize\color{tdtegrey} Tension : part des couples sans enfant de 25-34 ans sans place pour un enfant, par département (médiane 14\,\%, Paris 72\,\%). \textsuperscript{a} Disparaît à taille de commune donnée.}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.5em}
+        \item Là où se loger était difficile en 2014, le premier enfant arrive \alert{plus tard} en 2023.
+        \item Moins de premières naissances avant 35 ans, davantage après, et les deuxièmes suivent. À 40-44 ans, ni moins d'enfants, ni plus d'enfants uniques.
+        \item Les naissances sont \textbf{repoussées plus que perdues}.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014 et 2023 ; comparaison entre départements, indicative, car les familles quittent les zones tendues ; enfants présents au foyer ; script R/55.}
+\end{frame}
+
 \begin{frame}{Ce que cela dit de l'hypothèse}
   \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
+    \begin{column}{0.315\textwidth}
       \begin{callout}[tdteok]{Oui}
-        Déménager est devenu plus difficile depuis 2022, par le coût du crédit et de la relocation plutôt que par le prix au m², et d'abord pour les couples qui doivent s'agrandir.
+        \footnotesize\RaggedRight Déménager est plus difficile depuis 2022, par le crédit et la relocation plus que par le prix au m², d'abord pour qui doit s'agrandir.
       \end{callout}
     \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{callout}[tdtered]{Mais}
-        Le taux de première naissance baisse presque autant avec ou sans la place d'un enfant, de 14 et 16\,\% entre 2014 et 2023. Ce canal pèse donc peu dans la baisse des naissances.
+    \begin{column}{0.315\textwidth}
+      \begin{callout}[tdtered]{Peu de naissances en moins}
+        \footnotesize\RaggedRight Moins de déménagements, c'est au plus \textbf{6\,\%} du recul des premières naissances depuis 2014.
+      \end{callout}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \begin{callout}{Surtout un report}
+        \footnotesize\RaggedRight Le premier enfant arrive plus tard, sans moins d'enfants ni plus d'enfants uniques à 40-44 ans.
       \end{callout}
     \end{column}
   \end{columns}
-  \vspace{0.3cm}
+  \vspace{0.25cm}
   \begin{callout}[tdtenavy]{Suite}
-    Avec l'ERFS, mesurer la mobilité à revenu fiscal donné, si l'enquête permet de la repérer, et suivre les naissances des couples qui n'ont pas pu s'agrandir.
+    \footnotesize Suivre les mêmes couples sur dix ans ou plus, avec l'Échantillon démographique permanent de l'Insee (CASD), pour départager report et renoncement, rang par rang.
   \end{callout}
+  \source{Flux : 24,5\,\% sans place $\times$ $-$4,3 points de mobilité $\times$ +9,7 points de naissances après un déménagement ; borne haute ; script R/55.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -965,94 +1130,15 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Données, pistes et suite}
-
-\begin{frame}{Les pistes explorées en octobre}
-  \begin{columns}[T]
-    \begin{column}{0.235\textwidth}
-      \card{\faUsers}{Vie en couple}{À natalité inchangée, son recul explique un tiers de la baisse de l'ICF, dans tous les milieux.}
-    \end{column}
-    \begin{column}{0.235\textwidth}
-      \card{\faCity}{Géographie}{L'effet de composition est nul ; les premières naissances sont plus rares en ville, faute de pièces.}
-    \end{column}
-    \begin{column}{0.235\textwidth}
-      \card{\faCalendar}{Report}{L'âge à la maternité augmente à rythme constant : le report n'explique pas la baisse.}
-    \end{column}
-    \begin{column}{0.235\textwidth}
-      \card{\faKey}{Départ}{36 à 38\,\% des 18-34 ans vivent chez leurs parents, sans évolution ; départ plus tardif à Paris.}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{Les anomalies trouvées dans les données}
-  \small
-  \begin{itemize}\setlength{\itemsep}{0.35em}
-    \item \textbf{Pondération 2022-2023} faussée pour les ménages avec nouveau-né. Recalée sur les naissances de l'état civil : aucun résultat ne change.
-    \item \textbf{Double comptage} : dans les vagues 2022-2025, la moitié des naissances est comptée deux fois ; le niveau de natalité mesuré chute avec la refonte de 2022.
-    \item \textbf{Valeurs aberrantes} : surfaces du fichier de panel, 38 mensualités d'emprunt, type de logement qui change de nomenclature sous le même nom, tous corrigés.
-    \item \textbf{Code géographique} : absent de la nomenclature en 2014, c'est le Sud-Ouest ; non renseigné en 2010 et 2014, il signale des arrivés récents, sans effet sur les résultats.
-    \item \textbf{Date d'emménagement} : la mobilité mesurée par SRCV chute avec la refonte de 2022 ; le recensement sert de référence.
-  \end{itemize}
-  \vspace{0.1cm}
-  \begin{callout}{À signaler}
-    Un courrier à l'ADISP sur l'anomalie de pondération est prêt, en brouillon.
-  \end{callout}
-\end{frame}
-
-\begin{frame}{Ce qui reste à faire}
-  \begin{columns}[T]
-    \begin{column}{0.31\textwidth}
-      \begin{callout}{Avant diffusion}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Envoyer le courrier à l'ADISP.
-          \item Annexe sur le recensement à étendre à 2014.
-          \item Deux études : l'article sur le logement, la politique familiale à part.
-        \end{itemize}
-      \end{callout}
-    \end{column}
-    \begin{column}{0.31\textwidth}
-      \begin{callout}[tdtenavy]{Questions de fond}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Causalité : seule une variation extérieure de l'offre trancherait.
-          \item Vie en couple et départ de chez les parents.
-          \item Crédit, rang et pièces hors du modèle.
-        \end{itemize}
-      \end{callout}
-    \end{column}
-    \begin{column}{0.31\textwidth}
-      \begin{callout}[tdteok]{Données}
-        \begin{itemize}\setlength{\itemsep}{2pt}
-          \item Politique familiale : ERFS 2005-2023, vagues SRCV annuelles manquantes, naissances par commune.
-          \item Fluidité : mobilité à revenu fiscal donné avec l'ERFS.
-        \end{itemize}
-      \end{callout}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{Les documents produits}
-  \centering\small
-  \begin{tabular}{@{}p{0.5\textwidth}rp{0.33\textwidth}@{}}
-    \toprule
-    Document & Pages & État \\
-    \midrule
-    Article, « La surface fait-elle les naissances ? » & 32 & À jour au 22 octobre, avec l'annexe sur le recensement \\
-    Étude SRCV, 2006-2025 & 42 & À jour au 21 octobre ; mise de côté \\
-    Synthèse Word, 2014-2025 & 9 & 21 octobre \\
-    Note de synthèse & 4 & 21 octobre \\
-    Note de modélisation & 10 & 1er octobre \\
-    Ce diaporama & \inserttotalframenumber & 27 octobre \\
-    \bottomrule
-  \end{tabular}
-\end{frame}
+\section{Conclusion}
 
 \begin{frame}{À retenir}
   \small
-  \begin{enumerate}\setlength{\itemsep}{0.3em}
+  \begin{enumerate}\setlength{\itemsep}{0.2em}
     \item Le logement pèse peu dans la baisse de la fécondité, de \textbf{4 à 19\,\%} au plus, et la plupart de l'association est un logement choisi en vue d'un enfant.
-    \item Une contrainte existe pourtant, \textbf{à la marge d'une pièce} : sans la place d'un enfant, un tiers de naissances en moins dans les années suivantes.
+    \item Une contrainte existe pourtant, \textbf{à la marge d'une pièce} : sans la place d'un enfant, un tiers de naissances en moins dans les années suivantes, en partie repoussées à plus tard.
     \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
-    \item Déménager est devenu plus difficile depuis 2022, par le \textbf{crédit et la relocation} plus que par le prix au m² ; ce canal pèse peu dans la baisse des naissances.
+    \item Déménager est plus difficile depuis 2022 (\textbf{crédit, relocation}) ; ce canal pèse au plus 6\,\% du recul des premières naissances, et \textbf{repousse} le premier enfant plus qu'il ne le supprime.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
     \item La \textbf{politique familiale} pèserait de 14 à 25\,\% de la baisse, sur les naissances de rang 2 et plus ; l'estimation reste trop imprécise, d'où une étude à part.
     \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; un tiers reste inexpliqué.

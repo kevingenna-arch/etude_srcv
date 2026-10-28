@@ -133,14 +133,15 @@
 
 % ---------------------------------------------------------------- pages de section
 % fond sombre pleine page (pages de section, page de fin), avec un grand numero en filigrane
-\newcommand{\tdte@darkcanvas}[1]{%
+% \tdte@darkcanvas[taille du numero, en pt]{numero}
+\newcommand{\tdte@darkcanvas}[2][230]{%
   \setbeamertemplate{background canvas}{%
     \begin{tikzpicture}
       \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
       \clip (0,0) rectangle (\paperwidth,\paperheight);
       \fill[tdtenavy] (0,0) rectangle (\paperwidth,\paperheight);
-      \node[anchor=east,inner sep=0,text=tdtenavydark,font=\tdtebold\fontsize{230}{230}\selectfont]
-        at (\paperwidth+0.3cm,0.45\paperheight) {#1};
+      \node[anchor=east,inner sep=0,text=tdtenavydark,font=\tdtebold\fontsize{#1}{#1}\selectfont]
+        at (\paperwidth+0.3cm,0.45\paperheight) {#2};
     \end{tikzpicture}}}
 \newcommand{\darkcanvas}[1][]{\tdte@darkcanvas{#1}}
 
@@ -152,6 +153,19 @@
   \end{minipage}}
 \AtBeginSection{{\setbeamertemplate{footline}{}\tdte@darkcanvas{\insertsectionnumber}%
   \begin{frame}[noframenumbering]\sectionpage\end{frame}}}
+
+% pages de sous-section : meme fond, numero 1.1, rappel de la partie
+% (les sous-sections restent hors du sommaire : \tableofcontents[hideallsubsections])
+\setbeamertemplate{subsection page}{%
+  \begin{minipage}{0.75\paperwidth}\raggedright
+    {\color{tdteorange}\small\bfseries PARTIE \insertsectionnumber.\insertsubsectionnumber}\par\vspace{0.15cm}
+    {\color{tdteorange}\rule{1.2cm}{1.8pt}}\par\vspace{0.3cm}
+    {\color{white}\LARGE\bfseries\hyphenpenalty=10000 \insertsubsectionhead\par}\vspace{0.25cm}
+    {\color{white!70!tdtenavy}\normalsize\hyphenpenalty=10000 \insertsectionhead\par}
+  \end{minipage}}
+\AtBeginSubsection{{\setbeamertemplate{footline}{}%
+  \tdte@darkcanvas[150]{\insertsectionnumber.\insertsubsectionnumber}%
+  \begin{frame}[noframenumbering]\subsectionpage\end{frame}}}
 
 % ---------------------------------------------------------------- sommaire
 \setbeamertemplate{section in toc}{%
