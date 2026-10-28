@@ -164,6 +164,10 @@ ICF_2025 <- 1.56
 #   - 2014 : 2,00 (France entière, série Insee révisée) — vérifié le 2026-10-21
 #     sur la série publiée ; utilisé seulement avec SRCV_DEBUT=2014.
 ICF_2014 <- 2.00
+#   - 2023 : 1,68 (Insee, bilan démographique 2023, janvier 2024 ; repris tel
+#     quel dans les documents ultérieurs, vérifié le 2026-10-28) ; script 57
+#     (ERFS, dernier millésime 2023).
+ICF_2023 <- 1.68
 
 #  PÉRIODE D'ANALYSE des modèles de fécondité (scripts 23, 27-30, 32) :
 #  variable d'environnement SRCV_DEBUT, première vague retenue. Par défaut 2006
@@ -200,3 +204,13 @@ DIR_DVF <- "C:/Users/kgenn/Documents/TDTE/Immobilier/données Immo fécondité/1
 #  Recensement : fichiers détail Insee « individus localisés au canton-ou-ville »
 #  (FD_INDCVI_2019.csv, FD_INDCVI_2023.csv, ~4,7 Go chacun). Scripts 48-49.
 DIR_RP <- file.path("Data", "recensement")
+
+#  ERFS (Insee-DGFiP-Cnaf-Cnav-CCMSA), fichiers de production et de recherche
+#  diffusés par Progedo-Adisp, millésimes 2005 à 2023 (un dossier lil-* par
+#  année). Scripts 56-57 (étude politique familiale).
+DIR_ERFS <- file.path("Data", "ERFS")
+ERFS_LIL <- c("2005" = "lil-0767", "2006" = "lil-0768", "2007" = "lil-0769", "2008" = "lil-0556",
+              "2009" = "lil-0770", "2010" = "lil-0748", "2011" = "lil-0840", "2012" = "lil-0941",
+              "2013" = "lil-1050", "2014" = "lil-1177", "2015" = "lil-1344", "2016" = "lil-1345",
+              "2017" = "lil-1375", "2018" = "lil-1440", "2019" = "lil-1519", "2020" = "lil-1587",
+              "2021" = "lil-1648", "2022" = "lil-1696", "2023" = "lil-1766")

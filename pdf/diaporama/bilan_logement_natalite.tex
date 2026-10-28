@@ -81,8 +81,8 @@
           \item Logement : surtout un choix, et une contrainte à la marge d'une pièce.
           \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
           \item Fluidité : déménager est plus difficile ; le premier enfant est repoussé plus que perdu.
-          \item Politique familiale : effet sur les rangs 2 et plus, imprécis.
-          \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, 14 à 25\,\%.
+          \item Politique familiale : dans l'ERFS, aucun effet mesurable du barème.
+          \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, au plus un cinquième.
         \end{itemize}
       \end{callout}
     \end{column}
@@ -757,7 +757,7 @@
       \begin{aere}
         \item Mille euros de gain en plus : +0,29 point de probabilité de naissance, \alert{non significatif} ($p = 0{,}26$).
         \item L'imprécision vient du petit nombre de naissances ; il en faudrait environ 9\,300.
-        \item D'où une étude à part, fondée sur l'\textbf{ERFS 2010-2023} : demande à adresser à l'ADISP.
+        \item D'où une étude à part, sur l'\textbf{ERFS 2005-2023}, reçue le 28 octobre : voir plus loin.
       \end{aere}
     \end{column}
   \end{columns}
@@ -818,11 +818,125 @@
       \begin{itemize}\setlength{\itemsep}{0.35em}
         \item Cohérent avec Laroque et Salanié (troisième enfant) et Elmallakh (enfant supplémentaire).
         \item L'écart avec le premier enfant n'est pas significatif ($p = 0{,}31$).
-        \item Pour conclure : vagues SRCV annuelles, ERFS, naissances par commune.
+        \item L'ERFS, dix fois plus riche en naissances, ne confirme pas ces effets.
       \end{itemize}
     \end{column}
   \end{columns}
   \source{Insee, SRCV 2014-2025 ; mesure affinée du gain ; probits, effets marginaux moyens.}
+\end{frame}
+
+\begin{frame}{L'ERFS, dix fois plus de naissances}
+  \begin{columns}[T]
+    \begin{column}{0.29\textwidth}
+      \kpi{16\,139}{naissances chez 230\,000 couples, de 2005 à 2023, contre 1\,519 dans SRCV}
+      \vspace{0.15cm}
+      \kpi[tdtered]{$-$27\,\%}{de gain pour un enfant de plus entre 2014 et 2023, surtout la PAJE}
+    \end{column}
+    \begin{column}{0.67\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, height=4.6cm, xmin=2004.5, xmax=2023.5, ymin=3400, ymax=5400,
+            xtick={2005,2008,2011,2014,2017,2020,2023},
+            xticklabel={\pgfmathprintnumber[assume math mode=true,set thousands separator={}]{\tick}},
+            yticklabel={\pgfmathprintnumber[assume math mode=true,set thousands separator={\,}]{\tick}},
+            ylabel={€ de 2023 par an}, ymajorgrids, title={Ce que rapporte un enfant de plus},
+            legend style={at={(0.02,0.03)},anchor=south west,fill=white,fill opacity=0.85,text opacity=1}]
+          \fill[tdtelight!60] (axis cs:2012.5,3400) rectangle (axis cs:2018.5,5400);
+          \addplot[tdtenavy,very thick,mark=*,mark size=1.2pt] coordinates {(2005,5085) (2006,5016) (2007,5117)
+            (2008,5022) (2009,5012) (2010,5008) (2011,4984) (2012,4924) (2013,4957) (2014,5026) (2015,4669)
+            (2016,4634) (2017,4591) (2018,4499) (2019,4114) (2020,4086) (2021,4052) (2022,3810) (2023,3679)};
+          \addplot[tdtegrey,very thick,dashed] coordinates {(2005,4991) (2006,4987) (2007,4989) (2008,4958)
+            (2009,4958) (2010,4970) (2011,4982) (2012,4991) (2013,5026) (2014,5026) (2015,4995) (2016,5022)
+            (2017,5033) (2018,5018) (2019,5016) (2020,4990) (2021,5016) (2022,4981) (2023,4956)};
+          \legend{Barème de l'année, Barème de 2014}
+        \end{axis}
+      \end{tikzpicture}
+      \footnotesize\RaggedRight La simulation suit les montants observés : allocations familiales corrélées à 0,86-0,93 avec les montants versés ; PAJE simulée $-$50\,\% de 2014 à 2023, observée $-$47\,\%.
+    \end{column}
+  \end{columns}
+  \source{Insee-DGFiP-Cnaf-Cnav-CCMSA, ERFS 2005-2023 ; OpenFisca-France ; couples dont la femme a de 15 à 49 ans ; réformes de 2013 à 2018 en grisé ; scripts R/56-57.}
+\end{frame}
+
+\begin{frame}{Le barème n'a pas d'effet mesurable}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, height=5.0cm, xmin=2004.5, xmax=2023.5, ymin=-1.6, ymax=1.3,
+            xtick={2005,2008,2011,2014,2017,2020,2023},
+            xticklabel={\pgfmathprintnumber[assume math mode=true,set thousands separator={}]{\tick}},
+            ylabel={points pour 1\,000\,€, réf. 2012}, ymajorgrids,
+            title={Exposition aux réformes, effet par année},
+            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey}}]
+          \fill[tdtelight!60] (axis cs:2012.5,-1.6) rectangle (axis cs:2018.5,1.3);
+          \addplot[only marks, mark=*, mark size=1.6pt, tdtenavy,
+              error bars/.cd, y dir=both, y explicit, error bar style={tdtenavy,thick}, error mark=none]
+            coordinates {(2005,-0.303) +- (0,0.760) (2006,-0.526) +- (0,0.751) (2007,-0.268) +- (0,0.776)
+              (2008,0.244) +- (0,0.808) (2009,-0.305) +- (0,0.694) (2010,0.011) +- (0,0.753)
+              (2011,0.187) +- (0,0.617) (2012,0) +- (0,0) (2013,0.114) +- (0,0.792)
+              (2014,0.321) +- (0,0.657) (2015,-0.724) +- (0,0.739) (2016,-0.078) +- (0,0.672)
+              (2017,0.411) +- (0,0.637) (2018,-0.263) +- (0,0.676) (2019,0.197) +- (0,0.688)
+              (2020,0.179) +- (0,0.682) (2021,-0.090) +- (0,0.711) (2022,-0.309) +- (0,0.749)
+              (2023,-0.458) +- (0,0.682)};
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \footnotesize\setlength{\tabcolsep}{3.5pt}
+      \begin{tabular}{@{}lrrr@{}}
+        \toprule
+        Points pour 1\,000\,€ & ERFS 05-23 & ERFS 14-23 & SRCV \\
+        \midrule
+        Ensemble & 0,11 (0,08) & $-$0,05 (0,11) & 0,23 (0,25) \\
+        1\textsuperscript{er} enfant & 0,43 (0,24) & 0,31 (0,29) & 0,07 (0,70) \\
+        Rang 2 et plus & 0,08 (0,08) & $-$0,09 (0,12) & 0,43 (0,25) \\
+        Naissances & 16\,139 & 7\,472 & 1\,519 \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.2cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Précision trois fois meilleure : un effet de 0,23 point, 3\,\% du taux, serait détecté.
+        \item Avant les réformes, rien ne bouge ($p = 0{,}53$) ; après, \alert{aucune rupture} ($p = 0{,}13$).
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023 : modèles linéaires pondérés, gain et gain au barème de 2014, effets fixes d'année ; écarts-types entre parenthèses. SRCV 2014-2025 : probits, mesure affinée (script 50). Exposition : gain au barème de 2019 moins gain au barème de 2013.}
+\end{frame}
+
+\begin{frame}{Ce que pèse le barème dans la baisse}
+  \begin{columns}[T]
+    \begin{column}{0.50\textwidth}
+      \footnotesize
+      \begin{tabular}{@{}lrr@{}}
+        \toprule
+        Part de la baisse de l'ICF & Part & IC à 95\,\% \\
+        \midrule
+        ERFS 2014-2023, effet commun & $-$6\,\% & $-$33 à 21\,\% \\
+        ERFS 2014-2023, effets par rang & $-$9\,\% & $-$36 à 19\,\% \\
+        SRCV 2014-2025, effet commun & 14\,\% & $-$17 à 47\,\% \\
+        SRCV 2014-2025, effets par rang & 25\,\% & $-$8 à 59\,\% \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.3cm}
+
+      \small Les couples de 2023 perdent 1\,277\,€ par an par rapport au barème de 2014 ($-$26\,\%), le plus dans le troisième quartile (2\,428\,€).
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \begin{callout}[tdtenavy]{Verdict}
+        \footnotesize\RaggedRight Le recul du barème explique \textbf{au plus un cinquième} de la baisse de la fécondité, et vraisemblablement rien.
+      \end{callout}
+      \vspace{0.1cm}
+      \begin{callout}{Ce qui reste fragile}
+        \footnotesize\RaggedRight
+        \begin{itemize}\setlength{\itemsep}{1pt}
+          \item En probit, l'effet 2014-2023 devient négatif ($-$0,28).
+          \item Classes moyennes : +0,29 seules, mais pas d'écart avec les autres.
+          \item Seul indice, le premier enfant : +0,43 ($p = 0{,}07$).
+        \end{itemize}
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023 ; ICF de 2,00 (2014) à 1,68 (2023), Insee ; SRCV : script 50. L'ERFS ne repère plus les déménagements après 2020 : la fluidité résidentielle n'y est pas testable.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -851,7 +965,7 @@
     Recul de la vie en couple & 34\,\% & 33 à 34\,\% & Moins de femmes en couple à âge donné \\
     Logement, petites surfaces & 12\,\% & 4 à 19\,\% & IC à 95\,\% de 0 à 33\,\% ; en partie de l'anticipation \\
     {\color{blue} Logement, statuts d'occupation} & $-$10\,\% & & Recul des propriétaires non accédants, les moins féconds \\
-    Politique familiale (barème) & 18\,\% & {$-$\color{red}14 à 52\,\%}& Non significatif ; 14 à 25\,\% selon le calcul \\
+    Politique familiale (barème) & 18\,\% & {$-$\color{red}14 à 52\,\%}& Non significatif ; ERFS : $\approx$\,0, au plus un cinquième \\
     Âge des couples & 4\,\% & 2 à 4\,\% & Les couples ont vieilli d'un demi-an \\
     Prix au m², revenu, ville & $\approx$\,0 & & Aucun effet à surface donnée \\
     Non expliqué & 33\,\% & & Moins de naissances à situation donnée \\
@@ -1134,14 +1248,14 @@
 
 \begin{frame}{À retenir}
   \small
-  \begin{enumerate}\setlength{\itemsep}{0.2em}
+  \begin{enumerate}\setlength{\itemsep}{0.05em}
     \item Le logement pèse peu dans la baisse de la fécondité, de \textbf{4 à 19\,\%} au plus, et la plupart de l'association est un logement choisi en vue d'un enfant.
     \item Une contrainte existe pourtant, \textbf{à la marge d'une pièce} : sans la place d'un enfant, un tiers de naissances en moins dans les années suivantes, en partie repoussées à plus tard.
     \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
     \item Déménager est plus difficile depuis 2022 (\textbf{crédit, relocation}) ; ce canal pèse au plus 6\,\% du recul des premières naissances, et \textbf{repousse} le premier enfant plus qu'il ne le supprime.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
-    \item La \textbf{politique familiale} pèserait de 14 à 25\,\% de la baisse, sur les naissances de rang 2 et plus ; l'estimation reste trop imprécise, d'où une étude à part.
-    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; un tiers reste inexpliqué.
+    \item Le barème de la \textbf{politique familiale} rapporte un quart de moins par enfant qu'en 2014, mais dans l'ERFS ce recul n'a pas d'effet mesurable : \textbf{au plus un cinquième} de la baisse, vraisemblablement rien.
+    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; un tiers reste inexpliqué, davantage si la politique familiale n'y est pour rien.
   \end{enumerate}
 \end{frame}
 
