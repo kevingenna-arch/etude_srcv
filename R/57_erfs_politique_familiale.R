@@ -236,7 +236,9 @@ print(as.data.frame(diff_diff %>% mutate(across(where(is.double), ~ round(.x, 3)
 #  Les couples de 2023 reçoivent le gain du barème 2014 (gain_ref inchangé) :
 #  hausse relative de leur natalité = effet × écart de gain moyen / taux.
 #  Rapportée au recul de l'ICF (2,00 -> 1,68) et à celui du taux de naissance
-#  des couples de l'ERFS. Effet estimé sur 2014-2023, commun ou par rang.
+#  des couples de l'ERFS. Effet commun ou par rang, estimé sur 2014-2023 (la
+#  période des réformes et de la baisse) ou sur 2005-2023 (plus précis) : la
+#  part en dépend nettement, d'où les deux.
 d23 <- filter(df, annee == 2023); d14 <- filter(df, annee == 2014)
 baisse_icf <- ICF_2023 / ICF_2014 - 1
 baisse_couples <- pond(d23$naiss01, d23$poids) / pond(d14$naiss01, d14$poids) - 1
@@ -247,16 +249,20 @@ part <- function(d_est, d_cf) {
   tibble(ecart_gain_euros = 1000 * dg, effet_pts = 100 * b, hausse_relative_pct = 100 * b * dg / p0,
          se_rel = 100 * s * dg / p0, naissances_2023 = sum(d_cf$poids * d_cf$naiss01))
 }
-d1423 <- filter(df, annee %in% 2014:2023)
-par_rang <- imap_dfr(ECHANTILLONS[c("1er enfant", "2e enfant", "3e enfant ou plus")],
-                     ~ part(.x(d1423), .x(d23)) %>% mutate(rang = .y, .before = 1))
-w <- par_rang$naissances_2023 / sum(par_rang$naissances_2023)
-part_baisse <- bind_rows(
-  part(d1423, d23) %>% mutate(rang = "Ensemble, effet commun", .before = 1),
-  par_rang,
-  tibble(rang = "Ensemble, effets par rang", ecart_gain_euros = sum(w * par_rang$ecart_gain_euros),
-         effet_pts = NA_real_, hausse_relative_pct = sum(w * par_rang$hausse_relative_pct),
-         se_rel = sqrt(sum((w * par_rang$se_rel)^2)), naissances_2023 = sum(par_rang$naissances_2023))) %>%
+part_periode <- function(ans) {
+  d_est <- filter(df, annee %in% ans)
+  par_rang <- imap_dfr(ECHANTILLONS[c("1er enfant", "2e enfant", "3e enfant ou plus")],
+                       ~ part(.x(d_est), .x(d23)) %>% mutate(rang = .y, .before = 1))
+  w <- par_rang$naissances_2023 / sum(par_rang$naissances_2023)
+  bind_rows(
+    part(d_est, d23) %>% mutate(rang = "Ensemble, effet commun", .before = 1),
+    par_rang,
+    tibble(rang = "Ensemble, effets par rang", ecart_gain_euros = sum(w * par_rang$ecart_gain_euros),
+           effet_pts = NA_real_, hausse_relative_pct = sum(w * par_rang$hausse_relative_pct),
+           se_rel = sqrt(sum((w * par_rang$se_rel)^2)), naissances_2023 = sum(par_rang$naissances_2023)))
+}
+part_baisse <- imap_dfr(PERIODES[c("2014-2023", "2005-2023")],
+                        ~ part_periode(.x) %>% mutate(estimation = .y, .before = 1)) %>%
   mutate(part_baisse_icf_pct = hausse_relative_pct / -baisse_icf,
          ic_bas = (hausse_relative_pct - 1.96 * se_rel) / -baisse_icf,
          ic_haut = (hausse_relative_pct + 1.96 * se_rel) / -baisse_icf,

@@ -319,9 +319,9 @@ def largeurs_colonnes(lignes, ncol, taille):
                     if "num" in c.classes:
                         nombre[j] = max(nombre[j], len(t))
             j += n
-    # Chiffres : une ligne jusqu'à 11 caractères, au-delà coupure entre les mots ;
-    # en-tête sur deux lignes au plus
-    mini = [(max(min(nombre[j], 11), min(entete[j], 10), mot[j]) if chiffres[j] else mot[j])
+    # Chiffres : une ligne jusqu'à 16 caractères (« −6 % (−33 à 21) »), au-delà
+    # coupure entre les mots ; en-tête sur deux lignes au plus
+    mini = [(max(min(nombre[j], 16), min(entete[j], 10), mot[j]) if chiffres[j] else mot[j])
             * car + marge for j in range(ncol)]
     texte_ = [j for j in range(ncol) if not chiffres[j]]
     poids = {j: max(longueur[j], 24 if j == 0 else 8) for j in texte_}

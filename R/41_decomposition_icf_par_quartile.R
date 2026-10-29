@@ -30,8 +30,13 @@
 #     NATIONAL de l'âge à parité donnée (2014 -> 2025), appliqué aux couples de
 #     2025 du groupe. Mesuré groupe par groupe, il reflétait la recomposition
 #     des groupes (−48 à +94 %), pas le report des naissances.
-#   - Politique familiale : modèle du script 38 ; gain d'un enfant au barème
-#     de 2014.
+#   - Politique familiale : effet relatif de 1 000 € de gain estimé dans
+#     l'ERFS 2014-2023 (script 57, 16 000 naissances), appliqué au recul du
+#     gain d'un enfant des couples de 2025 du groupe entre les barèmes 2014 et
+#     2025 (gains simulés du script 38), avec son intervalle à 95 % ; variante
+#     avec l'effet estimé sur 2005-2023 (`pf_0523`), plus précis. L'estimation
+#     de SRCV (modèle du script 38), trop imprécise, est gardée pour mémoire
+#     (`politique_familiale_srcv`).
 #  Toutes les parts sont rapportées à la baisse NATIONALE de l'ICF (−22 %) :
 #  le « non expliqué » suppose que chaque groupe a baissé comme la moyenne.
 #  Sorties : Output/decomposition_icf_par_quartile.csv,
@@ -137,6 +142,11 @@ di <- filter(df, anciennete >= 3)
 m_tr  <- fit(tr(di), update(F_POOLE, . ~ . - surface_10 + surf_tr))
 m_lin <- fit(di, F_POOLE)
 m_pf  <- fit(df, F_PF)
+ERFS  <- effet_relatif_erfs("2014-2023", euros = 2025)   # retenu (période des réformes)
+ERFS2 <- effet_relatif_erfs("2005-2023", euros = 2025)   # variante, plus précise
+for (e in list(ERFS, ERFS2))
+  cat("Effet relatif de 1 000 € (de 2025) de gain, ERFS", e$periode, ":", round(100 * e$effet, 2),
+      "% [", round(100 * e$bas, 2), ";", round(100 * e$haut, 2), "]\n")
 
 # `diplome` des données préparées est celui de la personne de référence : on le
 # remplace par celui de la femme.
@@ -158,9 +168,13 @@ effets_couples <- function(d) {
                          surface_10 = surface / 10)
   cf_a <- d25 %>% mutate(age_femme = age_cf, age_c = (age_femme - 30) / 10)
   cf_p <- d25 %>% mutate(gain_1k = gain_ref_1k)
+  dg <- weighted.mean(d25$gain_ref_1k - d25$gain_1k, d25$poids)   # k€ de 2025
   tibble(logement = predire(m_tr, tr(cf_s)) / predire(m_tr, tr(d25)) - 1,
          age = predire(m_lin, cf_a) / predire(m_lin, d25) - 1,
-         politique_familiale = predire(m_pf, cf_p) / predire(m_pf, d25) - 1,
+         politique_familiale = ERFS$effet * dg, pf_ic_bas = ERFS$bas * dg, pf_ic_haut = ERFS$haut * dg,
+         pf_0523 = ERFS2$effet * dg, pf_0523_bas = ERFS2$bas * dg, pf_0523_haut = ERFS2$haut * dg,
+         politique_familiale_srcv = predire(m_pf, cf_p) / predire(m_pf, d25) - 1,
+         recul_gain_euros = 1000 * dg,
          n_couples_2025 = nrow(d25), naissances_2025 = sum(d25$naiss01))
 }
 
@@ -179,7 +193,8 @@ decomposer <- function(f, cpl, groupe, niveaux) {
                                                     c14$age_femme, c14$poids, c14$nb_enfants)
   un <- function(ff, cc, lib) bind_cols(
     tibble(groupe = lib, vie_en_couple = 100 * effet_couple(ff) / BAISSE),
-    effets_couples(cc) %>% mutate(across(c(logement, age, politique_familiale),
+    effets_couples(cc) %>% mutate(across(c(logement, age, politique_familiale, pf_ic_bas, pf_ic_haut,
+                                           pf_0523, pf_0523_bas, pf_0523_haut, politique_familiale_srcv),
                                          ~ 100 * .x / -BAISSE)),
     en_couple(ff))
   bind_rows(un(f, cpl, "Ensemble"),

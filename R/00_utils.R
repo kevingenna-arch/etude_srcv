@@ -282,6 +282,27 @@ transposer <- function(x, w, x_ref, w_ref) {
   out[ok] <- wquantile(x_ref, w_ref, p[ok]); out
 }
 
+# ── Effet du barème de la politique familiale estimé dans l'ERFS ────────────
+#  Effet relatif de 1 000 € de gain annuel sur la natalité des couples (effet
+#  en points / taux de naissance), estimé par le script 57 (ERFS, modèle
+#  « gain et gain à barème fixe », ensemble des couples), avec ses bornes à
+#  95 %, pour 1 000 € de l'année `euros` (le script 57 travaille en euros de
+#  2023). Sert aux décompositions de la baisse de l'ICF (39, 41) : l'effet de
+#  l'ERFS, dix fois plus riche en naissances, s'y applique au recul du gain des
+#  couples de SRCV.
+effet_relatif_erfs <- function(periode = "2014-2023", euros = 2025,
+                               fichier = "Output/erfs_politique_familiale.csv") {
+  m <- read_csv(fichier, show_col_types = FALSE) %>%
+    filter(bloc == "Modeles de gain", mesure == "Gain et gain a bareme fixe",
+           echantillon == "Ensemble", periode == !!periode)
+  stopifnot(nrow(m) == 1)
+  ipc <- charger_ipc()
+  k <- ipc$ipc[ipc$annee == 2023] / ipc$ipc[ipc$annee == euros]   # 1 000 € de `euros` en € de 2023
+  tibble(periode = periode, effet = m$effet_pts / m$taux_pct * k,
+         bas = (m$effet_pts - 1.96 * m$se) / m$taux_pct * k,
+         haut = (m$effet_pts + 1.96 * m$se) / m$taux_pct * k)
+}
+
 # ── Naissance récente : une seule définition pour les 8 vagues ──────────────
 #  2006-2018 : variable "événements" du fichier ménages (EVENEMEN_C).
 #  2022-2025 : module absent des fichiers FPR -> RECONSTRUITE depuis le fichier

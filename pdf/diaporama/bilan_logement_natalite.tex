@@ -60,7 +60,7 @@
 \subtitle{Bilan du projet SRCV, 2014-2025}
 \author[Kévin Genna]{Kévin Genna}
 \institute[Chaire TDTE]{Chaire Transitions Démographiques, Transitions Économiques}
-\date[28 octobre 2026]{Point d'étape au 28 octobre 2026}
+\date[29 octobre 2026]{Point d'étape au 29 octobre 2026}
 
 \begin{document}
 
@@ -82,7 +82,7 @@
           \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
           \item Fluidité : déménager est plus difficile ; le premier enfant est repoussé plus que perdu.
           \item Politique familiale : dans l'ERFS, aucun effet mesurable du barème.
-          \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, au plus un cinquième.
+          \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, $-$3 à 7\,\% ; la moitié inexpliquée.
         \end{itemize}
       \end{callout}
     \end{column}
@@ -905,27 +905,31 @@
 
 \begin{frame}{Ce que pèse le barème dans la baisse}
   \begin{columns}[T]
-    \begin{column}{0.50\textwidth}
-      \footnotesize
-      \begin{tabular}{@{}lrr@{}}
+    \begin{column}{0.57\textwidth}
+      \footnotesize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcc@{}}
         \toprule
-        Part de la baisse de l'ICF & Part & IC à 95\,\% \\
+        Part de la baisse (\%) & Effet 2014-2023 & Effet 2005-2023 \\
         \midrule
-        ERFS 2014-2023, effet commun & $-$6\,\% & $-$33 à 21\,\% \\
-        ERFS 2014-2023, effets par rang & $-$9\,\% & $-$36 à 19\,\% \\
-        SRCV 2014-2025, effet commun & 14\,\% & $-$17 à 47\,\% \\
-        SRCV 2014-2025, effets par rang & 25\,\% & $-$8 à 59\,\% \\
+        ERFS, baisse 2014-2023 & $-$6 ($-$33 à 21) & +13 ($-$6 à 33) \\
+        \quad effets par rang & $-$9 ($-$36 à 19) & +9 ($-$12 à 30) \\
+        Décomposition 2014-2025 & $-$3 ($-$17 à 11) & +7 ($-$3 à 17) \\
+        \midrule
+        SRCV 2014-2025 & \multicolumn{2}{c}{14 ($-$17 à 47)} \\
+        \quad effets par rang & \multicolumn{2}{c}{25 ($-$8 à 59)} \\
         \bottomrule
       \end{tabular}
-      \vspace{0.3cm}
+      \vspace{0.1cm}
+
+      \scriptsize Intervalles à 95\,\% entre parenthèses. 2014-2023 : la période des réformes ; 2005-2023 : plus précis.
+      \vspace{0.2cm}
 
       \small Les couples de 2023 perdent 1\,277\,€ par an par rapport au barème de 2014 ($-$26\,\%), le plus dans le troisième quartile (2\,428\,€).
     \end{column}
-    \begin{column}{0.46\textwidth}
+    \begin{column}{0.39\textwidth}
       \begin{callout}[tdtenavy]{Verdict}
-        \footnotesize\RaggedRight Le recul du barème explique \textbf{au plus un cinquième} de la baisse de la fécondité, et vraisemblablement rien.
+        \footnotesize\RaggedRight Effet faible, non significatif : \textbf{de 0 à 13\,\%} de la baisse selon la période, \textbf{au plus un tiers}.
       \end{callout}
-      \vspace{0.1cm}
       \begin{callout}{Ce qui reste fragile}
         \footnotesize\RaggedRight
         \begin{itemize}\setlength{\itemsep}{1pt}
@@ -947,11 +951,12 @@
     \begin{column}{0.235\textwidth}\kpi[tdtered]{$-$22\,\%}{ICF passé de 2,00 à 1,56 enfant par femme}\end{column}
     \begin{column}{0.235\textwidth}\kpi{34\,\%}{de la baisse viennent du recul de la vie en couple}\end{column}
     \begin{column}{0.235\textwidth}\kpi[tdteorange]{4 à 19\,\%}{pour les petites surfaces, selon la forme retenue}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdtegrey]{33\,\%}{restent inexpliqués : à situation donnée, moins d'enfants}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdtegrey]{51\,\%}{restent inexpliqués : à situation donnée, moins d'enfants}\end{column}
   \end{columns}
-  \vspace{0.4cm}
+  \vspace{0.25cm}
   \begin{aere}
-    \item Aucun facteur n'explique la baisse à lui seul ; ensemble, les facteurs mesurés en couvrent environ \alert{les deux tiers}.
+    \item Aucun facteur n'explique la baisse à lui seul ; ensemble, les facteurs mesurés en couvrent environ \alert{la moitié}.
+    \item Le barème de la politique familiale y prend peu de part : estimé dans l'ERFS, son effet est faible et non significatif ($-$3\,\% ou +7\,\% selon la période d'estimation, au plus 17\,\%).
     \item La vie en couple recule à âge donné, surtout à 25-29 ans (de 58,3 à 53,4\,\% des femmes de 15 à 49 ans), dans tous les milieux.
   \end{aere}
 \end{frame}
@@ -965,138 +970,120 @@
     Recul de la vie en couple & 34\,\% & 33 à 34\,\% & Moins de femmes en couple à âge donné \\
     Logement, petites surfaces & 12\,\% & 4 à 19\,\% & IC à 95\,\% de 0 à 33\,\% ; en partie de l'anticipation \\
     {\color{blue} Logement, statuts d'occupation} & $-$10\,\% & & Recul des propriétaires non accédants, les moins féconds \\
-    Politique familiale (barème) & 18\,\% & {$-$\color{red}14 à 52\,\%}& Non significatif ; ERFS : $\approx$\,0, au plus un cinquième \\
+    Politique familiale (barème) & $-$3\,\% & {$-$\color{red}17 à 11\,\%}& Effet ERFS 2014-2023 ; +7\,\% avec l'effet 2005-2023 ; SRCV : 18\,\%, non significatif \\
     Âge des couples & 4\,\% & 2 à 4\,\% & Les couples ont vieilli d'un demi-an \\
     Prix au m², revenu, ville & $\approx$\,0 & & Aucun effet à surface donnée \\
-    Non expliqué & 33\,\% & & Moins de naissances à situation donnée \\
+    Non expliqué & 51\,\% & & Moins de naissances à situation donnée \\
     \bottomrule
   \end{tabular}
-  \source{Insee, SRCV 2014-2025 ; OpenFisca-France ; calculs de l'auteur.}
+  \source{Insee, SRCV 2014-2025 ; ERFS 2014-2023 pour l'effet du barème, appliqué au recul du gain des couples de 2025 ; OpenFisca-France ; calculs de l'auteur.}
 \end{frame}
 
 \begin{frame}{La décomposition par quartile de niveau de vie}
   \begin{columns}[c]
     \begin{column}{0.64\textwidth}
       \begin{tikzpicture}
-        \begin{axis}[icf, symbolic y coords={Q4,Q3,Q2,Q1,Ens}, ytick={Q4,Q3,Q2,Q1,Ens},
+        \begin{axis}[icf, xmax=110, width=0.88\linewidth, symbolic y coords={Q4,Q3,Q2,Q1,Ens}, ytick={Q4,Q3,Q2,Q1,Ens},
             yticklabels={{Q4 (aisés)},Q3,Q2,{Q1 (modestes)},Ensemble}]
           \addplot[fill=fcouple,draw=none] coordinates {(33.8000,Ens) (66.0000,Q1) (30.3000,Q2) (33.0000,Q3) (26.1000,Q4)};
           \addplot[fill=flogement,draw=none] coordinates {(12.2000,Ens) (13.6000,Q1) (14.5000,Q2) (3.1000,Q3) (22.8000,Q4)};
-          \addplot[fill=fpf,draw=none] coordinates {(17.5000,Ens) (7.3000,Q1) (14.9000,Q2) (32.5000,Q3) (10.8000,Q4)};
           \addplot[fill=fage,draw=none] coordinates {(4.7000,Ens) (0.3000,Q1) (3.4000,Q2) (2.1000,Q3) (9.5000,Q4)};
-          \addplot[fill=freste,draw=none] coordinates {(31.8000,Ens) (12.8000,Q1) (36.9000,Q2) (29.3000,Q3) (30.8000,Q4)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
+          \addplot[fill=freste,draw=none] coordinates {(52.3000,Ens) (21.4000,Q1) (54.6000,Q2) (67.1000,Q3) (43.8000,Q4)};
+          \legend{Vie en couple, Petites surfaces, Âge des couples, Non expliqué}
           \coordinate (e1) at (axis cs:16.9000,Ens);
           \coordinate (e2) at (axis cs:39.9000,Ens);
-          \coordinate (e3) at (axis cs:54.7500,Ens);
-          \coordinate (e4) at (axis cs:84.1000,Ens);
-          \coordinate (e5) at (axis cs:33.0000,Q1);
-          \coordinate (e6) at (axis cs:72.8000,Q1);
-          \coordinate (e7) at (axis cs:83.2500,Q1);
-          \coordinate (e8) at (axis cs:93.6000,Q1);
-          \coordinate (e9) at (axis cs:15.1500,Q2);
-          \coordinate (e10) at (axis cs:37.5500,Q2);
-          \coordinate (e11) at (axis cs:52.2500,Q2);
-          \coordinate (e12) at (axis cs:81.5500,Q2);
-          \coordinate (e13) at (axis cs:16.5000,Q3);
-          \coordinate (e14) at (axis cs:52.3500,Q3);
-          \coordinate (e15) at (axis cs:85.3500,Q3);
-          \coordinate (e16) at (axis cs:13.0500,Q4);
-          \coordinate (e17) at (axis cs:37.5000,Q4);
-          \coordinate (e18) at (axis cs:54.3000,Q4);
-          \coordinate (e19) at (axis cs:64.4500,Q4);
-          \coordinate (e20) at (axis cs:84.6000,Q4);
+          \coordinate (e3) at (axis cs:76.8500,Ens);
+          \coordinate (e4) at (axis cs:33.0000,Q1);
+          \coordinate (e5) at (axis cs:72.8000,Q1);
+          \coordinate (e6) at (axis cs:90.6000,Q1);
+          \coordinate (e7) at (axis cs:15.1500,Q2);
+          \coordinate (e8) at (axis cs:37.5500,Q2);
+          \coordinate (e9) at (axis cs:75.5000,Q2);
+          \coordinate (e10) at (axis cs:16.5000,Q3);
+          \coordinate (e11) at (axis cs:71.7500,Q3);
+          \coordinate (e12) at (axis cs:13.0500,Q4);
+          \coordinate (e13) at (axis cs:37.5000,Q4);
+          \coordinate (e14) at (axis cs:53.6500,Q4);
+          \coordinate (e15) at (axis cs:80.3000,Q4);
         \end{axis}
         \node[etiq,text=white] at (e1) {34};
         \node[etiq,text=black] at (e2) {12};
-        \node[etiq,text=black] at (e3) {18};
-        \node[etiq,text=black] at (e4) {32};
-        \node[etiq,text=white] at (e5) {66};
-        \node[etiq,text=black] at (e6) {14};
-        \node[etiq,text=black] at (e7) {7};
-        \node[etiq,text=black] at (e8) {13};
-        \node[etiq,text=white] at (e9) {30};
-        \node[etiq,text=black] at (e10) {14};
-        \node[etiq,text=black] at (e11) {15};
-        \node[etiq,text=black] at (e12) {37};
-        \node[etiq,text=white] at (e13) {33};
-        \node[etiq,text=black] at (e14) {32};
-        \node[etiq,text=black] at (e15) {29};
-        \node[etiq,text=white] at (e16) {26};
-        \node[etiq,text=black] at (e17) {23};
-        \node[etiq,text=black] at (e18) {11};
-        \node[etiq,text=black] at (e19) {10};
-        \node[etiq,text=black] at (e20) {31};
+        \node[etiq,text=black] at (e3) {52};
+        \node[etiq,text=white] at (e4) {66};
+        \node[etiq,text=black] at (e5) {14};
+        \node[etiq,text=black] at (e6) {21};
+        \node[etiq,text=white] at (e7) {30};
+        \node[etiq,text=black] at (e8) {15};
+        \node[etiq,text=black] at (e9) {55};
+        \node[etiq,text=white] at (e10) {33};
+        \node[etiq,text=black] at (e11) {67};
+        \node[etiq,text=white] at (e12) {26};
+        \node[etiq,text=black] at (e13) {23};
+        \node[etiq,text=black] at (e14) {10};
+        \node[etiq,text=black] at (e15) {44};
+
       \end{tikzpicture}
     \end{column}
     \begin{column}{0.33\textwidth}
       \small
       \begin{aere}
-        \item La politique familiale se concentre sur les \alert{classes moyennes} (33\,\% en Q3, 15\,\% en Q2) : ce sont elles qui ont perdu la PAJE.
+        \item Les classes moyennes ont le plus perdu (1\,878\,€ par an en Q3), mais le barème \alert{y pèse peu} : de $-$5 à +12\,\% en Q3 selon la période d'estimation, non représenté.
         \item Les 66\,\% de la vie en couple en Q1 sont surtout un effet de classement : une femme seule n'a qu'un revenu et tombe en Q1.
       \end{aere}
     \end{column}
   \end{columns}
-  \source{Insee, SRCV 2014-2025 ; calculs de l'auteur.}
+  \source{Insee, SRCV 2014-2025 ; politique familiale : effet estimé dans l'ERFS 2014-2023 ; calculs de l'auteur.}
 \end{frame}
 
 \begin{frame}{Par quartile, en enfants par femme}
   \begin{columns}[c]
     \begin{column}{0.64\textwidth}
       \begin{tikzpicture}
-        \begin{axis}[icfpts, symbolic y coords={Q4,Q3,Q2,Q1,Ens}, ytick={Q4,Q3,Q2,Q1,Ens},
+        \begin{axis}[icfpts, xmax=0.49, width=0.88\linewidth, symbolic y coords={Q4,Q3,Q2,Q1,Ens}, ytick={Q4,Q3,Q2,Q1,Ens},
             yticklabels={{Q4 (aisés)},Q3,Q2,{Q1 (modestes)},Ensemble}]
           \addplot[fill=fcouple,draw=none] coordinates {(0.1487,Ens) (0.2904,Q1) (0.1333,Q2) (0.1452,Q3) (0.1148,Q4)};
           \addplot[fill=flogement,draw=none] coordinates {(0.0537,Ens) (0.0598,Q1) (0.0638,Q2) (0.0136,Q3) (0.1003,Q4)};
-          \addplot[fill=fpf,draw=none] coordinates {(0.0770,Ens) (0.0321,Q1) (0.0656,Q2) (0.1430,Q3) (0.0475,Q4)};
           \addplot[fill=fage,draw=none] coordinates {(0.0207,Ens) (0.0013,Q1) (0.0150,Q2) (0.0092,Q3) (0.0418,Q4)};
-          \addplot[fill=freste,draw=none] coordinates {(0.1399,Ens) (0.0563,Q1) (0.1624,Q2) (0.1289,Q3) (0.1355,Q4)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
+          \addplot[fill=freste,draw=none] coordinates {(0.2301,Ens) (0.0942,Q1) (0.2402,Q2) (0.2952,Q3) (0.1927,Q4)};
+          \legend{Vie en couple, Petites surfaces, Âge des couples, Non expliqué}
           \coordinate (e1) at (axis cs:0.0744,Ens);
           \coordinate (e2) at (axis cs:0.1756,Ens);
-          \coordinate (e3) at (axis cs:0.2409,Ens);
-          \coordinate (e4) at (axis cs:0.3700,Ens);
-          \coordinate (e5) at (axis cs:0.1452,Q1);
-          \coordinate (e6) at (axis cs:0.3203,Q1);
-          \coordinate (e7) at (axis cs:0.4118,Q1);
-          \coordinate (e8) at (axis cs:0.0667,Q2);
-          \coordinate (e9) at (axis cs:0.1652,Q2);
-          \coordinate (e10) at (axis cs:0.2299,Q2);
-          \coordinate (e11) at (axis cs:0.3588,Q2);
-          \coordinate (e12) at (axis cs:0.0726,Q3);
-          \coordinate (e13) at (axis cs:0.2303,Q3);
-          \coordinate (e14) at (axis cs:0.3755,Q3);
-          \coordinate (e15) at (axis cs:0.0574,Q4);
-          \coordinate (e16) at (axis cs:0.1650,Q4);
-          \coordinate (e17) at (axis cs:0.2389,Q4);
-          \coordinate (e18) at (axis cs:0.2836,Q4);
-          \coordinate (e19) at (axis cs:0.3722,Q4);
+          \coordinate (e3) at (axis cs:0.3381,Ens);
+          \coordinate (e4) at (axis cs:0.1452,Q1);
+          \coordinate (e5) at (axis cs:0.3203,Q1);
+          \coordinate (e6) at (axis cs:0.3986,Q1);
+          \coordinate (e7) at (axis cs:0.0667,Q2);
+          \coordinate (e8) at (axis cs:0.1652,Q2);
+          \coordinate (e9) at (axis cs:0.3322,Q2);
+          \coordinate (e10) at (axis cs:0.0726,Q3);
+          \coordinate (e11) at (axis cs:0.3157,Q3);
+          \coordinate (e12) at (axis cs:0.0574,Q4);
+          \coordinate (e13) at (axis cs:0.1650,Q4);
+          \coordinate (e14) at (axis cs:0.2361,Q4);
+          \coordinate (e15) at (axis cs:0.3533,Q4);
         \end{axis}
         \node[etiq,text=white] at (e1) {0,15};
         \node[etiq,text=black] at (e2) {0,05};
-        \node[etiq,text=black] at (e3) {0,08};
-        \node[etiq,text=black] at (e4) {0,14};
-        \node[etiq,text=white] at (e5) {0,29};
-        \node[etiq,text=black] at (e6) {0,06};
-        \node[etiq,text=black] at (e7) {0,06};
-        \node[etiq,text=white] at (e8) {0,13};
-        \node[etiq,text=black] at (e9) {0,06};
-        \node[etiq,text=black] at (e10) {0,07};
-        \node[etiq,text=black] at (e11) {0,16};
-        \node[etiq,text=white] at (e12) {0,15};
-        \node[etiq,text=black] at (e13) {0,14};
-        \node[etiq,text=black] at (e14) {0,13};
-        \node[etiq,text=white] at (e15) {0,11};
-        \node[etiq,text=black] at (e16) {0,10};
-        \node[etiq,text=black] at (e17) {0,05};
-        \node[etiq,text=black] at (e18) {0,04};
-        \node[etiq,text=black] at (e19) {0,14};
+        \node[etiq,text=black] at (e3) {0,23};
+        \node[etiq,text=white] at (e4) {0,29};
+        \node[etiq,text=black] at (e5) {0,06};
+        \node[etiq,text=black] at (e6) {0,09};
+        \node[etiq,text=white] at (e7) {0,13};
+        \node[etiq,text=black] at (e8) {0,06};
+        \node[etiq,text=black] at (e9) {0,24};
+        \node[etiq,text=white] at (e10) {0,15};
+        \node[etiq,text=black] at (e11) {0,30};
+        \node[etiq,text=white] at (e12) {0,11};
+        \node[etiq,text=black] at (e13) {0,10};
+        \node[etiq,text=black] at (e14) {0,04};
+        \node[etiq,text=black] at (e15) {0,19};
+
       \end{tikzpicture}
     \end{column}
     \begin{column}{0.33\textwidth}
       \small
       \begin{itemize}\setlength{\itemsep}{0.4em}
-        \item \textbf{France entière}, l'ICF perd 0,44 enfant par femme : 0,15 pour la vie en couple, 0,05 pour les petites surfaces (de 0,02 à 0,08), 0,08 pour la politique familiale, 0,02 pour l'âge, 0,14 non expliqué.
+        \item \textbf{France entière}, l'ICF perd 0,44 enfant par femme : 0,15 pour la vie en couple, 0,05 pour les surfaces (0,02 à 0,08), 0,02 pour l'âge, 0 à 0,03 pour le barème, 0,23 non expliqué.
       \end{itemize}
       \vspace{0.15cm}
       \begin{callout}[tdtenavy]{Lire un quartile}
@@ -1111,130 +1098,108 @@
   \begin{columns}[c]
     \begin{column}{0.64\textwidth}
       \begin{tikzpicture}
-        \begin{axis}[icf, symbolic y coords={CAP,Bac,Bac2,Sup,Ens}, ytick={CAP,Bac,Bac2,Sup,Ens},
+        \begin{axis}[icf, xmax=110, width=0.82\linewidth, symbolic y coords={CAP,Bac,Bac2,Sup,Ens}, ytick={CAP,Bac,Bac2,Sup,Ens},
             yticklabels={{CAP-BEP ou moins},Bac,Bac+2,{Bac+3 ou plus},{Ensemble (25-49 ans)}}]
           \addplot[fill=fcouple,draw=none] coordinates {(30.3000,Ens) (28.6000,Sup) (49.5000,Bac2) (24.9000,Bac) (24.9000,CAP)};
           \addplot[fill=flogement,draw=none] coordinates {(11.7000,Ens) (18.0000,Sup) (0.0000,Bac2) (1.0000,Bac) (15.9000,CAP)};
-          \addplot[fill=fpf,draw=none] coordinates {(17.8000,Ens) (16.9000,Sup) (18.6000,Bac2) (19.5000,Bac) (17.6000,CAP)};
           \addplot[fill=fage,draw=none] coordinates {(6.7000,Ens) (8.9000,Sup) (10.6000,Bac2) (1.8000,Bac) (3.8000,CAP)};
-          \addplot[fill=freste,draw=none] coordinates {(33.4000,Ens) (27.7000,Sup) (26.2000,Bac2) (52.7000,Bac) (37.8000,CAP)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
+          \addplot[fill=freste,draw=none] coordinates {(54.3000,Ens) (47.7000,Sup) (47.9000,Bac2) (75.5000,Bac) (58.3000,CAP)};
+          \legend{Vie en couple, Petites surfaces, Âge des couples, Non expliqué}
           \coordinate (e1) at (axis cs:15.1500,Ens);
           \coordinate (e2) at (axis cs:36.1500,Ens);
-          \coordinate (e3) at (axis cs:50.9000,Ens);
-          \coordinate (e4) at (axis cs:63.1500,Ens);
-          \coordinate (e5) at (axis cs:83.2000,Ens);
-          \coordinate (e6) at (axis cs:14.3000,Sup);
-          \coordinate (e7) at (axis cs:37.6000,Sup);
-          \coordinate (e8) at (axis cs:55.0500,Sup);
-          \coordinate (e9) at (axis cs:67.9500,Sup);
-          \coordinate (e10) at (axis cs:86.2500,Sup);
-          \coordinate (e11) at (axis cs:24.7500,Bac2);
-          \coordinate (e12) at (axis cs:58.8000,Bac2);
-          \coordinate (e13) at (axis cs:73.4000,Bac2);
-          \coordinate (e14) at (axis cs:91.8000,Bac2);
-          \coordinate (e15) at (axis cs:12.4500,Bac);
-          \coordinate (e16) at (axis cs:35.6500,Bac);
-          \coordinate (e17) at (axis cs:73.5500,Bac);
-          \coordinate (e18) at (axis cs:12.4500,CAP);
-          \coordinate (e19) at (axis cs:32.8500,CAP);
-          \coordinate (e20) at (axis cs:49.6000,CAP);
-          \coordinate (e21) at (axis cs:81.1000,CAP);
+          \coordinate (e3) at (axis cs:45.3500,Ens);
+          \coordinate (e4) at (axis cs:75.8500,Ens);
+          \coordinate (e5) at (axis cs:14.3000,Sup);
+          \coordinate (e6) at (axis cs:37.6000,Sup);
+          \coordinate (e7) at (axis cs:51.0500,Sup);
+          \coordinate (e8) at (axis cs:79.3500,Sup);
+          \coordinate (e9) at (axis cs:24.7500,Bac2);
+          \coordinate (e10) at (axis cs:54.8000,Bac2);
+          \coordinate (e11) at (axis cs:84.0500,Bac2);
+          \coordinate (e12) at (axis cs:12.4500,Bac);
+          \coordinate (e13) at (axis cs:65.4500,Bac);
+          \coordinate (e14) at (axis cs:12.4500,CAP);
+          \coordinate (e15) at (axis cs:32.8500,CAP);
+          \coordinate (e16) at (axis cs:73.7500,CAP);
         \end{axis}
         \node[etiq,text=white] at (e1) {30};
         \node[etiq,text=black] at (e2) {12};
-        \node[etiq,text=black] at (e3) {18};
-        \node[etiq,text=black] at (e4) {7};
-        \node[etiq,text=black] at (e5) {33};
-        \node[etiq,text=white] at (e6) {29};
-        \node[etiq,text=black] at (e7) {18};
-        \node[etiq,text=black] at (e8) {17};
-        \node[etiq,text=black] at (e9) {9};
-        \node[etiq,text=black] at (e10) {28};
-        \node[etiq,text=white] at (e11) {50};
-        \node[etiq,text=black] at (e12) {19};
-        \node[etiq,text=black] at (e13) {11};
-        \node[etiq,text=black] at (e14) {26};
-        \node[etiq,text=white] at (e15) {25};
-        \node[etiq,text=black] at (e16) {20};
-        \node[etiq,text=black] at (e17) {53};
-        \node[etiq,text=white] at (e18) {25};
-        \node[etiq,text=black] at (e19) {16};
-        \node[etiq,text=black] at (e20) {18};
-        \node[etiq,text=black] at (e21) {38};
+        \node[etiq,text=black] at (e3) {7};
+        \node[etiq,text=black] at (e4) {54};
+        \node[etiq,text=white] at (e5) {29};
+        \node[etiq,text=black] at (e6) {18};
+        \node[etiq,text=black] at (e7) {9};
+        \node[etiq,text=black] at (e8) {48};
+        \node[etiq,text=white] at (e9) {50};
+        \node[etiq,text=black] at (e10) {11};
+        \node[etiq,text=black] at (e11) {48};
+        \node[etiq,text=white] at (e12) {25};
+        \node[etiq,text=black] at (e13) {76};
+        \node[etiq,text=white] at (e14) {25};
+        \node[etiq,text=black] at (e15) {16};
+        \node[etiq,text=black] at (e16) {58};
+
       \end{tikzpicture}
     \end{column}
     \begin{column}{0.33\textwidth}
       \small
       \begin{aere}
         \item Le recul de la vie en couple touche \alert{tous les niveaux de diplôme}, sans concentration chez les moins diplômées.
-        \item La politique familiale pèse de façon semblable dans chaque groupe (17 à 20\,\%).
+        \item Le barème de la politique familiale pèse peu dans chaque groupe ($-$3 ou +7\,\% selon la période d'estimation), non représenté.
         \item Chez les bac+2, la contribution des surfaces est légèrement négative ($-$5\,\%), non représentée.
       \end{aere}
     \end{column}
   \end{columns}
-  \source{Insee, SRCV 2014-2025, femmes de 25 à 49 ans ; calculs de l'auteur.}
+  \source{Insee, SRCV 2014-2025, femmes de 25 à 49 ans ; politique familiale : effet estimé dans l'ERFS 2014-2023 ; calculs de l'auteur.}
 \end{frame}
 
 \begin{frame}{Par diplôme, en enfants par femme}
   \begin{columns}[c]
     \begin{column}{0.64\textwidth}
       \begin{tikzpicture}
-        \begin{axis}[icfpts, symbolic y coords={CAP,Bac,Bac2,Sup,Ens}, ytick={CAP,Bac,Bac2,Sup,Ens},
+        \begin{axis}[icfpts, xmax=0.49, width=0.82\linewidth, symbolic y coords={CAP,Bac,Bac2,Sup,Ens}, ytick={CAP,Bac,Bac2,Sup,Ens},
             yticklabels={{CAP-BEP ou moins},Bac,Bac+2,{Bac+3 ou plus},{Ensemble (25-49 ans)}}]
           \addplot[fill=fcouple,draw=none] coordinates {(0.1333,Ens) (0.1258,Sup) (0.2178,Bac2) (0.1096,Bac) (0.1096,CAP)};
           \addplot[fill=flogement,draw=none] coordinates {(0.0515,Ens) (0.0792,Sup) (0.0000,Bac2) (0.0044,Bac) (0.0700,CAP)};
-          \addplot[fill=fpf,draw=none] coordinates {(0.0783,Ens) (0.0744,Sup) (0.0818,Bac2) (0.0858,Bac) (0.0774,CAP)};
           \addplot[fill=fage,draw=none] coordinates {(0.0295,Ens) (0.0392,Sup) (0.0466,Bac2) (0.0079,Bac) (0.0167,CAP)};
-          \addplot[fill=freste,draw=none] coordinates {(0.1470,Ens) (0.1219,Sup) (0.1153,Bac2) (0.2319,Bac) (0.1663,CAP)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
+          \addplot[fill=freste,draw=none] coordinates {(0.2389,Ens) (0.2099,Sup) (0.2108,Bac2) (0.3322,Bac) (0.2565,CAP)};
+          \legend{Vie en couple, Petites surfaces, Âge des couples, Non expliqué}
           \coordinate (e1) at (axis cs:0.0667,Ens);
           \coordinate (e2) at (axis cs:0.1591,Ens);
-          \coordinate (e3) at (axis cs:0.2240,Ens);
-          \coordinate (e4) at (axis cs:0.3661,Ens);
-          \coordinate (e5) at (axis cs:0.0629,Sup);
-          \coordinate (e6) at (axis cs:0.1654,Sup);
-          \coordinate (e7) at (axis cs:0.2422,Sup);
-          \coordinate (e8) at (axis cs:0.2990,Sup);
-          \coordinate (e9) at (axis cs:0.3795,Sup);
-          \coordinate (e10) at (axis cs:0.1089,Bac2);
-          \coordinate (e11) at (axis cs:0.2587,Bac2);
-          \coordinate (e12) at (axis cs:0.3230,Bac2);
-          \coordinate (e13) at (axis cs:0.4039,Bac2);
-          \coordinate (e14) at (axis cs:0.0548,Bac);
-          \coordinate (e15) at (axis cs:0.1569,Bac);
-          \coordinate (e16) at (axis cs:0.3236,Bac);
-          \coordinate (e17) at (axis cs:0.0548,CAP);
-          \coordinate (e18) at (axis cs:0.1445,CAP);
-          \coordinate (e19) at (axis cs:0.2182,CAP);
-          \coordinate (e20) at (axis cs:0.3568,CAP);
+          \coordinate (e3) at (axis cs:0.3337,Ens);
+          \coordinate (e4) at (axis cs:0.0629,Sup);
+          \coordinate (e5) at (axis cs:0.1654,Sup);
+          \coordinate (e6) at (axis cs:0.3491,Sup);
+          \coordinate (e7) at (axis cs:0.1089,Bac2);
+          \coordinate (e8) at (axis cs:0.2411,Bac2);
+          \coordinate (e9) at (axis cs:0.3698,Bac2);
+          \coordinate (e10) at (axis cs:0.0548,Bac);
+          \coordinate (e11) at (axis cs:0.2880,Bac);
+          \coordinate (e12) at (axis cs:0.0548,CAP);
+          \coordinate (e13) at (axis cs:0.1445,CAP);
+          \coordinate (e14) at (axis cs:0.3245,CAP);
         \end{axis}
         \node[etiq,text=white] at (e1) {0,13};
         \node[etiq,text=black] at (e2) {0,05};
-        \node[etiq,text=black] at (e3) {0,08};
-        \node[etiq,text=black] at (e4) {0,15};
-        \node[etiq,text=white] at (e5) {0,13};
-        \node[etiq,text=black] at (e6) {0,08};
-        \node[etiq,text=black] at (e7) {0,07};
-        \node[etiq,text=black] at (e8) {0,04};
-        \node[etiq,text=black] at (e9) {0,12};
-        \node[etiq,text=white] at (e10) {0,22};
-        \node[etiq,text=black] at (e11) {0,08};
-        \node[etiq,text=black] at (e12) {0,05};
-        \node[etiq,text=black] at (e13) {0,12};
-        \node[etiq,text=white] at (e14) {0,11};
-        \node[etiq,text=black] at (e15) {0,09};
-        \node[etiq,text=black] at (e16) {0,23};
-        \node[etiq,text=white] at (e17) {0,11};
-        \node[etiq,text=black] at (e18) {0,07};
-        \node[etiq,text=black] at (e19) {0,08};
-        \node[etiq,text=black] at (e20) {0,17};
+        \node[etiq,text=black] at (e3) {0,24};
+        \node[etiq,text=white] at (e4) {0,13};
+        \node[etiq,text=black] at (e5) {0,08};
+        \node[etiq,text=black] at (e6) {0,21};
+        \node[etiq,text=white] at (e7) {0,22};
+        \node[etiq,text=black] at (e8) {0,05};
+        \node[etiq,text=black] at (e9) {0,21};
+        \node[etiq,text=white] at (e10) {0,11};
+        \node[etiq,text=black] at (e11) {0,33};
+        \node[etiq,text=white] at (e12) {0,11};
+        \node[etiq,text=black] at (e13) {0,07};
+        \node[etiq,text=black] at (e14) {0,26};
+
       \end{tikzpicture}
     \end{column}
     \begin{column}{0.33\textwidth}
       \small
       \begin{itemize}\setlength{\itemsep}{0.4em}
-        \item Chez les 25-49 ans, la vie en couple équivaut à 0,13 enfant par femme ; la politique familiale à 0,08 dans chaque groupe.
+        \item Chez les 25-49 ans, la vie en couple équivaut à 0,13 enfant par femme ; 0,24 reste inexpliqué.
         \item Chez les bac+2, la vie en couple pèse 0,22 ; les surfaces y jouent un peu en sens inverse ($+$0,02, non représenté).
         \item Une barre de groupe se lit comme pour les quartiles.
       \end{itemize}
@@ -1254,8 +1219,8 @@
     \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
     \item Déménager est plus difficile depuis 2022 (\textbf{crédit, relocation}) ; ce canal pèse au plus 6\,\% du recul des premières naissances, et \textbf{repousse} le premier enfant plus qu'il ne le supprime.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
-    \item Le barème de la \textbf{politique familiale} rapporte un quart de moins par enfant qu'en 2014, mais dans l'ERFS ce recul n'a pas d'effet mesurable : \textbf{au plus un cinquième} de la baisse, vraisemblablement rien.
-    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; un tiers reste inexpliqué, davantage si la politique familiale n'y est pour rien.
+    \item Le barème de la \textbf{politique familiale} rapporte un quart de moins par enfant qu'en 2014, mais dans l'ERFS ce recul n'a pas d'effet significatif : de 0 à 13\,\% de la baisse selon la période d'estimation, \textbf{au plus un tiers}.
+    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; la moitié reste inexpliquée.
   \end{enumerate}
 \end{frame}
 
