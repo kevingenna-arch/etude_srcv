@@ -60,7 +60,7 @@
 \subtitle{Bilan du projet SRCV, 2014-2025}
 \author[Kévin Genna]{Kévin Genna}
 \institute[Chaire TDTE]{Chaire Transitions Démographiques, Transitions Économiques}
-\date[29 octobre 2026]{Point d'étape au 29 octobre 2026}
+\date[9 novembre 2026]{Point d'étape au 9 novembre 2026}
 
 \begin{document}
 
@@ -81,7 +81,7 @@
           \item Logement : surtout un choix, et une contrainte à la marge d'une pièce.
           \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
           \item Fluidité : déménager est plus difficile ; le premier enfant est repoussé plus que perdu.
-          \item Politique familiale : dans l'ERFS, aucun effet mesurable du barème.
+          \item Politique familiale : dans l'ERFS, aucun effet mesurable du barème, prestations comme quotient familial.
           \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, $-$3 à 7\,\% ; la moitié inexpliquée.
         \end{itemize}
       \end{callout}
@@ -903,6 +903,141 @@
   \source{ERFS 2005-2023 : modèles linéaires pondérés, gain et gain au barème de 2014, effets fixes d'année ; écarts-types entre parenthèses. SRCV 2014-2025 : probits, mesure affinée (script 50). Exposition : gain au barème de 2019 moins gain au barème de 2013.}
 \end{frame}
 
+\pgfplotsset{plafond/.style={tdte, height=4.1cm, xmin=2004.5, xmax=2023.5, ymin=-9, ymax=8.5,
+    xtick={2005,2011,2017,2023}, ytick={-8,-4,0,4,8}, ymajorgrids,
+    xticklabel={\pgfmathprintnumber[assume math mode=true,set thousands separator={}]{\tick}},
+    extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey}}},
+  saut/.style={only marks, mark=*, mark size=1.4pt, #1,
+    error bars/.cd, y dir=both, y explicit, error bar style={#1,thick}, error mark=none}}
+\begin{frame}{Plafonds de la PAJE : un saut noyé dans le bruit}
+  \begin{columns}[T]
+    \begin{column}{0.64\textwidth}
+      \begin{minipage}[t]{0.5\linewidth}
+        \begin{tikzpicture}
+          \begin{axis}[plafond, ylabel={saut, points}, title={Plafond zéro de 2014}]
+            \fill[tdtelight!60] (axis cs:2013.5,-9) rectangle (axis cs:2017.5,8.5);
+            \draw[tdtered, densely dashed, thick] (axis cs:2004.5,-2) -- (axis cs:2023.5,-2);
+            \addplot[saut=tdtegrey!70] coordinates {(2005,2.68) +- (0,4.10) (2006,-0.72) +- (0,3.63)
+              (2007,-2.63) +- (0,3.29) (2008,-1.20) +- (0,4.45) (2009,0.48) +- (0,3.53) (2010,-0.87) +- (0,3.29)
+              (2011,0.26) +- (0,3.39) (2012,-0.15) +- (0,3.27) (2013,0.71) +- (0,3.88) (2018,0.56) +- (0,3.63)
+              (2019,0.40) +- (0,3.80) (2020,0.73) +- (0,3.82) (2021,-0.66) +- (0,4.08) (2022,-0.74) +- (0,3.98)
+              (2023,-4.27) +- (0,3.98)};
+            \addplot[saut=tdtenavy] coordinates {(2014,-0.44) +- (0,3.53) (2015,-4.29) +- (0,3.76)
+              (2016,1.30) +- (0,3.88) (2017,1.55) +- (0,3.94)};
+            \node[font=\tiny, tdtered, anchor=south west] at (axis cs:2004.8,-8.9) {Elmallakh : $-$2};
+          \end{axis}
+        \end{tikzpicture}
+      \end{minipage}%
+      \begin{minipage}[t]{0.5\linewidth}
+        \begin{tikzpicture}
+          \begin{axis}[plafond, title={Plafond zéro de 2018}]
+            \fill[tdtelight!60] (axis cs:2017.5,-9) rectangle (axis cs:2023.5,8.5);
+            \draw[tdtered, densely dashed, thick] (axis cs:2004.5,-2) -- (axis cs:2023.5,-2);
+            \addplot[saut=tdtegrey!70] coordinates {(2005,-0.05) +- (0,3.35) (2006,0.97) +- (0,3.49)
+              (2007,0.50) +- (0,3.23) (2008,0.06) +- (0,3.96) (2009,-0.85) +- (0,3.14) (2010,-0.80) +- (0,3.18)
+              (2011,-0.92) +- (0,3.00) (2012,1.92) +- (0,2.90) (2013,-0.05) +- (0,3.35) (2014,-1.30) +- (0,3.31)
+              (2015,-1.95) +- (0,3.96) (2016,-1.50) +- (0,3.21) (2017,2.90) +- (0,3.14)};
+            \addplot[saut=tdtenavy] coordinates {(2018,-0.89) +- (0,3.33) (2019,-1.91) +- (0,3.31)
+              (2020,-2.37) +- (0,3.70) (2021,3.80) +- (0,3.74) (2022,-0.49) +- (0,3.88) (2023,-0.68) +- (0,3.72)};
+          \end{axis}
+        \end{tikzpicture}
+      \end{minipage}
+
+      \vspace{0.1cm}
+      \scriptsize\RaggedRight En foncé, sur fond grisé : les années où la falaise existe. D'une année à l'autre, les sauts varient comme le bruit : écart-type de 1,8 point, erreur-type moyenne de 1,9.
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \footnotesize
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Réplication 2014-2015 : \textbf{$-$2,3 points} (1,3) ; Elmallakh, dans SRCV : $-$2,0.
+        \item Mais $-$4,3 aussi en 2023, sans falaise, et +3,1 au plafond \og moitié\fg{} ; rien avant 2014.
+        \item Réformes 2014 et 2018 réunies : $-$0,04 point par k€ (0,06), contre +0,40.
+      \end{itemize}
+      \begin{callout}{L'ERFS ne tranche pas}
+        \scriptsize\RaggedRight Revenus de N, plafonds sur \mbox{N-2} : les prestations observées ne baissent presque pas aux seuils. Piste : un panel d'un an.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023, couples ayant déjà un enfant ; régression sur discontinuité à $\pm$10\,k€ de ressources, droite de chaque côté, une par année, intervalles à 95\,\% ; script R/59. Elmallakh (2023), \emph{Demography} 60(5).}
+\end{frame}
+
+\begin{frame}{Prestations ou quotient familial : ni l'un ni l'autre}
+  \begin{columns}[T]
+    \begin{column}{0.47\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[tdte, xbar stacked, bar width=0.38cm, height=3.8cm, xmin=0, xmax=46,
+            ytick={1,2,3,4}, yticklabels={4\textsuperscript{e} quartile, 3\textsuperscript{e} quartile,
+              2\textsuperscript{e} quartile, 1\textsuperscript{er} quartile},
+            yticklabel style={font=\scriptsize,color=tdteink}, y axis line style={draw=none}, ytick style={draw=none},
+            xlabel={k€ de 2023, actualisés à 2\,\%}, xmajorgrids,
+            title={Ce que rapporte un enfant de 0 à 19 ans (2023)},
+            legcarre, legend columns=2, legend style={at={(0.5,-0.45)},anchor=north}]
+          \addplot[fill=tdtenavy, draw=none] coordinates {(9.4,1) (18.7,2) (30.3,3) (34.4,4)};
+          \addplot[fill=tdteorange, draw=none] coordinates {(30.0,1) (18.8,2) (9.2,3) (1.7,4)};
+          \legend{{Prestations (AF, CF, PAJE)}, {Quotient familial}}
+        \end{axis}
+      \end{tikzpicture}
+
+      \scriptsize\RaggedRight Ensemble : 23,2\,k€ de prestations, 14,9\,k€ de quotient familial (39\,\%, contre 25\,\% sur la seule première année).
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3.5pt}
+      Effet de 1\,000\,€ sur l'enfance, en points de probabilité de naissance :\par\vspace{2pt}
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        & Prestations & Quotient familial \\
+        \midrule
+        Référence & $-$0,05 (0,02) & +0,02 (0,01) \\
+        Contrôles stricts & $-$0,02 (0,02) & +0,01 (0,01) \\
+        Même effet par euro & \multicolumn{2}{c}{0,00 (0,01)} \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.2cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Plafonnement du QF de 2012-2013 : 42\,\% des couples du dernier quartile perdent 15\,k€, sans baisse mesurable de leurs naissances.
+        \item Au plus \textbf{0,03 point} pour 1\,000\,€ : il faudrait 30\,000\,€ de plus par enfant pour 10\,\% de naissances en plus.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023, OpenFisca-France ; enfant de 0 à 19 ans, revenus et barème figés ; écarts-types entre parenthèses ; contrôles stricts : année $\times$ décile de niveau de vie $\times$ nombre d'enfants, qui effacent le signe négatif des prestations. Script R/60.}
+\end{frame}
+
+\begin{frame}{Reverser le QF en prestations : rien à attendre}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Couples de 2023 & Plafond à 1\,000\,€ & QF supprimé \\
+        \midrule
+        Recette & 1,9\,Md€ & 8,4\,Md€ \\
+        Forfait par enfant de moins de 20 ans & 16\,€ par mois & 73\,€ par mois \\
+        Enfant de plus : prestations & +3,3\,k€ & +14,6\,k€ \\
+        \quad quotient familial & $-$3,0\,k€ & $-$14,9\,k€ \\
+        Couples pour qui il vaut plus & 76\,\% & 50\,\% \\
+        \midrule
+        Naissances, même effet par euro & 0\,\% & 0\,\% \\
+        Naissances, effets séparés & $-$1\,\% ($-$4 à +1) & $-$6\,\% ($-$17 à +5) \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small\RaggedRight La réforme déplace la valeur d'un enfant vers la moitié modeste : +9\,k€ par enfant, sans effet mesurable ($-$0,02 point $\pm$ 0,22).
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \begin{callout}[tdtenavy]{Ce qu'on peut dire}
+        \scriptsize\RaggedRight Les montants des prestations et du quotient familial n'ont pas d'effet mesurable sur les naissances : reverser l'un en l'autre ne relancerait pas la natalité.
+      \end{callout}
+      \begin{callout}{Hors de portée}
+        \scriptsize\RaggedRight Accueil du jeune enfant, congé parental, existence même d'une politique familiale, effets lents ou communs à toutes les familles.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{Couples de 2023 dont la femme a 15 à 49 ans, budget équilibré sur ce champ ; valeur sur l'enfance actualisée à 2\,\% ; effets séparés : contrôles stricts, intervalles à 95\,\% ; effet revenu sur les enfants déjà nés non compté. Script R/60.}
+\end{frame}
+
 \begin{frame}{Ce que pèse le barème dans la baisse}
   \begin{columns}[T]
     \begin{column}{0.57\textwidth}
@@ -1219,7 +1354,7 @@
     \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
     \item Déménager est plus difficile depuis 2022 (\textbf{crédit, relocation}) ; ce canal pèse au plus 6\,\% du recul des premières naissances, et \textbf{repousse} le premier enfant plus qu'il ne le supprime.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
-    \item Le barème de la \textbf{politique familiale} rapporte un quart de moins par enfant qu'en 2014, mais dans l'ERFS ce recul n'a pas d'effet significatif : de 0 à 13\,\% de la baisse selon la période d'estimation, \textbf{au plus un tiers}.
+    \item Le barème de la \textbf{politique familiale} rapporte un quart de moins par enfant qu'en 2014, sans effet significatif dans l'ERFS : de 0 à 13\,\% de la baisse, \textbf{au plus un tiers} ; ni les prestations ni le quotient familial ne pèsent, et reverser l'un en l'autre ne relancerait pas la natalité.
     \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; la moitié reste inexpliquée.
   \end{enumerate}
 \end{frame}
