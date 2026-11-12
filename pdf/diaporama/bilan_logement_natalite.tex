@@ -60,7 +60,7 @@
 \subtitle{Bilan du projet SRCV, 2014-2025}
 \author[Kévin Genna]{Kévin Genna}
 \institute[Chaire TDTE]{Chaire Transitions Démographiques, Transitions Économiques}
-\date[9 novembre 2026]{Point d'étape au 9 novembre 2026}
+\date[12 novembre 2026]{Point d'étape au 12 novembre 2026}
 
 \begin{document}
 
@@ -81,7 +81,7 @@
           \item Logement : surtout un choix, et une contrainte à la marge d'une pièce.
           \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
           \item Fluidité : déménager est plus difficile ; le premier enfant est repoussé plus que perdu.
-          \item Politique familiale : dans l'ERFS, aucun effet mesurable du barème, prestations comme quotient familial.
+          \item Politique familiale : dans l'ERFS, aucun effet mesurable du barème, prestations comme quotient familial, sauf peut-être au premier enfant ; congé parental raccourci en 2015, pas moins de naissances.
           \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, $-$3 à 7\,\% ; la moitié inexpliquée.
         \end{itemize}
       \end{callout}
@@ -1038,6 +1038,90 @@
   \source{Couples de 2023 dont la femme a 15 à 49 ans, budget équilibré sur ce champ ; valeur sur l'enfance actualisée à 2\,\% ; effets séparés : contrôles stricts, intervalles à 95\,\% ; effet revenu sur les enfants déjà nés non compté. Script R/60.}
 \end{frame}
 
+\begin{frame}{L'emploi des femmes avant la naissance}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lccc@{}}
+        \toprule
+        Naissance l'année suivante (points) & Tous rangs & 1\textsuperscript{er} enfant & 2\textsuperscript{e} enfant \\
+        \midrule
+        Femme en emploi temporaire & $-$1,7 (0,5) & $-$1,8 (1,0) & $-$3,3 (1,0) \\
+        Femme, moins de 25\,\% des revenus du couple & $-$1,1 (0,3) & $-$2,3 (0,9) & $-$1,1 (0,9) \\
+        Homme au chômage & 0,0 (0,6) & $-$0,3 (1,3) & $-$0,5 (1,5) \\
+        \midrule
+        Taux de naissance & 6,3\,\% & 10,1\,\% & 10,0\,\% \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item C'est la \textbf{précarité de l'emploi de la femme} qui va avec moins de naissances, pas le chômage de l'homme.
+        \item Associations : sur les seules naissances conçues après l'observation (998), plus rien n'est significatif.
+        \item Les inégalités de revenu dans le couple ont reculé pendant la baisse : elles ne l'expliquent pas.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \kpi{35 → 40\,\%}{part des femmes dans les revenus d'activité du couple, de 2005 à 2023}
+      \vspace{0.1cm}
+      \kpi[tdtered]{10,7 → 2,4\,\%}{des mères d'un enfant de moins de 3 ans en congé parental}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023, panel d'un an (l'enquête Emploi réinterroge un tiers des ménages) : 55\,474 couples, 3\,269 naissances ; références : emploi stable, femme gagnant 40 à 60\,\% des revenus ; modèles linéaires pondérés, contrôles du script 57 ; écarts-types entre parenthèses. Script R/61.}
+\end{frame}
+
+\begin{frame}{Congé parental : les mères reviennent plus tôt}
+  \begin{columns}[T]
+    \begin{column}{0.64\textwidth}
+      \begin{minipage}[t]{0.5\linewidth}
+        \begin{tikzpicture}
+          \begin{axis}[plafond, xmin=2007.5, xmax=2023.5, ymin=-25, ymax=21, ytick={-20,-10,0,10,20},
+              xtick={2008,2012,2016,2020}, ylabel={points}, title={Mère en retrait}]
+            \draw[tdtegrey, densely dashed] (axis cs:2016.5,-25) -- (axis cs:2016.5,21);
+            \addplot[saut=tdtegrey!70] coordinates {(2008,10.60) +- (0,8.84) (2009,1.28) +- (0,8.53)
+              (2010,0.15) +- (0,7.86) (2011,2.40) +- (0,7.70) (2012,2.30) +- (0,7.59) (2013,-2.61) +- (0,8.21)
+              (2014,-3.18) +- (0,7.62) (2015,-1.47) +- (0,8.15) (2016,0) +- (0,0)};
+            \addplot[saut=tdtenavy] coordinates {(2017,-15.23) +- (0,8.47) (2018,-12.28) +- (0,8.74)
+              (2019,-12.63) +- (0,8.08) (2020,-7.70) +- (0,8.94) (2021,-5.39) +- (0,8.53)
+              (2022,-12.17) +- (0,9.45) (2023,-9.38) +- (0,8.88)};
+          \end{axis}
+        \end{tikzpicture}
+      \end{minipage}%
+      \begin{minipage}[t]{0.5\linewidth}
+        \begin{tikzpicture}
+          \begin{axis}[plafond, xmin=2007.5, xmax=2023.5, ymin=-11, ymax=6, ytick={-10,-5,0,5},
+              xtick={2008,2012,2016,2020}, title={Naissance dans l'année}]
+            \draw[tdtegrey, densely dashed] (axis cs:2016.5,-11) -- (axis cs:2016.5,6);
+            \addplot[saut=tdtegrey!70] coordinates {(2008,-2.58) +- (0,4.29) (2009,0.81) +- (0,3.61)
+              (2010,-3.13) +- (0,3.74) (2011,0.29) +- (0,3.55) (2012,-0.86) +- (0,3.61) (2013,1.19) +- (0,4.43)
+              (2014,1.08) +- (0,3.92) (2015,-0.15) +- (0,3.88) (2016,0) +- (0,0)};
+            \addplot[saut=tdtenavy] coordinates {(2017,1.33) +- (0,3.70) (2018,-1.10) +- (0,4.04)
+              (2019,0.20) +- (0,4.00) (2020,0.14) +- (0,4.06) (2021,0.65) +- (0,4.16)
+              (2022,0.84) +- (0,4.17) (2023,-5.13) +- (0,5.55)};
+          \end{axis}
+        \end{tikzpicture}
+      \end{minipage}
+
+      \vspace{0.1cm}
+      \scriptsize\RaggedRight Familles de deux enfants ou plus contre familles d'un enfant, par année d'enquête ; retrait de la mère quand le benjamin a 2 ans, naissance quand il a 1 à 3 ans ; en foncé, benjamin né après la réforme de 2015.
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \footnotesize
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Depuis 2015, 24 mois de congé indemnisé au plus par parent, à partir de deux enfants.
+        \item Benjamin de 2 ans : mères en retrait \textbf{37 → 26\,\%}.
+        \item Pères : pas de relais (0,1\,\%).
+        \item Naissances : aucun écart ($p = 0{,}51$).
+      \end{itemize}
+      \begin{callout}{En clair}
+        \scriptsize\RaggedRight La troisième année de congé payé ne décidait pas d'un enfant de plus : la retirer a ramené les mères vers l'emploi sans coûter de naissances.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2008-2023 ; double différence, effets fixes d'année et d'âge du benjamin, référence 2016 ; retrait : congé parental ou inactivité ; intervalles à 95\,\%. Script R/62.}
+\end{frame}
+
 \begin{frame}{Ce que pèse le barème dans la baisse}
   \begin{columns}[T]
     \begin{column}{0.57\textwidth}
@@ -1076,6 +1160,120 @@
     \end{column}
   \end{columns}
   \source{ERFS 2005-2023 ; ICF de 2,00 (2014) à 1,68 (2023), Insee ; SRCV : script 50. L'ERFS ne repère plus les déménagements après 2020 : la fluidité résidentielle n'y est pas testable.}
+\end{frame}
+
+\begin{frame}{Deux vérifications : l'absence d'effet tient}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Effet de 1\,000\,€ & Points & Part de la baisse (\%) \\
+        \midrule
+        \multicolumn{3}{@{}l}{\textit{Tous les couples, 2005-2023}} \\
+        Écarts-types robustes & +0,11 (0,083) & 13 ($-$6 à 33) \\
+        Groupés, la borne la plus prudente & +0,11 (0,088) & 13 ($-$8 à 34) \\
+        \midrule
+        \multicolumn{3}{@{}l}{\textit{Couples suivis d'une année sur l'autre}} \\
+        Revenus de l'année de la naissance & +0,15 (0,19) & 19 ($-$28 à 65) \\
+        Revenus de l'année d'avant & +0,01 (0,13) & 1 ($-$30 à 32) \\
+        \quad naissances conçues après l'enquête & $-$0,01 (0,08) & $-$4 ($-$65 à 58) \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Grappes : année $\times$ revenu $\times$ taille de la famille, groupe suivi dans le temps, couple. Les bornes s'élargissent peu.
+        \item Le $-$0,054 des prestations sur l'enfance, peu crédible, n'est plus significatif ($p = 0{,}11$).
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \kpi{0,01}{point pour 1\,000\,€, avec le revenu d'avant la naissance}
+      \vspace{0.1cm}
+      \begin{callout}[tdtenavy]{En clair}
+        \footnotesize\RaggedRight Le revenu de l'année de la naissance, que le congé parental fait baisser, ne cachait pas d'effet : mesuré avec celui de l'année d'avant, l'effet tombe à zéro.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023 ; panel : 55\,474 couples, 3\,269 naissances, gain resimulé par OpenFisca (local) ; intervalles à 95\,\%. Script R/63.}
+\end{frame}
+
+\begin{frame}{Le premier enfant, seule question ouverte}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lccc@{}}
+        \toprule
+        Couples, 2012-2014 → 2021-2023 & 1\textsuperscript{er} enfant & 2\textsuperscript{e} enfant & 3\textsuperscript{e} ou plus \\
+        \midrule
+        Taux de naissance en 2012-2014 & 11,7\,\% & 11,4\,\% & 3,7\,\% \\
+        Évolution à âge de la femme donné & \textbf{$-$24\,\%} & $-$2\,\% & $-$1\,\% \\
+        Contribution à la baisse & 48\,\% & 31\,\% & 21\,\% \\
+        Recul du gain dû au barème & $-$31\,\% & $-$22\,\% & $-$19\,\% \\
+        \midrule
+        Effet de 1\,000\,€ (points) & +0,43 (0,24) & $-$0,19 (0,20) & 0,00 (0,09) \\
+        \quad revenus d'avant la naissance & +0,22 (0,35) & $-$0,38 (0,34) & +0,03 (0,10) \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item La baisse est d'abord celle du \textbf{premier enfant} ; les rangs suivants ne bougent presque pas.
+        \item Les réformes ont retiré environ 1\,090\,€ par an à chaque rang : près d'un tiers du gain d'un premier enfant.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \kpi[tdtered]{29\,\%}{du recul du premier enfant si l'on prend l'effet tel quel, entre $-$3 et 61\,\%}
+      \vspace{0.1cm}
+      \begin{callout}{Ni établi ni écarté}
+        \scriptsize\RaggedRight Positif dans toutes les estimations (+0,16 à +0,74), jamais significatif. Pour trancher, il faut plus de premières naissances : l'EDP au CASD.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS ; rang : enfants de moins de 21 ans présents dans le ménage, plus un ; contribution : évolution des taux et du nombre de couples à chaque rang ; recul du gain : 1\,095, 1\,094 et 1\,090\,€ par an ; écarts-types entre parenthèses. Script R/63.}
+\end{frame}
+
+\begin{frame}{Avec RSA, prime d'activité et aides au logement}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        Enfant de plus (€ par an) & RSA & Prime d'act. & Aides logt & Gain → gain complet \\
+        \midrule
+        Ensemble, 2014 & $-$120 & -- & +108 & 5\,026 → 5\,013 \\
+        Ensemble, 2023 & $-$10 & $-$44 & +108 & 3\,678 → 3\,733 \\
+        1\textsuperscript{er} quartile, 2014 & $-$438 & -- & +424 & 4\,531 → 4\,517 \\
+        1\textsuperscript{er} quartile, 2023 & $-$34 & $-$153 & +419 & 3\,942 → 4\,174 \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.2cm}
+
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Effet de 1\,000\,€ (points), 2010-2023 & Gain & Gain complet \\
+        \midrule
+        Ensemble & $-$0,01 (0,12) & +0,03 (0,12) \\
+        Moitié modeste & +0,14 (0,23) & +0,04 (0,22) \\
+        Part de la baisse de l'ICF & $-$1\,\% ($-$29 à 27) & +3\,\% ($-$24 à 30) \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \footnotesize
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Le RSA et la prime d'activité \textbf{baissent} à la naissance : allocations familiales et PAJE entrent dans leurs ressources.
+        \item Les aides au logement \textbf{montent} presque d'autant.
+        \item Recul dû aux réformes : 1\,241\,€ au lieu de 1\,277\,€.
+      \end{itemize}
+      \begin{callout}[tdtenavy]{En clair}
+        \scriptsize\RaggedRight L'absence d'effet ne tenait pas à l'oubli de ces aides : le gain net d'une famille modeste change peu.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2010-2023 hors 2013 et 2017 (statut d'occupation manquant), OpenFisca local ; € de 2023 ; aides au logement sous-simulées (12-14\,\% de bénéficiaires contre 22-23\,\%), RSA surestimé avant 2016. Script R/64.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1354,7 +1552,7 @@
     \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
     \item Déménager est plus difficile depuis 2022 (\textbf{crédit, relocation}) ; ce canal pèse au plus 6\,\% du recul des premières naissances, et \textbf{repousse} le premier enfant plus qu'il ne le supprime.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
-    \item Le barème de la \textbf{politique familiale} rapporte un quart de moins par enfant qu'en 2014, sans effet significatif dans l'ERFS : de 0 à 13\,\% de la baisse, \textbf{au plus un tiers} ; ni les prestations ni le quotient familial ne pèsent, et reverser l'un en l'autre ne relancerait pas la natalité.
+    \item Ni le barème de la \textbf{politique familiale} (un quart de moins par enfant depuis 2014 : \textbf{au plus un tiers} de la baisse), ni le \textbf{congé parental} raccourci en 2015 n'ont d'effet mesurable, sauf peut-être au \textbf{premier enfant} ; la précarité de l'emploi des femmes va, elle, avec moins de naissances.
     \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; la moitié reste inexpliquée.
   \end{enumerate}
 \end{frame}
