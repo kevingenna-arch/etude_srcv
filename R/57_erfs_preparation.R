@@ -50,14 +50,14 @@ ligne <- function(d, b = NULL) d %>%
             rev1 = if (is.null(b)) rev1 else round(deflater(rev1, annee, IPC, base = b)),
             rev2 = if (is.null(b)) rev2 else round(deflater(rev2, annee, IPC, base = b)),
             conj = conj_sim, ages)
-simuler <- function(entree, f_out) {
+simuler <- function(entree, f_out, script = "R/57_gain_enfant_erfs.py") {
   deja <- if (file.exists(f_out)) read_csv(f_out, show_col_types = FALSE) else NULL
   manque <- if (is.null(deja)) entree else anti_join(entree, deja, by = c("cle", "legis"))
   if (nrow(manque)) {
     cat("Simulation OpenFisca :", nrow(manque), "situations\n")
     f_in <- "Output/gain_erfs_entree.csv"; f_tmp <- "Output/gain_erfs_lot.csv"
     write_csv(manque, f_in)
-    code <- system2(PYTHON, c("-X", "utf8", "R/57_gain_enfant_erfs.py", f_in, f_tmp, PROCESSUS))
+    code <- system2(PYTHON, c("-X", "utf8", script, f_in, f_tmp, PROCESSUS))
     # Les lots terminés sont gardés même en cas d'échec : le passage suivant reprend.
     if (file.exists(f_tmp)) {
       deja <- bind_rows(deja, read_csv(f_tmp, show_col_types = FALSE)) %>% distinct(cle, legis, .keep_all = TRUE)
