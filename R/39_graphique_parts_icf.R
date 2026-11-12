@@ -89,7 +89,10 @@ if (pf$part > 0) hors_barre <- "Hors de la barre : statuts d'occupation −10 %.
 g <- ggplot(p) +
   geom_col(aes(x = 1, y = valeur, fill = facteur), width = 0.55,
            colour = "white", linewidth = 0.8) +
-  geom_text(data = filter(p, fourchette != "", visible), aes(x = 0.6, y = milieu, label = fourchette),
+  # Fourchettes sous la barre ; celle de la politique familiale une ligne plus bas, son segment
+  # étant étroit et voisin de celui de l'âge
+  geom_text(data = filter(p, fourchette != "", visible),
+            aes(x = if_else(as.character(facteur) == "Politique familiale", 0.47, 0.6), y = milieu, label = fourchette),
             size = 3.4, colour = "#52514e") +
   geom_text(data = filter(p, dedans), aes(x = 1, y = milieu, label = etiquette, colour = I(encre)),
             size = 5.2, fontface = "bold") +
@@ -101,7 +104,7 @@ g <- ggplot(p) +
   scale_fill_manual(values = COULEURS, breaks = names(COULEURS), name = NULL) +
   scale_y_continuous(breaks = seq(0, 100, 20), labels = function(x) paste0(x, " %"),
                      expand = expansion(mult = c(0, 0.01))) +
-  scale_x_continuous(limits = c(0.5, 1.5)) +
+  scale_x_continuous(limits = c(0.4, 1.5)) +
   labs(x = NULL, y = "Part de la baisse de l'ICF entre 2014 et 2025 (−22 %)", caption = hors_barre) +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
   theme_minimal(base_size = 12) +

@@ -72,7 +72,7 @@ inf_gain <- imap_dfr(list("2005-2023" = 2005:2023, "2014-2023" = 2014:2023), fun
       mutate(modele = "Gain de la premiere annee", periode = per, echantillon = ech,
              naissances = sum(x$naiss01), .before = 1)
   }))
-inf_vie <- imap_dfr(SPECS[c("Reference", "Annee x decile x nombre d'enfants")], function(fe, spec)
+inf_vie <- imap_dfr(SPECS[c("Reference", "Effets d'annee communs")], function(fe, spec)
   bind_rows(ecarts_types(f_vie(c("pf_vie", "qf_vie"), fe), d, c("pf_vie", "qf_vie")),
             ecarts_types(f_vie("vie", fe), d, "vie")) %>%
     mutate(modele = paste("Valeur sur l'enfance,", spec), periode = "2005-2023", echantillon = "Ensemble",
@@ -117,7 +117,7 @@ gain_avant <- simuler(entree_avant, "Output/gain_enfant_erfs_avant.csv") %>%
 
 #  Variables de N+1 (suffixe _n1) : celles du script 57 pour la même naissance
 VARS_N1 <- c("annee", "gain_1k", "gain_ref_1k", "nv_10k", "age_f", "age_h_cl", "nb_enf", "benjamin_cl",
-             "dipl_femme", "dipl_homme", "act_homme", "conj", "statut", "tuu", "region", "d_nv", "rang3")
+             "dipl_femme", "dipl_homme", "act_homme", "conj", "statut", "tuu", "region", "d_nv", "age_cl", "rang3")
 pb <- panel %>%
   left_join(df %>% select(cle_b = cle, all_of(VARS_N1)) %>% rename_with(~ paste0(.x, "_n1"), -cle_b), by = "cle_b") %>%
   left_join(gain_avant, by = "cle_b") %>%
@@ -138,7 +138,8 @@ cat("\nGain d'un enfant selon l'année des revenus (€ de 2023 ; niveau de vie 
 print(as.data.frame(mesure_gain %>% mutate(across(where(is.double), ~ round(.x, 2)))), row.names = FALSE)
 
 FE_N1 <- paste0(gsub("(\\w+)", "\\1_n1", FE))                    # tout mesuré en N+1, comme au script 57
-FE_N  <- sub("nb_enf \\+ benjamin_cl", "nb_enf_n1 + benjamin_cl_n1", FE)   # mesuré en N, composition avant la naissance
+#  Mesuré en N, sauf la composition avant la naissance suivie (nombre d'enfants, benjamin : N+1)
+FE_N  <- gsub("\\bbenjamin_cl\\b", "benjamin_cl_n1", gsub("\\bnb_enf\\b", "nb_enf_n1", FE, perl = TRUE), perl = TRUE)
 MODELES_PANEL <- list(
   "Revenus de N+1 (demarche du script 57)" = list(
     y = "naiss", f = paste("~ gain_1k_n1 + gain_ref_1k_n1 + nv_10k_n1 + I(nv_10k_n1^2) |", FE_N1),

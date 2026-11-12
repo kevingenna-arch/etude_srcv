@@ -43,16 +43,13 @@ source("R/57_erfs_preparation.R")   # df, simuler(), IPC, pond(), deflater()
 
 ANNEES      <- 2010:2023
 SANS_STATUT <- c(2013L, 2017L)
-CTRL        <- "nv_10k + I(nv_10k^2)"   # comme au script 57
-FE          <- "annee + age_f + age_h_cl + nb_enf + benjamin_cl + dipl_femme + dipl_homme + act_homme + conj + statut + tuu + region"
+CTRL        <- "nv_10k + I(nv_10k^2)"   # comme au script 57 ; FE : R/57_erfs_preparation.R
 COMP_57     <- c("af", "cf", "paje_base", "paje_naissance", "ir")
 COMP_64     <- c(COMP_57, "rsa", "ppa", "aide_logement")
 vers_annee  <- function(x, an) x * IPC$ipc[match(an, IPC$annee)] / IPC$ipc[IPC$annee == EUROS]
 baisse_icf  <- ICF_2023 / ICF_2014 - 1
 
 d <- df %>% filter(annee %in% ANNEES) %>%
-  group_by(annee) %>%
-  mutate(d_nv = factor(findInterval(nv_reel, wquantile(nv_reel, poids, seq(0.1, 0.9, 0.1))))) %>% ungroup() %>%
   mutate(femme_1   = rev_femme >= rev_homme,
          act1      = round(if_else(femme_1, act_rev_femme, act_rev_homme)),
          act2      = round(if_else(femme_1, act_rev_homme, act_rev_femme)),
@@ -63,8 +60,7 @@ d <- df %>% filter(annee %in% ANNEES) %>%
                                region == "Ile-de-France" | tuu == "200 000 et plus" ~ "zone_2", TRUE ~ "zone_3"),
          taille    = pmin(2L + nb_enf_avant, 5L),
          locataire = statut_of %in% c("locataire_vide", "locataire_hlm"),
-         loyer_obs = if_else(locataire & !is.na(loyer) & loyer > 0, loyer, NA_real_),
-         groupe    = paste(d_nv, nb_enf))
+         loyer_obs = if_else(locataire & !is.na(loyer) & loyer > 0, loyer, NA_real_))
 
 # ── §1 Loyers et simulation ────────────────────────────────────────────────
 loyers_cellule <- d %>% filter(!is.na(loyer_obs)) %>%

@@ -10,7 +10,9 @@
 #     âge 0 (script 57), âges 1-2 (âge 0 sans la prime), âges 3-19 (grille de
 #     quatre âges). Modèle du script 57 avec deux termes : naissance ~
 #     prestations + QF + leurs valeurs au barème de 2014 + contrôles | effets
-#     fixes ; variantes avec effets fixes année × décile de niveau de vie.
+#     fixes de la référence (année x décile x enfants x âge) ; variantes avec
+#     effets d'année communs, année x décile, année x décile x enfants.
+#     Erreurs-types : la plus grande de la robuste et de la groupée.
 #  2. Plafonnement du QF de 2012-2013 (avantage par demi-part de 2 336 € sur
 #     les revenus de 2011, 2 000 € en 2012, 1 500 € en 2013) : exposition =
 #     QF de l'enfance au barème de 2014 moins au même barème avec le plafond
@@ -39,14 +41,17 @@ F_VIE    <- "Output/gain_vie_enfant_erfs.csv"
 GRILLE   <- tibble(k = c(4, 9, 14, 18), debut = c(3, 7, 12, 17), fin = c(6, 11, 16, 19))
 TAUX     <- 0.02
 PLAFONDS <- c("Avantage du QF plafonne a 1 000 EUR" = "1000", "Avantage du QF des enfants supprime" = "0")
-CTRL     <- "nv_10k + I(nv_10k^2)"   # comme au script 57
-FE       <- "annee + age_f + age_h_cl + nb_enf + benjamin_cl + dipl_femme + dipl_homme + act_homme + conj + statut + tuu + region"
-SPECS    <- c("Reference" = FE, "Annee x decile" = paste(FE, "+ annee^d_nv"),
-              "Annee x decile x nombre d'enfants" = paste(FE, "+ annee^d_nv^nb_enf"))
+CTRL     <- "nv_10k + I(nv_10k^2)"   # comme au script 57 ; FE et FE_COMMUNS : R/57_erfs_preparation.R
+SPECS    <- c("Reference" = FE, "Effets d'annee communs" = FE_COMMUNS,
+              "Annee x decile" = paste(FE_COMMUNS, "+ annee^d_nv"),
+              "Annee x decile x nombre d'enfants" = paste(FE_COMMUNS, "+ annee^d_nv^nb_enf"))
 variante_de <- function(cle) if_else(grepl("_b[0-9]{4}$", cle), sub("^.*_(b[0-9]{4})$", "\\1", cle), "propre")
-
-df <- df %>% group_by(annee) %>%
-  mutate(d_nv = factor(findInterval(nv_reel, wquantile(nv_reel, poids, seq(0.1, 0.9, 0.1))))) %>% ungroup()
+#  Erreur-type d'une combinaison a'b : la plus grande de la robuste et de la groupée (décile x enfants)
+se_comb <- function(m, a, termes) {
+  a <- matrix(a, ncol = 1)
+  max(sqrt(drop(t(a) %*% vcov(m)[termes, termes] %*% a)),
+      sqrt(drop(t(a) %*% vcov(m, vcov = ~groupe)[termes, termes] %*% a)))
+}
 
 # ── §0 Simulations ─────────────────────────────────────────────────────────
 #  60_gain_vie_enfant.py : âges de la grille aux barèmes de l'année et de
@@ -128,12 +133,12 @@ estimer <- function(dd, fe, vars = c("pf_vie", "qf_vie")) {
         data = dd, weights = ~poids, vcov = "hetero")
 }
 resumer <- function(m, m_tot, dd) {
-  V <- vcov(m)[c("pf_vie", "qf_vie"), c("pf_vie", "qf_vie")]
-  dlt <- coef(m)[["pf_vie"]] - coef(m)[["qf_vie"]]; s <- sqrt(V[1, 1] + V[2, 2] - 2 * V[1, 2])
-  tibble(prestations_pts = 100 * coef(m)[["pf_vie"]], se_prestations = 100 * se(m)[["pf_vie"]],
-         qf_pts = 100 * coef(m)[["qf_vie"]], se_qf = 100 * se(m)[["qf_vie"]],
+  t2 <- c("pf_vie", "qf_vie")
+  dlt <- coef(m)[["pf_vie"]] - coef(m)[["qf_vie"]]; s <- se_comb(m, c(1, -1), t2)
+  tibble(prestations_pts = 100 * coef(m)[["pf_vie"]], se_prestations = 100 * se_comb(m, c(1, 0), t2),
+         qf_pts = 100 * coef(m)[["qf_vie"]], se_qf = 100 * se_comb(m, c(0, 1), t2),
          ecart_pts = 100 * dlt, se_ecart = 100 * s, p_ecart = 2 * pnorm(-abs(dlt / s)),
-         commun_pts = 100 * coef(m_tot)[["vie"]], se_commun = 100 * se(m_tot)[["vie"]],
+         commun_pts = 100 * coef(m_tot)[["vie"]], se_commun = 100 * se_comb(m_tot, 1, "vie"),
          n = nobs(m), naissances = sum(dd$naiss01), taux_pct = 100 * pond(dd$naiss01, dd$poids))
 }
 ECHANTILLONS <- list("2005-2023" = function(x) x, "2014-2023" = function(x) filter(x, annee >= 2014),
@@ -170,9 +175,10 @@ print(as.data.frame(exposition %>% mutate(across(where(is.double), ~ round(.x, 2
 plafonnement <- imap_dfr(SPECS[1:2], function(fe, spec) {
   dd <- filter(d, annee != 2012)
   base_f <- paste0("expo_qf + expo_pf + i(annee, expo_pf, ref = 2011) + pf_vie_ref + qf_vie_ref + ", CTRL, " | ", fe)
+  #  Tests joints en erreurs robustes (groupées : matrice non définie positive avec 50 grappes)
   ev <- feols(as.formula(paste0("naiss01 ~ i(annee, expo_qf, ref = 2011) + ", base_f)),
               data = d, weights = ~poids, vcov = "hetero")
-  dd_m <- feols(as.formula(paste0("naiss01 ~ expo_qf:apres + ", base_f)), data = dd, weights = ~poids, vcov = "hetero")
+  dd_m <- feols(as.formula(paste0("naiss01 ~ expo_qf:apres + ", base_f)), data = dd, weights = ~poids, vcov = ~groupe)
   ct <- as.data.frame(coeftable(ev)); ct$terme <- rownames(ct)
   annees <- ct %>% filter(grepl("^annee::[0-9]+:expo_qf$", terme)) %>%
     transmute(annee = as.integer(sub("annee::([0-9]+):.*", "\\1", terme)),
@@ -196,11 +202,12 @@ print(as.data.frame(plafonnement %>% mutate(across(where(is.double), ~ round(.x,
 loi23 <- sim %>% filter(variante == "propre", legis == 2023) %>% select(cle = base, ir_sans_loi = ir_sans)
 n_enf <- d23 %>% transmute(cle, poids, q_nv, rang3, naiss01,
                            enfants = map_int(strsplit(coalesce(ages, ""), ";"), ~ sum(as.integer(.x) < 20, na.rm = TRUE)))
-#  La spécification la plus stricte d'abord : dans les deux autres, l'effet
-#  négatif des prestations (signe non crédible) tient à des tendances propres
-#  au revenu et à la taille de la famille.
-SPECS_PREDICTION <- c("Annee x decile x nombre d'enfants | 2005-2023", "Annee x decile | 2005-2023",
-                      "Reference | 2005-2023", "Annee x decile | 2014-2023")
+#  La référence (effets d'année par décile x enfants x âge) d'abord : avec des
+#  effets d'année communs, l'effet négatif des prestations (signe non
+#  crédible) tient à des tendances propres au revenu, à la taille de la
+#  famille et à l'âge.
+SPECS_PREDICTION <- c("Reference | 2005-2023", "Annee x decile x nombre d'enfants | 2005-2023",
+                      "Effets d'annee communs | 2005-2023", "Reference | 2014-2023")
 reforme <- imap_dfr(PLAFONDS, function(pl, nom) {
   vr <- vie %>% filter(plafond == pl)
   qf_r <- valeur_vie(vr %>% filter(k == 0) %>% select(base, variante, af, cf, paje_base, paje_naissance, ir),
@@ -216,12 +223,12 @@ reforme <- imap_dfr(PLAFONDS, function(pl, nom) {
   forfait <- recette / sum(x$poids * x$enfants)                       # € par enfant et par an
   x <- x %>% mutate(d_pf = forfait * sum((1 + TAUX)^(-(0:19))) / 1000, d_qf = qf_reforme - qf_vie)
   map_dfr(SPECS_PREDICTION, function(sp) {
-    mm <- MODELES[[sp]]; b <- coef(mm$m)[c("pf_vie", "qf_vie")]; V <- vcov(mm$m)[names(b), names(b)]
+    mm <- MODELES[[sp]]; b <- coef(mm$m)[c("pf_vie", "qf_vie")]
     groupes <- list("Ensemble" = x, "Moitie modeste (Q1-Q2)" = filter(x, q_nv %in% c("Q1", "Q2")),
                     "Moitie aisee (Q3-Q4)" = filter(x, q_nv %in% c("Q3", "Q4")))
     imap_dfr(groupes, function(g, nom_g) {
       a <- c(pond(g$d_pf, g$poids), pond(g$d_qf, g$poids))
-      dp <- sum(a * b); s <- sqrt(drop(t(a) %*% V %*% a))
+      dp <- sum(a * b); s <- se_comb(mm$m, a, names(b))
       tibble(scenario = nom, specification = sp, groupe = nom_g,
              recette_md_eur = recette / 1e9, forfait_eur_mois = forfait / 12,
              gain_prestations_keur = a[1], perte_qf_keur = -a[2],
@@ -233,7 +240,7 @@ reforme <- imap_dfr(PLAFONDS, function(pl, nom) {
              haut_naissances_pct = 100 * (dp + 1.96 * s) / pond(g$naiss01, g$poids),
              # Même effet par euro pour les deux instruments
              effet_commun_pts = 100 * coef(mm$m_tot)[["vie"]] * sum(a),
-             se_commun_pts = 100 * se(mm$m_tot)[["vie"]] * abs(sum(a)))
+             se_commun_pts = 100 * se_comb(mm$m_tot, 1, "vie") * abs(sum(a)))
     })
   })
 })

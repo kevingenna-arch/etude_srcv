@@ -16,11 +16,16 @@
 #  2. Contrôle de la simulation : prestations familiales et impôt simulés
 #     contre les montants que l'ERFS tient des sources fiscales et sociales.
 #  3. Modèles de gain : naissance ~ gain + gain_ref + contrôles + effets fixes
-#     d'année. À barème fixe, la dépendance du gain au revenu et à la famille
-#     passe par `gain_ref` ; l'effet de `gain` n'est identifié que par les
-#     changements de barème (instruments simulés, Currie et Gruber, 1996).
-#     Modèle linéaire de probabilité pondéré, erreurs-types robustes ; probit
-#     en contrôle.
+#     (FE, R/57_erfs_preparation.R), dont année x décile de niveau de vie x
+#     nombre d'enfants x âge de la femme. À barème fixe, la
+#     dépendance du gain au revenu et à la famille passe par `gain_ref` ;
+#     l'effet de `gain` n'est identifié que par les changements de barème
+#     (instruments simulés, Currie et Gruber, 1996). Gain en euros, ou en % du
+#     revenu du ménage hors prestations (gain relatif). Modèle linéaire de
+#     probabilité pondéré ; erreur-type : la plus grande de la robuste et de
+#     la groupée par décile x nombre d'enfants ; probit en contrôle.
+#     Comparaison avec les effets d'année communs (ancienne référence) et les
+#     spécifications intermédiaires : bloc « Effets temporels ».
 #  4. Étude d'événement : exposition de chaque couple aux réformes 2013-2018
 #     (abaissement du plafond du quotient familial, PAJE 2014, modulation des
 #     allocations familiales en 2015, PAJE 2018) = gain sous le barème 2019
@@ -72,24 +77,28 @@ cat("\nGain d'un enfant supplémentaire (€ de 2023 par an) :\n")
 print(as.data.frame(gains_annee %>% mutate(across(where(is.double), ~ round(.x, 1)))), row.names = FALSE)
 
 # ── §4 Modèles de gain ─────────────────────────────────────────────────────
-CTRL <- "nv_10k + I(nv_10k^2)"
-FE   <- "annee + age_f + age_h_cl + nb_enf + benjamin_cl + dipl_femme + dipl_homme + act_homme + conj + statut + tuu + region"
+CTRL <- "nv_10k + I(nv_10k^2)"   # FE : R/57_erfs_preparation.R
 PERIODES <- list("2005-2023" = 2005:2023, "2014-2023" = 2014:2023, "2005-2019" = 2005:2019)
 ECHANTILLONS <- list("Ensemble" = function(d) d, "1er enfant" = function(d) filter(d, rang3 == "1er enfant"),
                      "2e enfant" = function(d) filter(d, rang3 == "2e enfant"),
                      "3e enfant ou plus" = function(d) filter(d, rang3 == "3e enfant ou plus"),
                      "Rang 2 et plus" = function(d) filter(d, rang3 != "1er enfant"))
+#  Gain relatif : effet d'un gain égal à 1 % du revenu (gain_moyen en % du revenu)
 MESURES <- list("Gain et gain a bareme fixe" = c("gain_1k", "gain_ref_1k"),
+                "Gain relatif (% du revenu)" = c("gain_rel", "gain_rel_ref"),
                 "Gain seul (effet de structure)" = "gain_1k")
 formule <- function(vars, fe = FE, extra = "")
   as.formula(paste("naiss01 ~", paste(vars, collapse = " + "), "+", CTRL, extra, "|", fe))
-modele_gain <- function(d, vars) {
-  m <- feols(formule(vars), data = d, weights = ~poids, vcov = "hetero")
-  b <- unname(coef(m)[vars[1]]); s <- unname(se(m)[vars[1]])
-  taux <- pond(d$naiss01, d$poids); g <- pond(d[[vars[1]]], d$poids)
-  tibble(effet_pts = 100 * b, se = 100 * s, p = unname(pvalue(m)[vars[1]]), mde_pts = 2.8 * 100 * s,
-         n = nobs(m), naissances = sum(d$naiss01), taux_pct = 100 * taux, gain_moyen = 1000 * g,
-         elasticite = b / taux * g)
+#  Erreur-type retenue : la plus grande de la robuste et de la groupée (décile x enfants)
+se_prudente <- function(m, v) max(se(m)[[v]], se(m, vcov = ~groupe)[[v]])
+modele_gain <- function(d, vars, fe = FE) {
+  m <- feols(formule(vars, fe), data = d, weights = ~poids, vcov = "hetero")
+  b <- unname(coef(m)[vars[1]]); s <- se_prudente(m, vars[1])
+  taux <- pond(d$naiss01, d$poids)
+  g <- pond(d[[vars[1]]], d$poids) * if (grepl("_1k$", vars[1])) 1000 else 1
+  tibble(effet_pts = 100 * b, se = 100 * s, se_robuste = 100 * se(m)[[vars[1]]], p = 2 * pnorm(-abs(b / s)),
+         mde_pts = 2.8 * 100 * s, n = nobs(m), naissances = sum(d$naiss01), taux_pct = 100 * taux,
+         gain_moyen = g, elasticite = b / taux * g / if (grepl("_1k$", vars[1])) 1000 else 1)
 }
 gains_modeles <- imap_dfr(PERIODES, function(ans, per) imap_dfr(MESURES, function(vars, mes)
   imap_dfr(ECHANTILLONS, function(fe, ech)
@@ -112,12 +121,12 @@ cat("\nProbit, effet marginal moyen (points pour 1 000 €) :\n"); print(as.data
 # ── §5 Étude d'événement : exposition aux réformes 2013-2018 ───────────────
 #  expo = gain sous le barème 2019 - gain sous le barème 2013 (k€ de 2023),
 #  négative pour les couples qui perdent. Coefficient de expo année par
-#  année, relativement à 2012 ; gain_ref en contrôle. Variante : effets fixes
-#  rang × année et quartile de niveau de vie × année (tendances propres aux
-#  familles nombreuses et aux revenus).
-FE_ROBUSTE <- paste(FE, "+ annee^nb_enf + annee^q_nv")
-evenement <- function(d, expo, fe = FE) {
-  m <- feols(as.formula(paste0("naiss01 ~ i(annee, ", expo, ", ref = 2012) + ", expo, " + gain_ref_1k + ",
+#  année, relativement à 2012 ; gain_ref en contrôle. Variante : effets
+#  d'année communs (ancienne référence). Erreurs-types robustes : avec 50
+#  grappes, la matrice groupée n'est pas définie positive et ses tests joints
+#  (7 à 11 coefficients) rejettent à tort, y compris après les réformes.
+evenement <- function(d, expo, fe = FE, ref = "gain_ref_1k") {
+  m <- feols(as.formula(paste0("naiss01 ~ i(annee, ", expo, ", ref = 2012) + ", expo, " + ", ref, " + ",
                                CTRL, " | ", fe)), data = d, weights = ~poids, vcov = "hetero")
   ct <- as.data.frame(coeftable(m))
   # Tests joints : années placebo (2005-2011) et années des réformes et après (2013-2023)
@@ -128,7 +137,7 @@ evenement <- function(d, expo, fe = FE) {
     bind_rows(tibble(annee = 2012L, coef_pts = 0, se = 0, p = NA_real_, n = nobs(m))) %>% arrange(annee) %>%
     mutate(p_joint_2005_2011 = joint(2005:2011), p_joint_2013_2023 = joint(2013:2023))
 }
-SPECS_EV <- list("Reference" = FE, "Rang x annee et revenu x annee" = FE_ROBUSTE)
+SPECS_EV <- list("Reference" = FE, "Effets d'annee communs" = FE_COMMUNS)
 EXPOS <- c("Reformes 2013-2018" = "expo_1k", "Reformes 2014-2015" = "expo1415_1k", "Reforme 2018" = "expo18_1k")
 etude_evenement <- bind_rows(
   imap_dfr(SPECS_EV, function(fe, spec) imap_dfr(ECHANTILLONS[c("Ensemble", "1er enfant", "Rang 2 et plus")],
@@ -146,9 +155,19 @@ did <- function(d, fe = FE) {
     mutate(apres_14_17 = as.integer(annee %in% 2014:2017), apres_18_23 = as.integer(annee >= 2018))
   m <- feols(as.formula(paste("naiss01 ~ expo_1k:apres_14_17 + expo_1k:apres_18_23 + expo_1k + gain_ref_1k +",
                               CTRL, "|", fe)), data = d, weights = ~poids, vcov = "hetero")
-  ct <- as.data.frame(coeftable(m))
-  ct %>% rownames_to_column("terme") %>% filter(grepl("apres", terme)) %>%
-    transmute(terme, coef_pts = 100 * Estimate, se = 100 * `Std. Error`, p = `Pr(>|t|)`, n = nobs(m))
+  map_dfr(c("expo_1k:apres_14_17", "expo_1k:apres_18_23"), function(t) {
+    b <- coef(m)[[t]]; s <- se_prudente(m, t)
+    tibble(terme = t, coef_pts = 100 * b, se = 100 * s, p = 2 * pnorm(-abs(b / s)), n = nobs(m))
+  })
+}
+#  Placebo à un coefficient (fiable avec 50 grappes) : sur 2005-2012 seulement,
+#  exposition x 2005-2008, référence 2009-2012 ; erreur-type prudente.
+placebo <- function(d, expo, fe = FE, ref = "gain_ref_1k") {
+  x <- filter(d, annee <= 2012) %>% mutate(p0508 = as.integer(annee <= 2008))
+  m <- feols(as.formula(paste0("naiss01 ~ ", expo, ":p0508 + ", expo, " + ", ref, " + ", CTRL, " | ", fe)),
+             data = x, weights = ~poids, vcov = "hetero")
+  t <- paste0(expo, ":p0508"); b <- coef(m)[[t]]; s <- se_prudente(m, t)
+  tibble(placebo_pts = 100 * b, placebo_se = 100 * s, placebo_p = 2 * pnorm(-abs(b / s)))
 }
 diff_diff <- imap_dfr(SPECS_EV, function(fe, spec) imap_dfr(ECHANTILLONS[c("Ensemble", "1er enfant", "Rang 2 et plus")],
   ~ did(.x(df), fe) %>% mutate(specification = spec, echantillon = .y, .before = 1)))
@@ -161,31 +180,33 @@ print(as.data.frame(diff_diff %>% mutate(across(where(is.double), ~ round(.x, 3)
 #  Rapportée au recul de l'ICF (2,00 -> 1,68) et à celui du taux de naissance
 #  des couples de l'ERFS. Effet commun ou par rang, estimé sur 2014-2023 (la
 #  période des réformes et de la baisse) ou sur 2005-2023 (plus précis) : la
-#  part en dépend nettement, d'où les deux.
+#  part en dépend nettement, d'où les deux. Gain en euros et gain relatif (le
+#  recul est alors mesuré en % du revenu : `ecart_mesure`).
 d23 <- filter(df, annee == 2023); d14 <- filter(df, annee == 2014)
 baisse_icf <- ICF_2023 / ICF_2014 - 1
 baisse_couples <- pond(d23$naiss01, d23$poids) / pond(d14$naiss01, d14$poids) - 1
-part <- function(d_est, d_cf) {
-  m <- feols(formule(c("gain_1k", "gain_ref_1k")), data = d_est, weights = ~poids, vcov = "hetero")
-  b <- coef(m)[["gain_1k"]]; s <- se(m)[["gain_1k"]]
-  dg <- pond(d_cf$gain_ref_1k - d_cf$gain_1k, d_cf$poids); p0 <- pond(d_cf$naiss01, d_cf$poids)
-  tibble(ecart_gain_euros = 1000 * dg, effet_pts = 100 * b, hausse_relative_pct = 100 * b * dg / p0,
+part <- function(d_est, d_cf, vars = MESURES[[1]], fe = FE) {
+  m <- feols(formule(vars, fe), data = d_est, weights = ~poids, vcov = "hetero")
+  b <- coef(m)[[vars[1]]]; s <- se_prudente(m, vars[1])
+  dg <- pond(d_cf[[vars[2]]] - d_cf[[vars[1]]], d_cf$poids); p0 <- pond(d_cf$naiss01, d_cf$poids)
+  tibble(ecart_gain_euros = 1000 * pond(d_cf$gain_ref_1k - d_cf$gain_1k, d_cf$poids), ecart_mesure = dg,
+         effet_pts = 100 * b, se_pts = 100 * s, hausse_relative_pct = 100 * b * dg / p0,
          se_rel = 100 * s * dg / p0, naissances_2023 = sum(d_cf$poids * d_cf$naiss01))
 }
-part_periode <- function(ans) {
+part_periode <- function(ans, vars) {
   d_est <- filter(df, annee %in% ans)
   par_rang <- imap_dfr(ECHANTILLONS[c("1er enfant", "2e enfant", "3e enfant ou plus")],
-                       ~ part(.x(d_est), .x(d23)) %>% mutate(rang = .y, .before = 1))
+                       ~ part(.x(d_est), .x(d23), vars) %>% mutate(rang = .y, .before = 1))
   w <- par_rang$naissances_2023 / sum(par_rang$naissances_2023)
   bind_rows(
-    part(d_est, d23) %>% mutate(rang = "Ensemble, effet commun", .before = 1),
+    part(d_est, d23, vars) %>% mutate(rang = "Ensemble, effet commun", .before = 1),
     par_rang,
     tibble(rang = "Ensemble, effets par rang", ecart_gain_euros = sum(w * par_rang$ecart_gain_euros),
            effet_pts = NA_real_, hausse_relative_pct = sum(w * par_rang$hausse_relative_pct),
            se_rel = sqrt(sum((w * par_rang$se_rel)^2)), naissances_2023 = sum(par_rang$naissances_2023)))
 }
-part_baisse <- imap_dfr(PERIODES[c("2014-2023", "2005-2023")],
-                        ~ part_periode(.x) %>% mutate(estimation = .y, .before = 1)) %>%
+part_baisse <- imap_dfr(MESURES[1:2], function(vars, mes) imap_dfr(PERIODES[c("2014-2023", "2005-2023")],
+                        ~ part_periode(.x, vars) %>% mutate(mesure = mes, estimation = .y, .before = 1))) %>%
   mutate(part_baisse_icf_pct = hausse_relative_pct / -baisse_icf,
          ic_bas = (hausse_relative_pct - 1.96 * se_rel) / -baisse_icf,
          ic_haut = (hausse_relative_pct + 1.96 * se_rel) / -baisse_icf,
@@ -193,6 +214,34 @@ part_baisse <- imap_dfr(PERIODES[c("2014-2023", "2005-2023")],
 cat("\nPart de la baisse 2014-2023 imputable au barème (ICF", ICF_2014, "->", ICF_2023,
     "; taux des couples ERFS", round(100 * baisse_couples, 1), "%) :\n")
 print(as.data.frame(part_baisse %>% mutate(across(where(is.double), ~ round(.x, 2)))), row.names = FALSE)
+
+# ── §6 bis Effets temporels : pourquoi la référence a changé ───────────────
+#  Des effets d'année communs aux effets d'année par groupe : effet du gain,
+#  part de la baisse (effet commun, ensemble) et deux placebos, en euros et
+#  en relatif : années 2005-2011 conjointement nulles dans l'étude
+#  d'événement (erreurs robustes), et exposition x 2005-2008 sur 2005-2012.
+SPECS_T <- c("Effets d'annee communs" = FE_COMMUNS,
+             "+ annee x decile x nombre d'enfants" = paste(FE_COMMUNS, "+ annee^d_nv^nb_enf"),
+             "+ annee x age de la femme" = paste(FE_COMMUNS, "+ annee^d_nv^nb_enf + annee^age_cl"),
+             "+ annee x age x nombre d'enfants" = paste(FE_COMMUNS, "+ annee^d_nv^nb_enf + annee^age_cl^nb_enf"),
+             "Annee x decile x nombre d'enfants x age (reference)" = FE,
+             "+ annee x chacun des controles" = paste(FE, "+ annee^dipl_femme + annee^dipl_homme + annee^act_homme",
+                                                      "+ annee^conj + annee^statut + annee^tuu + annee^region",
+                                                      "+ annee^benjamin_cl + annee^age_h_cl"))
+EXPO_MESURE <- c("Gain et gain a bareme fixe" = "expo_1k", "Gain relatif (% du revenu)" = "expo_rel")
+effets_temporels <- imap_dfr(SPECS_T, function(fe, spec) imap_dfr(MESURES[1:2], function(vars, mes) {
+  p_joint <- evenement(df, EXPO_MESURE[[mes]], fe, ref = vars[2])$p_joint_2005_2011[1]
+  pl <- placebo(df, EXPO_MESURE[[mes]], fe, ref = vars[2])
+  imap_dfr(PERIODES[1:2], function(ans, per)
+    part(filter(df, annee %in% ans), d23, vars, fe) %>%
+      transmute(periode = per, effet_pts, se = se_pts, p = 2 * pnorm(-abs(effet_pts / se_pts)),
+                part_baisse_icf_pct = hausse_relative_pct / -baisse_icf,
+                ic_bas = (hausse_relative_pct - 1.96 * se_rel) / -baisse_icf,
+                ic_haut = (hausse_relative_pct + 1.96 * se_rel) / -baisse_icf)) %>%
+    mutate(specification = spec, mesure = mes, p_placebo_2005_2011 = p_joint, pl, .before = 1)
+}))
+cat("\nEffets temporels : effet du gain, part de la baisse et placebo :\n")
+print(as.data.frame(effets_temporels %>% mutate(across(where(is.double), ~ round(.x, 3)))), row.names = FALSE)
 
 # ── §7 Classes moyennes : quartiles 2 et 3 ─────────────────────────────────
 GROUPES_Q <- list("Q2 et Q3" = c("Q2", "Q3"), "Q1 et Q4" = c("Q1", "Q4"), "Q1" = "Q1", "Q2" = "Q2",
@@ -205,11 +254,27 @@ ecart_q <- imap_dfr(PERIODES[1:2], function(ans, per) {
   d <- filter(df, annee %in% ans) %>% mutate(classes_moy = as.integer(q_nv %in% c("Q2", "Q3")))
   m <- feols(formule(c("gain_1k * classes_moy", "gain_ref_1k * classes_moy")), data = d,
              weights = ~poids, vcov = "hetero")
-  tibble(periode = per, terme = "gain_1k:classes_moy", coef_pts = 100 * coef(m)[["gain_1k:classes_moy"]],
-         se = 100 * se(m)[["gain_1k:classes_moy"]], p = pvalue(m)[["gain_1k:classes_moy"]])
+  b <- coef(m)[["gain_1k:classes_moy"]]; s <- se_prudente(m, "gain_1k:classes_moy")
+  tibble(periode = per, terme = "gain_1k:classes_moy", coef_pts = 100 * b, se = 100 * s, p = 2 * pnorm(-abs(b / s)))
 })
 recul_q <- d23 %>% group_by(q_nv) %>%
-  summarise(recul_gain_euros = 1000 * pond(gain_ref_1k - gain_1k, poids), .groups = "drop")
+  summarise(recul_gain_euros = 1000 * pond(gain_ref_1k - gain_1k, poids),
+            recul_gain_pct_revenu = pond(gain_rel_ref - gain_rel, poids), .groups = "drop")
+#  Report des naissances : recul du taux de naissance (2012-2014 -> 2021-2023) et
+#  recul du gain dû au barème (couples de 2023), par âge de la femme
+recul_age <- df %>% filter(annee %in% c(2012:2014, 2021:2023)) %>%
+  mutate(per = if_else(annee <= 2014, "taux_2012_2014", "taux_2021_2023")) %>%
+  group_by(age_cl, per) %>% summarise(taux = 100 * pond(naiss01, poids), .groups = "drop") %>%
+  pivot_wider(names_from = per, values_from = taux) %>%
+  mutate(evolution_taux_pct = 100 * (taux_2021_2023 / taux_2012_2014 - 1)) %>%
+  left_join(d23 %>% group_by(age_cl) %>%
+              summarise(recul_gain_euros = 1000 * pond(gain_ref_1k - gain_1k, poids),
+                        revenu_menage_keur = pond(rev_men, poids) / 1000,
+                        recul_gain_pct_revenu = pond(gain_rel_ref - gain_rel, poids), .groups = "drop"),
+            by = "age_cl") %>%
+  mutate(age_cl = as.character(age_cl))
+cat("\nPar âge de la femme : évolution du taux de naissance et recul du gain dû au barème :\n")
+print(as.data.frame(recul_age %>% mutate(across(where(is.double), ~ round(.x, 2)))), row.names = FALSE)
 cat("\nPar quartile de niveau de vie : effet de 1 000 € (points) :\n")
 print(as.data.frame(quartiles_modeles %>% mutate(across(where(is.double), ~ round(.x, 3)))), row.names = FALSE)
 cat("\nÉcart d'effet Q2-Q3 / Q1-Q4 :\n"); print(as.data.frame(ecart_q), row.names = FALSE)
@@ -223,6 +288,8 @@ ecrire(bind_rows(controle %>% mutate(bloc = "Simulation et montants observes", .
                  etude_evenement %>% mutate(bloc = "Etude d'evenement", .before = 1),
                  diff_diff %>% mutate(bloc = "Difference de differences", .before = 1),
                  part_baisse %>% mutate(bloc = "Part de la baisse 2014-2023", .before = 1),
+                 effets_temporels %>% mutate(bloc = "Effets temporels", .before = 1),
+                 recul_age %>% mutate(bloc = "Recul par age de la femme", .before = 1),
                  quartiles_modeles %>% mutate(bloc = "Quartiles de niveau de vie", .before = 1),
                  ecart_q %>% mutate(bloc = "Ecart Q2-Q3 / Q1-Q4", .before = 1),
                  recul_q %>% mutate(bloc = "Recul du gain par quartile, 2023", .before = 1)),
