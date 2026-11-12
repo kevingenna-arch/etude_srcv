@@ -22,6 +22,18 @@
 #  déductible et la CRDS que l'ERFS en a retranchées.
 #  Statut conjugal : marié ; pacsé (repéré à partir de 2013 seulement, avant
 #  quoi les pacsés sont comptés comme non mariés) ; ni l'un ni l'autre.
+#  Situation de chaque conjoint la semaine de référence (scripts 61 et 62) :
+#  emploi stable (CDI, fonctionnaire, non-salarié) ou temporaire (CDD,
+#  saisonnier, intérim, apprentissage, stage ; CONTRA jusqu'en 2020, SALTYP
+#  ensuite), chômage, inactivité ; temps partiel, et temps partiel pour
+#  s'occuper des enfants (RAISTP = 4 jusqu'en 2012 ; 5, « raisons personnelles
+#  ou familiales », de 2013 à 2020 ; 3 ensuite) ; absence pour congé parental
+#  (RABS = 5 jusqu'en 2020, 4 ensuite ; jusqu'en 2007, le code 5 compte aussi
+#  les autres congés non rémunérés) ou de maternité ou paternité (RABS = 3).
+#  Pour apparier un millésime au suivant (panel rotatif de l'enquête Emploi) :
+#  rang d'interrogation (RGA), région, années et mois de naissance des deux
+#  conjoints ; mois de référence de l'enquête, du dernier nouveau-né et du
+#  benjamin, comptés en mois (année x 12 + mois).
 #
 #  Sortie (dans Data/, non versionné) : Data/ERFS/_extrait/couples_ERFS.rds
 # ============================================================================
@@ -80,7 +92,8 @@ lire <- function(f, cols) {
 nombre <- function(x) { x <- suppressWarnings(as.numeric(x)); fifelse(is.na(x), 0, x) }
 
 COLS_IND <- c("NOI", "NOINDIV", "LPR", "LPRM", "LPRL", "SEXE", "AG", "NAIA", "NAIM", "DATDEB", "NOICON",
-              "NOIMER", "NOIPAR1", "NOIPAR2", "MATRI", "PACS", "ETAMATRI_Y_COMP", "DDIPL", "DIP7", "ACTEU", "SO")
+              "NOIMER", "NOIPAR1", "NOIPAR2", "MATRI", "PACS", "ETAMATRI_Y_COMP", "DDIPL", "DIP7", "ACTEU", "SO",
+              "RGA", "CONTRA", "SALTYP", "TPPRED", "RAISTP", "RABS")
 REVENUS <- c("SALAIRES_I", "CHOMAGE_I", "RETRAITES_I", "PENS_INVALIDITE_I", "RAG_I", "RIC_I", "RNC_I",
              "CSG_ND_CRDS_SAL_I", "CSG_ND_CRDS_CHO_I", "CSG_ND_CRDS_RET_I", "CSG_ND_CRDS_INV_I",
              "CSG_ND_CRDS_RAG_I", "CSG_ND_CRDS_RIC_I", "CSG_ND_CRDS_RNC_I")
@@ -90,7 +103,7 @@ PRESTATIONS <- c("PREST_FAM_PETITE_ENFANCE", "PREST_FAM_AUTRES", "PREST_LOGEMENT
                  "PREST_PRECARITE_RSA", "PREST_PRECARITE_HAND", "PREST_PRECARITE_VIEIL",
                  "PREST_AIDE_SOLIDARITE", "M_RSA_ACTM", "PPA", "GJ", "CEJ")
 COLS_MEN <- c("WPRM", "CHAMP_CALCUL", "NB_UCI", "REVDISPM", "IRPP", "CS8CORPR", "CS8CORCJ", "LOGT", "REG",
-              "TUR5", "TUU2010R", "TUU2020", PRESTATIONS)
+              "TUR5", "TUU2010R", "TUU2020", "LOYER", PRESTATIONS)   # LOYER : 2014-2016 et 2018-2020
 
 diplome4 <- function(ddipl, dip7) {
   d <- coalesce(ddipl, dip7); ancien <- !is.na(ddipl)
@@ -102,6 +115,14 @@ diplome4 <- function(ddipl, dip7) {
 activite <- function(x) factor(fcase(x == "1", "Emploi", x == "2", "Chomage", x == "3", "Inactif",
                                      default = "Non renseigne"),
                                levels = c("Emploi", "Chomage", "Inactif", "Non renseigne"))
+emploi4 <- function(acteu, contra, saltyp, a) {
+  temp <- if (a <= 2020) contra %in% c("2", "3", "4", "5") else saltyp %in% c("3", "4", "5", "6", "7")
+  factor(fcase(acteu == "1" & temp, "Emploi temporaire", acteu == "1", "Emploi stable",
+               acteu == "2", "Chomage", acteu == "3", "Inactivite", default = "Non renseigne"),
+         levels = c("Emploi stable", "Emploi temporaire", "Chomage", "Inactivite", "Non renseigne"))
+}
+tp_famille <- function(raistp, a) raistp %in% (if (a <= 2012) "4" else if (a <= 2020) "5" else "3")
+conge_parental <- function(rabs, a) rabs %in% (if (a <= 2020) "5" else "4")
 # Statut d'occupation : statut consolidé LOGT quand il existe (2014-2016,
 # 2018-2023), sinon SO de l'enquête Emploi (complet avant 2013, première
 # interrogation seulement ensuite).
@@ -167,6 +188,7 @@ extraire <- function(an) {
   eec[, `:=`(age = as.integer(AG), naia = as.integer(NAIA), naim = suppressWarnings(as.integer(NAIM)),
              an_ref = as.integer(substr(DATDEB, 1, 4)), mois_ref = as.integer(substr(DATDEB, 5, 6)))]
   eec[naim > 12 | naim < 1, naim := NA_integer_]
+  eec[, `:=`(am = naia * 12L + naim, datref = an_ref * 12L + mois_ref)]
   eec[, mois_depuis := (an_ref * 12L + mois_ref) - (naia * 12L + naim)]
   eec[, nouveau_ne := lien == "3" & fifelse(is.na(mois_depuis), age == 0, mois_depuis >= -1 & mois_depuis <= 11)]
   eec[, `:=`(noi = as.integer(NOI), par1 = as.integer(coalesce(NOIMER, NOIPAR1)), par2 = as.integer(NOIPAR2))]
@@ -182,10 +204,18 @@ extraire <- function(an) {
                      default = "celibataire")]
   f <- pc[SEXE == "2", .(IDENT, noi_femme = noi, lien_femme = lien, age_femme = age, conj_f = conj,
                          dipl_femme = diplome4(DDIPL, DIP7), act_femme = activite(ACTEU),
-                         rev_femme = rev_imp, act_rev_femme = rev_act)]
+                         rev_femme = rev_imp, act_rev_femme = rev_act,
+                         naia_femme = naia, naim_femme = naim, rga = RGA, datref,
+                         emploi_femme = emploi4(ACTEU, CONTRA, SALTYP, a), tp_femme = TPPRED %in% "2",
+                         tp_fam_femme = tp_famille(RAISTP, a), cpar_femme = conge_parental(RABS, a),
+                         cmat_femme = RABS %in% "3")]
   h <- pc[SEXE == "1", .(IDENT, age_homme = age, conj_h = conj,
                          dipl_homme = diplome4(DDIPL, DIP7), act_homme = activite(ACTEU),
-                         rev_homme = rev_imp, act_rev_homme = rev_act)]
+                         rev_homme = rev_imp, act_rev_homme = rev_act,
+                         naia_homme = naia, naim_homme = naim,
+                         emploi_homme = emploi4(ACTEU, CONTRA, SALTYP, a), tp_homme = TPPRED %in% "2",
+                         tp_fam_homme = tp_famille(RAISTP, a), cpar_homme = conge_parental(RABS, a),
+                         cmat_homme = RABS %in% "3")]
   cp <- merge(f, h, by = "IDENT")[age_femme >= 15 & age_femme <= 49]
   cp[, conj := fcase(conj_f == "marie" | conj_h == "marie", "marie",
                      conj_f == "pacse" | conj_h == "pacse", "pacse",
@@ -195,10 +225,14 @@ extraire <- function(an) {
   enf <- eec[lien == "3" & IDENT %in% cp$IDENT & !is.na(age) & age <= 20]
   enf <- merge(enf, cp[, .(IDENT, noi_femme)], by = "IDENT")
   nn <- enf[nouveau_ne == TRUE, .(n_naiss = .N, naiss_mere = any((is.na(par1) & is.na(par2)) |
-                                                                 par1 %in% noi_femme | par2 %in% noi_femme)),
+                                                                 par1 %in% noi_femme | par2 %in% noi_femme),
+                                  naiss_am = suppressWarnings(max(as.numeric(am), na.rm = TRUE))),
             by = IDENT]
   av <- enf[nouveau_ne == FALSE][order(IDENT, age),
-            .(nb_enf_avant = .N, benjamin = min(age), ages = paste(age, collapse = ";")), by = IDENT]
+            .(nb_enf_avant = .N, benjamin = min(age), ages = paste(age, collapse = ";"),
+              benj_am = suppressWarnings(max(as.numeric(am), na.rm = TRUE))), by = IDENT]
+  nn[!is.finite(naiss_am), naiss_am := NA_real_]
+  av[!is.finite(benj_am), benj_am := NA_real_]
   cp <- merge(cp, nn, by = "IDENT", all.x = TRUE)
   cp <- merge(cp, av, by = "IDENT", all.x = TRUE)
   cp[, `:=`(n_naiss = fcoalesce(n_naiss, 0L), nb_enf_avant = fcoalesce(nb_enf_avant, 0L),
@@ -211,6 +245,10 @@ extraire <- function(an) {
   cp[, prestations := Reduce(`+`, lapply(prest, function(v) nombre(cp[[v]])))]
   cp[, `:=`(prest_pe = nombre(PREST_FAM_PETITE_ENFANCE), prest_autres = nombre(PREST_FAM_AUTRES),
             revdisp = nombre(REVDISPM), irpp = nombre(IRPP),
+            # Montants observés, pour contrôler la simulation du script 64 ; loyer mensuel
+            prest_logement = nombre(PREST_LOGEMENT),
+            prest_rsa = nombre(PREST_PRECARITE_RMI) + nombre(PREST_PRECARITE_RSA) + nombre(M_RSA_ACTM),
+            prest_ppa = nombre(PPA), loyer = suppressWarnings(as.numeric(sub(",", ".", LOYER, fixed = TRUE))),
             uc_avant = nombre(NB_UCI) - 0.3 * n_naiss)]
   cp[, nv_hp := (revdisp - prestations) / pmax(uc_avant, 1)]
   cp[, `:=`(cs_femme = fifelse(lien_femme == "1", CS8CORPR, CS8CORCJ),
@@ -220,7 +258,12 @@ extraire <- function(an) {
   out <- cp[, .(annee = a, ident = IDENT, poids, age_femme, age_homme, naiss01, n_naiss, naiss_mere,
                 nb_enf_avant, benjamin, ages, conj, rev_femme, rev_homme, act_rev_femme, act_rev_homme,
                 dipl_femme, dipl_homme, act_femme, act_homme, cs_femme, cs_homme, statut, tuu, region,
-                prest_pe, prest_autres, prestations, revdisp, irpp, uc_avant, nv_hp)]
+                prest_pe, prest_autres, prestations, revdisp, irpp, uc_avant, nv_hp,
+                prest_logement, prest_rsa, prest_ppa, loyer,
+                emploi_femme, emploi_homme, tp_femme, tp_homme, tp_fam_femme, tp_fam_homme,
+                cpar_femme, cpar_homme, cmat_femme, cmat_homme,
+                rga, reg_code = REG, naia_femme, naim_femme, naia_homme, naim_homme,
+                datref, naiss_am, benj_am)]
   cat(an, ":", nrow(out), "couples,", sum(out$naiss01), "naissances (",
       round(100 * weighted.mean(out$naiss01, out$poids), 2), "% pondéré ), lu en",
       round(difftime(Sys.time(), t0, units = "secs")), "s\n")

@@ -3,7 +3,9 @@
 Usage : python construire_synthese.py  (depuis ce dossier)
 Produit synthese_logement_fecondite.docx. Les chiffres de la politique
 familiale sont lus dans les sorties des scripts R/38 (SRCV), R/57 (ERFS),
-R/39 et R/41 (décomposition de la baisse de l'ICF), dans Output/, hors dépôt.
+R/39 et R/41 (décomposition de la baisse de l'ICF), R/59 (plafonds de la PAJE),
+R/60 (prestations ou quotient familial), R/61 (emploi des conjoints) et R/62
+(congé parental de 2015), dans Output/, hors dépôt.
 """
 import csv
 import re
@@ -38,6 +40,14 @@ def fr(x, d=1):
     v = Decimal(repr(float(x))).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP)
     s = f"{v:,.{d}f}".replace(",", " ").replace(".", ",")
     return s.replace("-", "−")
+
+
+def frs(x, d=1):
+    """Comme fr, avec un + devant un nombre positif ; zéro sans signe."""
+    s = fr(x, d)
+    if float(s.lstrip("−").replace(" ", "").replace(",", ".")) == 0:
+        return s.lstrip("−")
+    return s if s.startswith("−") else "+" + s
 
 
 # ── Mise en forme ───────────────────────────────────────────────────────────
@@ -237,7 +247,13 @@ def en_bref(s, pf, e):
         f"sans que l'estimation soit significative. L'**ERFS**, avec {fr(e['naissances'], 0)} "
         "naissances de 2005 à 2023, dix fois plus, tranche : l'effet du barème est **faible et "
         f"non significatif**, de 0 à {fr(e['part_0523'], 0)} % de la baisse selon la période "
-        "d'estimation, au plus un tiers.",
+        "d'estimation, au plus un tiers. Mesurés sur toute l'enfance, **ni les prestations ni le "
+        "quotient familial** n'ont d'effet mesurable : reverser le quotient familial en "
+        "prestations ne relancerait pas la natalité.",
+        "Les **inégalités entre femmes et hommes** dans le couple ont reculé pendant la baisse. La "
+        "réforme du **congé parental** de 2015 a ramené les mères plus tôt vers l'emploi, sans relais "
+        "des pères et sans baisse des naissances ; c'est la précarité de l'emploi des femmes qui va "
+        "avec moins de naissances.",
         "La moitié de la baisse reste inexpliquée : à situation donnée, les couples font moins "
         "d'enfants, ce qui renvoie au désir d'enfant (en net recul selon l'Ined) et à la "
         "confiance en l'avenir.",
@@ -618,8 +634,212 @@ def erfs(s, pf, e):
         "sont pas incompatibles, mais ils étaient trop imprécis. Limites : l'ERFS donne les "
         "revenus de l'année de la naissance, qu'un congé parental fait baisser, ce qui touche de "
         "la même façon le gain et le gain de référence ; crèches, complément de mode de garde et "
-        "PreParE ne sont pas simulés ; un effet local autour des plafonds de la PAJE, comme "
-        "celui que trouve Elmallakh (2023), reste à tester.")
+        "PreParE ne sont pas simulés. L'effet local autour des plafonds de la PAJE est examiné "
+        "en 4.7, la part des prestations et du quotient familial en 4.8, les inégalités entre femmes "
+        "et hommes en 4.9.")
+
+
+def plafonds_qf(s, pl, qf):
+    s.h2("4.7 Autour des plafonds de la PAJE")
+    s.p("Elmallakh (2023) compare, dans SRCV 2014-2015, les ménages juste au-dessus et juste en "
+        "dessous des plafonds de l'allocation de base fixés en avril 2014 : au-dessus du plafond "
+        "« zéro », la probabilité de naissance baisse de 2 points. Ce plafond n'est pas né en "
+        "2014 : pour un couple à un revenu et un enfant, il reprend l'ancien plafond (35 480 € en "
+        "2014), et il n'est que de 2 à 10 % plus bas dans les autres cas. Avant 2014, la falaise "
+        "était donc au même endroit, et presque deux fois plus haute.")
+    rep, per = pl["rep"], pl["per"]
+    tests = [("Réplication 2014-2015, plafond zéro", rep["Zero 2014"]),
+             ("Réplication 2014-2015, plafond moitié", rep["Moitie 2014"]),
+             ("Ancien plafond, 2005-2013", per[("Ancien plafond", "2005-2013")]),
+             ("Plafond zéro de 2014, 2019-2023, sans falaise", per[("Zero 2014", "2019-2023")]),
+             ("Plafond zéro de 2018, 2019-2023", per[("Zero 2018", "2019-2023")])]
+    s.tableau(
+        ["Test, couples ayant déjà un enfant", "Falaise (€ de 2023)", "Saut des naissances (points)"],
+        [[lib, fr(round(1000 * float(r["falaise_k"]), -1), 0), f"{frs(r['saut_pts'])} ({fr(r['se'])})"]
+         for lib, r in tests],
+        [8.6, 3.6, 3.8], taille=10,
+        note="Régression sur discontinuité à ±10 k€ de ressources, droite de chaque côté du seuil, "
+             "effets fixes d'année, sans pondération (la spécification d'Elmallakh) ; écarts-types "
+             "entre parenthèses. Falaise : allocation de base sur 36 mois et prime de naissance "
+             "perdues au passage du seuil.")
+    s.puces([
+        f"**Du bruit.** Année par année, les sauts varient autant que l'erreur d'échantillonnage : "
+        f"écart-type de {fr(pl['sd'])} point, pour une erreur-type moyenne de {fr(pl['bruit'])}. "
+        f"On trouve {fr(pl['saut15'])} points en 2015, mais aussi {fr(pl['saut23'])} en 2023, où il "
+        "n'y a plus de falaise.",
+        f"**Différence de discontinuités.** En réunissant les déplacements des falaises de 2014 et "
+        f"de 2018, 1 000 € de droit à la PAJE changent la natalité de {frs(pl['dd'], 2)} point "
+        f"(écart-type {fr(pl['dd_se'], 2)}), quand le résultat d'Elmallakh implique "
+        f"{frs(pl['pente_E'], 2)}.",
+        "**Limite.** L'ERFS donne les revenus de l'année, la CAF retient ceux de deux ans plus tôt : "
+        "les prestations observées ne baissent presque pas aux seuils, et un vrai effet serait "
+        "dilué. L'ERFS ne confirme donc pas ce résultat, sans pouvoir le réfuter. Elle se panélise "
+        "toutefois sur un an : un tiers des ménages est réinterrogé l'année suivante, et 86,5 % des "
+        "couples attendus se retrouvent.",
+    ])
+
+    s.h2("4.8 Prestations ou quotient familial")
+    v, eff, ref = qf["val"], qf["eff"], qf["ref"]
+    v23, v14 = v["2023"], v["2014"]
+    s.p("Reverser l'avantage du quotient familial en prestations augmenterait-il la natalité ? "
+        "Le gain de la première année sous-estime le quotient familial, qui accompagne l'enfant "
+        "jusqu'à ses 20 ans quand l'allocation de base s'arrête à 3 ans. On simule donc avec "
+        "OpenFisca la valeur d'un enfant de 0 à 19 ans, revenus et barème figés, actualisée à 2 % : "
+        f"en 2023, {fr(v23['prestations_keur'])} k€ de prestations et {fr(v23['qf_keur'])} k€ de "
+        f"quotient familial ({fr(v23['part_qf_pct'], 0)} %, contre {fr(qf['part_qf_an1'], 0)} % sur "
+        "la seule première année).")
+    s.tableau(
+        ["Valeur d'un enfant de 0 à 19 ans, 2023", "Prestations (k€)", "Quotient familial (k€)",
+         "Part du quotient"],
+        [[lib, fr(v[g]["prestations_keur"]), fr(v[g]["qf_keur"]), f"{fr(v[g]['part_qf_pct'], 0)} %"]
+         for lib, g in (("1er quartile de niveau de vie", "2023 Q1"), ("2e quartile", "2023 Q2"),
+                        ("3e quartile", "2023 Q3"), ("4e quartile", "2023 Q4"), ("Ensemble", "2023"))],
+        [6.4, 3.2, 3.6, 2.8], taille=10,
+        note="Euros de 2023, actualisés à 2 %. Depuis 2014, la valeur des prestations a reculé de "
+             f"{fr(100 * (1 - float(v23['prestations_keur']) / float(v14['prestations_keur'])), 0)} % "
+             f"(de {fr(v14['prestations_keur'])} à {fr(v23['prestations_keur'])} k€), celle du "
+             "quotient est restée stable.")
+    specs = (("Référence", "Reference"), ("Année × décile de niveau de vie", "Annee x decile"),
+             ("Année × décile × nombre d'enfants", "Annee x decile x nombre d'enfants"))
+    s.tableau(
+        ["Effet de 1 000 € sur l'enfance (points), 2005-2023", "Prestations", "Quotient familial",
+         "Même effet par euro"],
+        [[lib, *[f"{frs(eff[k][c], 3)} ({fr(eff[k][se], 3)})"
+                 for c, se in (("prestations_pts", "se_prestations"), ("qf_pts", "se_qf"),
+                               ("commun_pts", "se_commun"))]] for lib, k in specs],
+        [6.0, 3.4, 3.4, 3.4], taille=10,
+        note="Écarts-types entre parenthèses. Modèle de la section 4.6 avec deux termes, chacun "
+             "avec sa valeur au barème fixe de 2014. L'effet négatif des prestations, de signe non "
+             "crédible, tient à des tendances propres au revenu et à la taille de la famille : il "
+             "disparaît avec les contrôles les plus stricts.")
+    A, B = "Avantage du QF plafonne a 1 000 EUR", "Avantage du QF des enfants supprime"
+    col = lambda f: [f(ref[(sc, "Ensemble")]) for sc in (A, B)]
+    s.tableau(
+        ["Réforme à budget constant, couples de 2023", "Avantage du QF plafonné à 1 000 €",
+         "Avantage des enfants supprimé"],
+        [["Recette", *col(lambda r: f"{fr(r['recette_md_eur'])} Md€")],
+         ["Forfait par enfant de moins de 20 ans", *col(lambda r: f"{fr(r['forfait_eur_mois'], 0)} € par mois")],
+         ["Un enfant de plus : prestations / quotient familial",
+          *col(lambda r: f"+{fr(r['gain_prestations_keur'])} / −{fr(r['perte_qf_keur'])} k€")],
+         ["Couples pour qui un enfant de plus vaut davantage",
+          *col(lambda r: f"{fr(r['part_valeur_en_hausse_pct'], 0)} %")],
+         ["Naissances, même effet par euro",
+          *col(lambda r: f"{frs(100 * float(r['effet_commun_pts']) / float(r['taux_pct']), 0)} %")],
+         ["Naissances, effets séparés (contrôles stricts)",
+          *col(lambda r: f"{frs(r['effet_naissances_pct'], 0)} % ({frs(r['bas_naissances_pct'], 0)} "
+                         f"à {frs(r['haut_naissances_pct'], 0)})")]],
+        [7.0, 4.6, 4.6], taille=10,
+        note="Couples dont la femme a 15 à 49 ans, budget équilibré sur ce champ ; la recette est "
+             "reversée en un forfait par enfant de moins de 20 ans. Intervalles à 95 % entre "
+             "parenthèses. Les spécifications moins strictes, qui reposent sur l'effet négatif des "
+             f"prestations, prédisent de {fr(qf['autres_max'], 0)} à {fr(qf['autres_min'], 0)} % de "
+             "naissances.")
+    mod = ref[(B, "Moitie modeste (Q1-Q2)")]
+    expo, dd = qf["expo"], qf["ddq"]["Reference"]
+    s.puces([
+        f"**Un effet commun nul et précis.** Au plus {fr(qf['haut'], 2)} point pour 1 000 € sur "
+        f"l'enfance : il faudrait environ {fr(5 * round(qf['besoin'] / 5), 0)} k€ de plus par "
+        f"enfant, près de {fr(10 * round(qf['besoin_pct'] / 10), 0)} % de sa valeur actuelle, pour "
+        "10 % de naissances en plus.",
+        "**Le plafonnement de 2012-2013.** L'avantage par demi-part passe de 2 336 € à 1 500 €. "
+        f"{fr(expo['part_touches_pct'], 0)} % des couples du dernier quartile y perdent "
+        f"{fr(expo['perte_touches_keur'])} k€ sur l'enfance, presque personne en dessous, sans "
+        f"baisse mesurable de leurs naissances : {frs(dd['coef_pts'], 3)} point par k€ (écart-type "
+        f"{fr(dd['se'], 3)}), et aucune rupture (p = {fr(qf['p_rupture'], 2)}).",
+        "**Qui gagne.** En moyenne, la valeur d'un enfant de plus ne bouge presque pas : la réforme "
+        "la déplace vers la moitié modeste, où elle gagne "
+        f"{fr(float(mod['gain_prestations_keur']) - float(mod['perte_qf_keur']), 0)} k€ par enfant. "
+        f"Cette moitié ne réagit pas davantage : {frs(mod['effet_commun_pts'], 2)} point "
+        f"(± {fr(1.96 * float(mod['se_commun_pts']), 2)}).",
+    ])
+    s.p("Verdict : les montants des prestations et du quotient familial n'ont pas d'effet "
+        "mesurable sur les naissances ; reverser l'un en l'autre ne relancerait pas la natalité. "
+        "Landais (2003) trouvait déjà au quotient familial un effet positif mais extrêmement "
+        "faible. Cela ne vaut ni pour l'accueil du jeune enfant et le congé parental, absents de "
+        "ces mesures, ni pour l'existence même d'une politique familiale, ni pour des effets lents "
+        "ou communs à toutes les familles. Limites : revenus et barème figés sur vingt ans, "
+        "allocation de rentrée scolaire exclue, effet revenu des transferts sur les enfants déjà "
+        "nés non compté.")
+
+
+def inegalites(s, ig):
+    s.h2("4.9 Inégalités entre femmes et hommes")
+    t05, t23 = ig["tend"]["2005"], ig["tend"]["2023"]
+    s.p("Les inégalités de revenu au sein des couples ont diminué pendant que la fécondité baissait : "
+        "elles n'expliquent pas la baisse. Ce qui ressort, c'est la précarité de l'emploi des femmes, "
+        "et la réforme du congé parental de 2015 n'a pas fait baisser les naissances. L'ERFS reprend "
+        "pour chaque conjoint les variables de l'enquête Emploi (contrat, chômage, temps partiel et sa "
+        "raison, absence pour congé parental ou de maternité), mais rien sur le partage des tâches "
+        "domestiques ni sur les normes de genre.")
+    s.tableau(
+        ["Couples dont la femme a 15 à 49 ans", "2005", "2023"],
+        [[lib, f"{fr(t05[c])} %", f"{fr(t23[c])} %"] for lib, c in (
+            ("Part des femmes dans les revenus d'activité du couple", "part_femme_revenus_pct"),
+            ("Femmes inactives", "femmes_inactives_pct"),
+            ("Mères d'un enfant de moins de 3 ans en congé parental", "meres_conge_parental_pct"),
+            ("Pères d'un enfant de moins de 3 ans en congé parental", "peres_conge_parental_pct"))],
+        [11.2, 2.4, 2.4], taille=10)
+
+    I, m = "Naissance apres l'enquete de N", ig["mod"]
+    TEMP = "emploi_femmeEmploi temporaire"
+    ens, conc = m[(I, "Ensemble", TEMP)], m[("Naissance concue apres l'enquete de N", "Ensemble", TEMP)]
+    s.p("**L'emploi de la femme avant la naissance.** L'enquête Emploi réinterroge un tiers des ménages "
+        "l'année suivante : on rapporte la situation des deux conjoints en fin d'année N à la naissance "
+        f"qui suit. {fr(ens['n'], 0)} couples sont suivis, avec {fr(ens['naissances'], 0)} naissances.")
+    echs = ("Ensemble", "1er enfant", "2e enfant")
+    cellule = lambda e, t: f"{frs(m[(I, e, t)]['coef_pts'])} ({fr(m[(I, e, t)]['se'])})"
+    s.tableau(
+        ["Naissance dans l'année qui suit (points)", "Tous rangs", "1er enfant", "2e enfant"],
+        [[lib, *[cellule(e, t) for e in echs]] for lib, t in (
+            ("Femme en emploi temporaire (contre stable)", TEMP),
+            ("Femme gagnant moins de 25 % des revenus du couple (contre 40 à 60 %)", "part_clMoins de 25 %"),
+            ("Homme au chômage (contre emploi stable)", "emploi_hommeChomage"))]
+        + [["Taux de naissance", *[f"{fr(m[(I, e, TEMP)]['taux_pct'])} %" for e in echs]]],
+        [7.6, 2.8, 2.8, 2.8], taille=10,
+        note="Écarts-types entre parenthèses ; modèles linéaires pondérés avec les contrôles de la "
+             "section 4.6. Ce sont des associations : une partie de ces naissances étaient déjà en route "
+             "lors de l'observation ; sur les seules naissances conçues après "
+             f"({fr(conc['naissances'], 0)}), plus rien n'est significatif, la précision étant faible. Le "
+             "chômage de l'homme ne joue pas, contrairement à ce que trouve la littérature européenne.")
+
+    pe, ev = ig["pe"], ig["ev"]
+    RET, NAI = "Mere en retrait (conge parental ou inactive)", "Naissance dans l'annee"
+    tranches = ("12-23 mois", "24-35 mois", "36-47 mois")
+    p_ret = ev["Mere en retrait, benjamin de 24-35 mois"]["p_joint_apres"]
+    p_nai = ev["Naissance dans l'annee, benjamin de 12-47 mois"]["p_joint_apres"]
+    groupe = pe[(NAI, "12-47 mois")]
+    s.p("**La réforme du congé parental de 2015.** Pour un enfant né depuis janvier 2015, à partir de "
+        "deux enfants, chaque parent peut être indemnisé 24 mois au plus : une mère seule à prendre le "
+        "congé perd la troisième année, sauf si le père la prend. Pour un premier enfant, rien ne change "
+        "pour la mère. On compare les familles de deux enfants ou plus à celles d'un enfant, selon que "
+        "le benjamin est né avant ou depuis 2015.")
+    effet = lambda iss, t: f"{frs(pe[(iss, t)]['effet_pts'])} ({fr(pe[(iss, t)]['se'])})"
+    s.tableau(
+        ["Deux enfants ou plus, benjamin né depuis 2015 (points)", "Benjamin de 12-23 mois",
+         "24-35 mois", "36-47 mois"],
+        [[lib, *[effet(iss, t) for t in tranches]] for lib, iss in (
+            ("Mère en congé parental", "Mere en conge parental"),
+            ("Mère en retrait (congé parental ou inactive)", RET),
+            ("Père en congé parental", "Pere en conge parental"), ("Naissance dans l'année", NAI))]
+        + [["Avant la réforme : mère en retrait, naissance",
+            *[f"{fr(pe[(RET, t)]['moyenne_pct'])} %, {fr(pe[(NAI, t)]['moyenne_pct'])} %" for t in tranches]]],
+        [6.4, 3.3, 3.3, 3.2], taille=10,
+        note="Double différence avec effets d'année et d'âge du benjamin en mois, gain d'un enfant de "
+             "plus en contrôle (modulation des allocations familiales de 2015). À 36-47 mois, le congé "
+             "était fini dans les deux régimes : l'absence d'effet y sert de placebo. Année par année, le "
+             f"retrait des mères chute dès l'enquête 2017 (test joint après 2016 : p = {fr(p_ret, 2)}), "
+             f"les naissances ne bougent pas (p = {fr(p_nai, 2)}) ; les naissances groupées de 12 à 47 "
+             f"mois donnent {frs(groupe['effet_pts'])} point (p = {fr(groupe['p'], 2)}), un résultat que "
+             "ne confirment ni les tranches ni l'étude d'événement.")
+    s.p("**Comment le lire.** La réforme de 2015 a retiré une année de congé indemnisé aux mères de deux "
+        "enfants ou plus. Elles sont revenues plus tôt au travail : quand le benjamin a 2 ans, une sur "
+        "trois était en retrait avant la réforme, une sur quatre après. Les pères n'ont pas pris le "
+        "relais, et ces familles n'ont pas eu moins d'enfants. La troisième année de congé payé n'était "
+        "donc pas ce qui décidait d'un enfant de plus. Ce qui pèse davantage semble être la sécurité de "
+        "l'emploi de la femme, sans qu'on sache encore si la précarité retient les naissances ou si les "
+        "femmes qui projettent un enfant cherchent d'abord un emploi stable. Les naissances sont "
+        "observées six ans au plus après la réforme, et le partage des tâches domestiques reste hors de "
+        "portée de ces données : il faudrait l'enquête Emploi du temps de l'Insee.")
 
 
 def autres_pistes(s):
@@ -654,19 +874,23 @@ def reste_et_limites(s):
     s.puces([
         "Les parts sont des **bornes hautes** : elles lisent comme causales des associations. "
         "Pour le logement, le panel plaide plutôt contre une lecture causale ; pour la "
-        "politique familiale, l'ERFS ne trouve pas d'effet significatif du barème, et la part "
-        "de la baisse dépend de la période d'estimation (0 à 13 %).",
+        "politique familiale, l'ERFS ne trouve d'effet ni du barème, ni des prestations ou du "
+        "quotient familial pris séparément, ni des plafonds de la PAJE, et la part de la baisse "
+        "dépend de la période d'estimation (0 à 13 %).",
         "Le champ du logement et de la politique familiale est celui des **couples constitués** ; "
         "le passage à l'ensemble des femmes suppose que la natalité hors couple varie dans la "
         "même proportion.",
-        "Les services (crèches, assistantes maternelles) et le congé parental ne sont ni "
-        "observables dans SRCV, ni simulés dans l'ERFS. Dans SRCV, le gain simulé suppose les "
+        "Les services (crèches, assistantes maternelles) ne sont ni observables dans SRCV, ni "
+        "simulés dans l'ERFS ; le congé parental y est repéré (section 4.9), mais pas le partage des "
+        "tâches domestiques. Dans SRCV, le gain simulé suppose les "
         "couples mariés et approche le revenu imposable ; dans l'ERFS, le statut conjugal et "
         "les revenus imposables de chaque conjoint sont observés.",
         "Pistes : une variation extérieure de l'offre de logement pour trancher la causalité ; "
         "relier la vie en couple et le départ de chez les parents au logement, avec les "
-        "fichiers détaillés du recensement ; pour la politique familiale, tester l'effet autour "
-        "des plafonds de la PAJE et les services, avec les fichiers complets de l'ERFS au CASD.",
+        "fichiers détaillés du recensement ; pour la politique familiale, mesurer le revenu "
+        "d'avant la naissance (ERFS en panel d'un an, fichiers complets au CASD), tester les "
+        "services d'accueil du jeune enfant et mesurer le partage des tâches avec l'enquête Emploi "
+        "du temps.",
     ])
 
 
@@ -694,8 +918,11 @@ def donnees_documents(s):
          ["Note de modélisation", "10", "Modèle à générations imbriquées à trois périodes"],
          ["Article", "32", "« La surface fait-elle les naissances ? », 2014-2025, pour la "
           "Revue économique ou la Revue d'économie politique"],
-         ["Diaporama", "46", "Bilan du projet, du logement à la politique familiale dans l'ERFS"],
-         ["Page de bilan et bilan Word", "14", "Point d'étape partagé en ligne et sa version Word"]],
+         ["Diaporama", "51", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
+          "(plafonds de la PAJE, prestations ou quotient familial, emploi des femmes et congé parental)"],
+         ["Note sur l'ERFS", "", "« Politique familiale et fécondité dans l'ERFS 2005-2023 », "
+          "document partagé"],
+         ["Page de bilan et bilan Word", "17", "Point d'étape partagé en ligne et sa version Word"]],
         [4.2, 1.6, 10.4])
 
 
@@ -709,6 +936,8 @@ def sources(s):
         "Insee (2026), « Bilan démographique 2025 », Insee Première n° 2087.",
         "Insee (2024), « Bilan démographique 2023 », Insee Première.",
         "Elmallakh N. (2023), Demography, vol. 60, n° 5, p. 1493-1522.",
+        "Landais C. (2003), « Le quotient familial a-t-il stimulé la natalité française ? », "
+        "Économie publique, n° 13.",
         "Bouchet-Valat M., Toulemon L. (2025), « Les Français·es veulent moins d'enfants », "
         "Population et Sociétés n° 635, Ined.",
         "Saudubray L. (2026), « Les déterminants économiques de la fécondité dans les pays de "
@@ -810,9 +1039,67 @@ def chiffres_erfs():
     return e
 
 
+def chiffres_plafonds_qf():
+    """Lit les sorties des scripts 59 (plafonds de la PAJE) et 60 (prestations ou QF)."""
+    p59 = lire("erfs_plafonds_paje.csv")
+    avec = lambda r: r["echantillon"] == "Couples avec enfant(s)" and r["fenetre"] == "+/-10 k€"
+    ann = [r for r in p59 if r["bloc"] == "Saut annee par annee" and r["seuil"] == "Zero 2014"]
+    sauts = [float(r["saut_pts"]) for r in ann]
+    moy = sum(sauts) / len(sauts)
+    dd = next(r for r in p59 if r["bloc"] == "Difference de discontinuites" and r["variante"] == "Reference")
+    pl = {"rep": {r["seuil"]: r for r in p59 if r["bloc"] == "Replication Elmallakh"
+                  and r["annees"] == "2014-2015" and avec(r)},
+          "per": {(r["seuil"], r["periode"]): r for r in p59 if r["bloc"] == "Par periode" and avec(r)},
+          "sd": (sum((x - moy) ** 2 for x in sauts) / (len(sauts) - 1)) ** 0.5,
+          "bruit": (sum(float(r["se"]) ** 2 for r in ann) / len(ann)) ** 0.5,
+          "saut15": next(float(r["saut_pts"]) for r in ann if r["annee"] == "2015"),
+          "saut23": next(float(r["saut_pts"]) for r in ann if r["annee"] == "2023"),
+          "dd": float(dd["effet_pts_keur"]), "dd_se": float(dd["se"]),
+          "pente_E": float(dd["pente_elmallakh"])}
+
+    q60 = lire("erfs_qf_prestations.csv")
+    bloc = lambda b: [r for r in q60 if r["bloc"] == b]
+    STRICT = "Annee x decile x nombre d'enfants | 2005-2023"
+    reformes = bloc("Reforme a budget constant")
+    autres = [float(r["effet_naissances_pct"]) for r in reformes
+              if r["specification"] != STRICT and r["groupe"] == "Ensemble"]
+    qf = {"val": {r["groupe"]: r for r in bloc("Valeur sur l'enfance")},
+          "eff": {r["specification"]: r for r in bloc("Effets separes") if r["echantillon"] == "2005-2023"},
+          "expo": next(r for r in bloc("Plafonnement, exposition") if r["groupe"] == "Q4"),
+          "ddq": {r["specification"]: r for r in bloc("Plafonnement, effets")
+                  if r["mesure"].startswith("Double difference")},
+          "p_rupture": next(float(r["coef_pts"]) for r in bloc("Plafonnement, effets")
+                            if r["specification"] == "Reference" and r["mesure"] == "p joint 2013-2023"),
+          "ref": {(r["scenario"], r["groupe"]): r for r in reformes if r["specification"] == STRICT},
+          "autres_min": min(autres), "autres_max": max(autres)}
+    # Borne haute de l'effet commun (référence) et dépense qu'il faudrait pour +10 % de naissances
+    ref = qf["eff"]["Reference"]
+    qf["haut"] = float(ref["commun_pts"]) + 1.96 * float(ref["se_commun"])
+    qf["besoin"] = 0.1 * float(ref["taux_pct"]) / qf["haut"]
+    v23 = qf["val"]["2023"]
+    qf["besoin_pct"] = 100 * qf["besoin"] / (float(v23["prestations_keur"]) + float(v23["qf_keur"]))
+    # Part du quotient familial dans le gain de la seule première année, 2023 (script 57)
+    g23 = next(r for r in lire("erfs_politique_familiale.csv")
+               if r["bloc"] == "Gain par annee" and r["annee"] == "2023")
+    qf["part_qf_an1"] = 100 * float(g23["quotient_familial"]) / float(g23["gain"])
+    return pl, qf
+
+
+def chiffres_inegalites():
+    """Lit les sorties des scripts 61 (emploi des conjoints) et 62 (congé parental de 2015)."""
+    e61 = lire("erfs_emploi_couple.csv")
+    e62 = lire("erfs_prepare_2015.csv")
+    return {"tend": {r["annee"]: r for r in e61 if r["bloc"] == "Tendances"},
+            "mod": {(r["issue"], r["echantillon"], r["terme"]): r for r in e61 if r["bloc"] == "Modeles"},
+            "pe": {(r["issue"], r["tranche"]): r for r in e62 if r["bloc"] in ("Premier etage", "Naissances")},
+            "ev": {r["issue"]: r for r in e62 if r["bloc"] == "Etude d'evenement"}}
+
+
 def main():
     pf, gains, instr = chiffres_politique_familiale()
     e = chiffres_erfs()
+    pl, qf = chiffres_plafonds_qf()
+    ig = chiffres_inegalites()
     quart = [{k: (v if k == "q" else float(v)) for k, v in r.items()}
              for r in lire("politique_familiale_par_quartile_2014.csv")]
     diplomes = [{k: (v if k == "groupe" else float(v)) for k, v in r.items()}
@@ -820,12 +1107,14 @@ def main():
     s = Synthese()
     s.titre("Logement, politique familiale et baisse de la fécondité",
             "Synthèse des travaux sur les enquêtes SRCV (2014-2025) et ERFS (2005-2023)",
-            "Kévin Genna, Institut Louis Bachelier", "Octobre 2026")
+            "Kévin Genna, Institut Louis Bachelier", "Novembre 2026")
     en_bref(s, pf, e)
     contexte(s)
     vue_ensemble(s, pf, e, diplomes)
     logement(s)
     politique_familiale(s, pf, gains, instr, quart, e)
+    plafonds_qf(s, pl, qf)
+    inegalites(s, ig)
     autres_pistes(s)
     reste_et_limites(s)
     donnees_documents(s)
