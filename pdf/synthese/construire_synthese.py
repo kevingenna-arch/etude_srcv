@@ -233,7 +233,7 @@ class Synthese:
 def en_bref(s, pf, e):
     s.encadre("En bref", [
         "L'ICF a baissé de 22 % entre 2014 et 2025 (de 2,00 à 1,56). Aucun facteur n'explique "
-        "à lui seul cette baisse ; ceux que nous avons mesurés en couvrent environ la moitié.",
+        "à lui seul cette baisse ; ceux que nous avons mesurés en couvrent un peu plus de la moitié.",
         "Le premier facteur identifié est le **recul de la vie en couple** : environ un tiers de "
         "la baisse, car 92 % des naissances ont lieu en couple.",
         "Les **petites surfaces** pèsent de 4 à 19 % de la baisse selon la spécification. Mais "
@@ -245,16 +245,17 @@ def en_bref(s, pf, e):
         f"2014 ({fr(-pf['perte_pct'], 0)} %), pour les trois quarts à cause de la PAJE. Dans "
         f"SRCV, ce recul semblait expliquer de l'ordre de {fr(pf['part14'], 0)} % de la baisse, "
         f"sans que l'estimation soit significative. L'**ERFS**, avec {fr(e['naissances'], 0)} "
-        "naissances de 2005 à 2023, dix fois plus, tranche : l'effet du barème est **faible et "
-        f"non significatif**, de 0 à {fr(e['part_0523'], 0)} % de la baisse selon la période "
-        "d'estimation, au plus un tiers. Mesurés sur toute l'enfance, **ni les prestations ni le "
+        "naissances de 2005 à 2023, dix fois plus, précise : une fois contrôlé le report des "
+        "naissances, l'effet du barème est **positif mais non significatif**, de l'ordre de "
+        f"{fr(e['part_0523'], 0)} % de la baisse (de {fr(e['part_num'][(False, '2005-2023', 'Ensemble, effet commun')][1], 0)} "
+        f"à {fr(e['part_num'][(False, '2005-2023', 'Ensemble, effet commun')][2], 0)} %). Mesurés sur toute l'enfance, **ni les prestations ni le "
         "quotient familial** n'ont d'effet mesurable : reverser le quotient familial en "
         "prestations ne relancerait pas la natalité.",
         "Les **inégalités entre femmes et hommes** dans le couple ont reculé pendant la baisse. La "
         "réforme du **congé parental** de 2015 a ramené les mères plus tôt vers l'emploi, sans relais "
         "des pères et sans baisse des naissances ; c'est la précarité de l'emploi des femmes qui va "
         "avec moins de naissances.",
-        "La moitié de la baisse reste inexpliquée : à situation donnée, les couples font moins "
+        "Près de la moitié de la baisse reste inexpliquée : à situation donnée, les couples font moins "
         "d'enfants, ce qui renvoie au désir d'enfant (en net recul selon l'Ined) et à la "
         "confiance en l'avenir.",
     ])
@@ -286,15 +287,15 @@ def vue_ensemble(s, pf, e, diplomes):
         "chacun des facteurs étudiés. Les valeurs sont centrales ; la fourchette figure sous "
         "chaque segment. Pour la politique familiale, l'effet du barème est celui que donne "
         "l'ERFS, dix fois plus riche en naissances que SRCV, appliqué au recul du gain d'un "
-        "enfant des couples de 2025 ; légèrement négatif, il sort de la barre.")
+        "enfant des couples de 2025 ; positif mais non significatif, il entre dans la barre.")
     s.doc.add_picture(str(ICI / "graph_parts_baisse_icf.png"), width=Cm(16))
     s.doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     par = s.doc.add_paragraph()
     texte(par, "Figure 1 — Part de la baisse de l'ICF entre 2014 et 2025 associée à chaque "
           "facteur. ", gras=True, taille=9.5)
-    texte(par, "Ne figurent pas dans la barre : la structure des statuts d'occupation, qui a "
+    texte(par, "Ne figure pas dans la barre : la structure des statuts d'occupation, qui a "
           "soutenu la natalité (environ −10 %), de sorte que le logement dans son ensemble pèse "
-          f"entre −6 % et +8 %, et la politique familiale ({fr(e['dec_pf'], 0)} %). Les parts ne "
+          "entre −6 % et +8 %. Les parts ne "
           "s'additionnent qu'approximativement : elles viennent de méthodes et de champs "
           "différents.", italique=True, taille=9.5, couleur=GRIS)
     s.tableau(
@@ -311,7 +312,7 @@ def vue_ensemble(s, pf, e, diplomes):
           f"{fr(e['dec_pf_bas'], 0)} à {fr(e['dec_pf_haut'], 0)} %",
           "Effet estimé dans l'ERFS sur 2014-2023 ; "
           f"+{fr(e['dec_0523'], 0)} % ({fr(e['dec_0523_bas'], 0)} à {fr(e['dec_0523_haut'], 0)} %) "
-          "avec l'effet estimé sur 2005-2023 ; faible et non significatif dans les deux cas. "
+          "avec l'effet estimé sur 2005-2023 ; positif et non significatif dans les deux cas. "
           f"SRCV seule donnait {fr(pf['part14'], 0)} % ({fr(pf['bas14'], 0)} à "
           f"{fr(pf['haut14'], 0)} %)"],
          ["Âge des couples", "4 %", "2 à 4 %", "Les couples ont vieilli d'un demi-an"],
@@ -342,9 +343,9 @@ def vue_ensemble(s, pf, e, diplomes):
           "quartile a baissé comme la moyenne. Le trait pointillé marque 100 %.",
           italique=True, taille=9.5, couleur=GRIS)
     s.puces([
-        "**Les classes moyennes ont le plus perdu** (section 4.4), mais avec l'effet estimé dans "
-        f"l'ERFS, le barème ne pèse guère dans aucun quartile : de {fr(e['q_min'], 0)} à "
-        f"{fr(e['q_max'], 0)} % de la baisse, ou de +{fr(e['q0523_min'], 0)} à "
+        "**Les classes moyennes ont le plus perdu** (section 4.4), et avec l'effet estimé dans "
+        f"l'ERFS, c'est là que le barème pèse le plus : de {fr(e['q_min'], 0)} à "
+        f"{fr(e['q_max'], 0)} % de la baisse selon le quartile, ou de +{fr(e['q0523_min'], 0)} à "
         f"+{fr(e['q0523_max'], 0)} % avec l'effet estimé sur 2005-2023, le plus en Q3. SRCV "
         "seule le concentrait sur les classes moyennes (33 % en Q3), mais sans précision.",
         "**Le recul de la vie en couple atteint 66 % en Q1**, contre 26 à 33 % ailleurs, mais "
@@ -585,33 +586,57 @@ def erfs(s, pf, e):
     s.tableau(
         ["Effet de 1 000 € de gain annuel (points)", "ERFS 2005-2023", "ERFS 2014-2023",
          "SRCV 2014-2025"],
-        [[lib, *[f"{fr(e['eff'][(per, ech)][0], 2)} (p = {fr(e['eff'][(per, ech)][1], 2)})"
+        [[lib, *[f"{frs(e['eff'][(per, ech)][0], 2)} (p = {fr(e['eff'][(per, ech)][1], 2)})"
                  for per in ("2005-2023", "2014-2023")],
           f"{fr(pf['srcv'][ech][0], 2)} (p = {fr(pf['srcv'][ech][1], 2)})"]
          for lib, ech in (("Ensemble", "Ensemble"), ("Premier enfant", "1er enfant"),
                           ("Rangs 2 et plus", "Rang 2 et plus"))]
+        + [["Ensemble, gain égal à 1 % du revenu",
+            *[f"{frs(e['eff_rel'][(per, 'Ensemble')][0], 2)} (p = {fr(e['eff_rel'][(per, 'Ensemble')][1], 2)})"
+              for per in ("2005-2023", "2014-2023")], "–"]]
         + [["Naissances", fr(e['naissances'], 0), fr(e['naissances_1423'], 0), "1 519"]],
         [5.2, 3.6, 3.6, 3.8], taille=10,
         note="ERFS : modèles linéaires pondérés de la probabilité de naissance, gain et gain au "
-             "barème fixe de 2014, effets fixes d'année, d'âge, de rang, de diplôme, de statut "
-             "d'occupation, de taille d'unité urbaine et de région ; erreurs-types robustes. "
-             "SRCV : probits, effets marginaux moyens (section 4.5).")
+             "barème fixe de 2014, effets d'année propres à chaque cellule décile de niveau de vie "
+             "× nombre d'enfants × âge de la femme, effets fixes d'âge, d'âge du benjamin, de "
+             "diplôme, de statut conjugal et d'occupation, de taille d'unité urbaine et de région ; "
+             "p calculé avec la plus prudente des erreurs-types robuste et groupée. Gain en % : "
+             "revenu du ménage hors prestations. SRCV : probits, effets marginaux moyens (section 4.5).")
+    t = lambda spec, per="2005-2023", mes="Gain et gain a bareme fixe": float(e["temp"][(spec, mes, per)]["effet_pts"])
+    a = e["age"]
+    COMMUNS = "Effets d'annee communs"
     s.puces([
-        f"**Pas d'effet significatif.** Mille euros de gain annuel vont avec "
-        f"+{fr(e['eff'][('2005-2023', 'Ensemble')][0], 2)} point de probabilité de naissance "
-        f"sur 2005-2023, et {fr(e['eff'][('2014-2023', 'Ensemble')][0], 2)} sur 2014-2023. La "
-        "précision est trois fois meilleure que dans SRCV : un effet de 0,23 point, 3 % du taux "
-        "de naissance, serait détecté.",
+        "**Le report des naissances masquait l'effet.** Entre 2012-2014 et 2021-2023, les "
+        f"naissances reculent de {fr(-float(a['(-Inf,24]']['evolution_taux_pct']), 0)} à "
+        f"{fr(-float(a['(24,29]']['evolution_taux_pct']), 0)} % avant 30 ans et progressent de "
+        f"{fr(float(a['(34,39]']['evolution_taux_pct']), 0)} à {fr(float(a['(39, Inf]']['evolution_taux_pct']), 0)} % "
+        "après 35 ans, alors que les couples plus âgés perdent le plus au barème "
+        f"({fr(float(a['(34,39]']['recul_gain_euros']), 0)} à {fr(float(a['(39, Inf]']['recul_gain_euros']), 0)} € "
+        f"par an, contre {fr(float(a['(29,34]']['recul_gain_euros']), 0)} à "
+        f"{fr(float(a['(24,29]']['recul_gain_euros']), 0)} € avant 35 ans). Avec des effets d'année "
+        f"communs à tous les couples, l'effet tombait à {frs(t(COMMUNS), 2)} point "
+        f"sur 2005-2023 et à {frs(t(COMMUNS, '2014-2023'), 2)} sur 2014-2023 ; "
+        "avec des effets d'année propres à chaque décile, nombre d'enfants et âge, il est positif "
+        "dans toutes les spécifications. Le test placebo, lui, ne les départage pas : toutes le passent.",
+        f"**Un effet positif, non significatif.** Mille euros de gain annuel vont avec "
+        f"{frs(e['eff'][('2005-2023', 'Ensemble')][0], 2)} point de probabilité de naissance "
+        f"sur 2005-2023 (p = {fr(e['eff'][('2005-2023', 'Ensemble')][1], 2)}), et "
+        f"{frs(e['eff'][('2014-2023', 'Ensemble')][0], 2)} sur 2014-2023 ; un gain égal à 1 % du "
+        f"revenu, avec {frs(e['eff_rel'][('2005-2023', 'Ensemble')][0], 2)} point. Un effet de "
+        f"{fr(e['mde'], 2)} point, {fr(100 * e['mde'] / e['taux'], 0)} % du taux de naissance, serait "
+        "détecté.",
         "**Étude d'événement.** L'exposition de chaque couple aux réformes de 2013 à 2018 (gain "
         "au barème de 2019 moins gain au barème de 2013, en moyenne −800 € par an, quatre "
         "couples sur cinq perdants) est croisée avec l'année. Rien ne bouge avant les réformes "
-        f"(test joint des années 2005 à 2011 : p = {fr(e['p_avant'], 2)}), et aucune rupture "
-        f"n'apparaît après (p = {fr(e['p_apres'], 2)}).",
-        "**Ce qui reste fragile.** En probit, l'effet 2014-2023 devient négatif ; le deuxième "
-        "enfant sort avec un signe peu plausible ; les classes moyennes donnent un effet "
-        "positif estimées seules, sans écart significatif avec les autres. Seul indice, le "
-        f"premier enfant : +{fr(e['eff'][('2005-2023', '1er enfant')][0], 2)} point "
-        f"(p = {fr(e['eff'][('2005-2023', '1er enfant')][1], 2)}).",
+        f"(test joint des années 2005 à 2011 : p = {fr(e['p_avant'], 2)}) ; après, les coefficients "
+        f"sont plutôt positifs mais erratiques (p = {fr(e['p_apres'], 2)}).",
+        "**Ce qui reste fragile.** Une seule spécification donne un effet significatif à 5 % "
+        f"({frs(t('+ annee x age de la femme'), 2)} point, avec une tendance d'âge commune à tous "
+        f"les rangs). En probit, l'effet 2014-2023 est nul ({frs(e['probit1423'], 2)}). Le premier "
+        f"enfant donne {frs(e['eff'][('2005-2023', '1er enfant')][0], 2)} point "
+        f"(p = {fr(e['eff'][('2005-2023', '1er enfant')][1], 2)}) avec les revenus de l'année de la "
+        f"naissance, mais {frs(e['premier_avant'], 2)} avec ceux de l'année d'avant (panel, cinq fois "
+        "moins de naissances).",
     ])
     s.tableau(
         ["Part de la baisse de l'ICF imputable au barème", "Effet estimé sur 2014-2023",
@@ -620,6 +645,8 @@ def erfs(s, pf, e):
           *[e['part'][(per, "Ensemble, effet commun")] for per in ("2014-2023", "2005-2023")]],
          ["ERFS, baisse 2014-2023, effets par rang",
           *[e['part'][(per, "Ensemble, effets par rang")] for per in ("2014-2023", "2005-2023")]],
+         ["ERFS, baisse 2014-2023, gain en % du revenu",
+          *[e['part_rel'][(per, "Ensemble, effet commun")] for per in ("2014-2023", "2005-2023")]],
          ["Décomposition 2014-2025 (section 2)",
           f"{fr(e['dec_pf'], 0)} % ({fr(e['dec_pf_bas'], 0)} à {fr(e['dec_pf_haut'], 0)})",
           f"+{fr(e['dec_0523'], 0)} % ({fr(e['dec_0523_bas'], 0)} à {fr(e['dec_0523_haut'], 0)})"]],
@@ -628,10 +655,15 @@ def erfs(s, pf, e):
              "L'effet estimé sur 2014-2023 couvre la période des réformes et de la baisse ; celui "
              "estimé sur 2005-2023, plus précis, s'appuie aussi sur les écarts de barème d'avant "
              "2013.")
-    s.p(f"Le recul du barème, {fr(e['recul23'], 0)} € par an pour les couples de 2023, a donc un "
-        f"effet faible et non significatif : de 0 à {fr(e['part_0523'], 0)} % de la baisse de la "
-        "fécondité selon la période d'estimation, au plus un tiers. Les chiffres de SRCV n'en "
-        "sont pas incompatibles, mais ils étaient trop imprécis. Limites : l'ERFS donne les "
+    parts = [e['part_num'][(rel, per, "Ensemble, effet commun")]
+             for rel in (False, True) for per in ("2014-2023", "2005-2023")]
+    ref = e['part_num'][(False, "2005-2023", "Ensemble, effet commun")]
+    s.p(f"Le recul du barème, {fr(e['recul23'], 0)} € par an pour les couples de 2023 "
+        f"({fr(e['recul23_pct'], 1)} % de leur revenu), expliquerait de l'ordre de "
+        f"{fr(ref[0], 0)} % de la baisse de la fécondité, de {fr(min(p[0] for p in parts), 0)} à "
+        f"{fr(max(p[0] for p in parts), 0)} % selon la période et la mesure, sans que l'estimation "
+        f"soit significative : l'intervalle va de {fr(ref[1], 0)} à {fr(ref[2], 0)} %. Les chiffres "
+        "de SRCV n'en sont pas incompatibles, mais ils étaient trop imprécis. Limites : l'ERFS donne les "
         "revenus de l'année de la naissance, qu'un congé parental fait baisser, ce qui touche de "
         "la même façon le gain et le gain de référence ; crèches, complément de mode de garde et "
         "PreParE ne sont pas simulés. L'effet local autour des plafonds de la PAJE est examiné "
@@ -699,7 +731,9 @@ def plafonds_qf(s, pl, qf):
              f"{fr(100 * (1 - float(v23['prestations_keur']) / float(v14['prestations_keur'])), 0)} % "
              f"(de {fr(v14['prestations_keur'])} à {fr(v23['prestations_keur'])} k€), celle du "
              "quotient est restée stable.")
-    specs = (("Référence", "Reference"), ("Année × décile de niveau de vie", "Annee x decile"),
+    specs = (("Référence : année × décile × enfants × âge", "Reference"),
+             ("Effets d'année communs", "Effets d'annee communs"),
+             ("Année × décile de niveau de vie", "Annee x decile"),
              ("Année × décile × nombre d'enfants", "Annee x decile x nombre d'enfants"))
     s.tableau(
         ["Effet de 1 000 € sur l'enfance (points), 2005-2023", "Prestations", "Quotient familial",
@@ -708,10 +742,11 @@ def plafonds_qf(s, pl, qf):
                  for c, se in (("prestations_pts", "se_prestations"), ("qf_pts", "se_qf"),
                                ("commun_pts", "se_commun"))]] for lib, k in specs],
         [6.0, 3.4, 3.4, 3.4], taille=10,
-        note="Écarts-types entre parenthèses. Modèle de la section 4.6 avec deux termes, chacun "
-             "avec sa valeur au barème fixe de 2014. L'effet négatif des prestations, de signe non "
-             "crédible, tient à des tendances propres au revenu et à la taille de la famille : il "
-             "disparaît avec les contrôles les plus stricts.")
+        note="Écarts-types entre parenthèses, les plus prudents des robustes et des groupés. Modèle "
+             "de la section 4.6 avec deux termes, chacun avec sa valeur au barème fixe de 2014. "
+             "L'effet négatif des prestations, de signe non crédible, tient à des tendances propres "
+             "au revenu, à la taille de la famille et à l'âge : il disparaît avec les effets d'année "
+             "de la référence.")
     A, B = "Avantage du QF plafonne a 1 000 EUR", "Avantage du QF des enfants supprime"
     col = lambda f: [f(ref[(sc, "Ensemble")]) for sc in (A, B)]
     s.tableau(
@@ -725,19 +760,19 @@ def plafonds_qf(s, pl, qf):
           *col(lambda r: f"{fr(r['part_valeur_en_hausse_pct'], 0)} %")],
          ["Naissances, même effet par euro",
           *col(lambda r: f"{frs(100 * float(r['effet_commun_pts']) / float(r['taux_pct']), 0)} %")],
-         ["Naissances, effets séparés (contrôles stricts)",
+         ["Naissances, effets séparés (référence)",
           *col(lambda r: f"{frs(r['effet_naissances_pct'], 0)} % ({frs(r['bas_naissances_pct'], 0)} "
                          f"à {frs(r['haut_naissances_pct'], 0)})")]],
         [7.0, 4.6, 4.6], taille=10,
         note="Couples dont la femme a 15 à 49 ans, budget équilibré sur ce champ ; la recette est "
              "reversée en un forfait par enfant de moins de 20 ans. Intervalles à 95 % entre "
-             "parenthèses. Les spécifications moins strictes, qui reposent sur l'effet négatif des "
-             f"prestations, prédisent de {fr(qf['autres_max'], 0)} à {fr(qf['autres_min'], 0)} % de "
+             "parenthèses. Les autres spécifications, qui reposent sur l'effet négatif des "
+             f"prestations, prédisent de {frs(qf['autres_min'], 0)} à {frs(qf['autres_max'], 0)} % de "
              "naissances.")
     mod = ref[(B, "Moitie modeste (Q1-Q2)")]
     expo, dd = qf["expo"], qf["ddq"]["Reference"]
     s.puces([
-        f"**Un effet commun nul et précis.** Au plus {fr(qf['haut'], 2)} point pour 1 000 € sur "
+        f"**Un effet commun faible et précis.** Au plus {fr(qf['haut'], 2)} point pour 1 000 € sur "
         f"l'enfance : il faudrait environ {fr(5 * round(qf['besoin'] / 5), 0)} k€ de plus par "
         f"enfant, près de {fr(10 * round(qf['besoin_pct'] / 10), 0)} % de sa valeur actuelle, pour "
         "10 % de naissances en plus.",
@@ -864,7 +899,7 @@ def autres_pistes(s):
 
 def reste_et_limites(s):
     s.h1("6. Ce qui reste inexpliqué")
-    s.p("Environ la moitié de la baisse ne tient à aucun des facteurs mesurés : à âge, vie en "
+    s.p("Près de la moitié de la baisse ne tient à aucun des facteurs mesurés : à âge, vie en "
         "couple, logement et revenu donnés, les couples font moins d'enfants qu'en 2014. Deux "
         "pistes, extérieures à nos données, sont compatibles avec ce constat. Le nombre "
         "d'enfants souhaité recule : chez les femmes de moins de 30 ans, il est passé de 2,5 à "
@@ -874,9 +909,10 @@ def reste_et_limites(s):
     s.puces([
         "Les parts sont des **bornes hautes** : elles lisent comme causales des associations. "
         "Pour le logement, le panel plaide plutôt contre une lecture causale ; pour la "
-        "politique familiale, l'ERFS ne trouve d'effet ni du barème, ni des prestations ou du "
-        "quotient familial pris séparément, ni des plafonds de la PAJE, et la part de la baisse "
-        "dépend de la période d'estimation (0 à 13 %).",
+        "politique familiale, l'ERFS trouve au barème un effet positif mais non significatif, "
+        "aucun effet des prestations ou du quotient familial pris séparément ni des plafonds de "
+        "la PAJE, et la part de la baisse dépend de la manière de contrôler le report des "
+        "naissances (9 à 29 % avec des effets d'année par groupe, 13 % sans).",
         "Le champ du logement et de la politique familiale est celui des **couples constitués** ; "
         "le passage à l'ensemble des femmes suppose que la natalité hors couple varie dans la "
         "même proportion.",
@@ -1011,18 +1047,36 @@ def chiffres_erfs():
     e["cor_min"], e["cor_max"] = min(cor), max(cor)
     e["eff"] = {(r["periode"], r["echantillon"]): (float(r["effet_pts"]), float(r["p"]))
                 for r in bloc("Modeles de gain") if r["mesure"] == "Gain et gain a bareme fixe"}
+    e["eff_rel"] = {(r["periode"], r["echantillon"]): (float(r["effet_pts"]), float(r["p"]))
+                    for r in bloc("Modeles de gain") if r["mesure"] == "Gain relatif (% du revenu)"}
+    ref = next(r for r in bloc("Modeles de gain") if r["mesure"] == "Gain et gain a bareme fixe"
+               and r["periode"] == "2005-2023" and r["echantillon"] == "Ensemble")
+    e["mde"], e["taux"] = float(ref["mde_pts"]), float(ref["taux_pct"])
+    e["probit1423"] = next(float(r["ame_pts"]) for r in bloc("Probit") if r["periode"] == "2014-2023")
+    # Premier enfant, panel, revenus de l'année d'avant la naissance (script 63)
+    e["premier_avant"] = next(float(r["coef_pts"]) for r in lire("erfs_bareme_verifications.csv")
+                              if r["bloc"] == "Panel : modeles" and r["echantillon"] == "1er enfant"
+                              and r["modele"] == "Revenus de N (avant la naissance)")
+    # Effets temporels : (spécification, mesure, période) -> ligne ; placebo par (spécification, mesure)
+    e["temp"] = {(r["specification"], r["mesure"], r["periode"]): r for r in bloc("Effets temporels")}
+    e["age"] = {r["age_cl"]: r for r in bloc("Recul par age de la femme")}
     ev = next(r for r in bloc("Etude d'evenement") if r["exposition"] == "Reformes 2013-2018"
               and r["specification"] == "Reference" and r["echantillon"] == "Ensemble")
     e["p_avant"], e["p_apres"] = float(ev["p_joint_2005_2011"]), float(ev["p_joint_2013_2023"])
-    e["part"] = {}
+    e["part"], e["part_rel"], e["part_num"] = {}, {}, {}
     for r in bloc("Part de la baisse 2014-2023"):
+        relatif = r["mesure"] == "Gain relatif (% du revenu)"
         signe = "+" if float(r["part_baisse_icf_pct"]) > 0 else ""
-        e["part"][(r["estimation"], r["rang"])] = (
+        (e["part_rel"] if relatif else e["part"])[(r["estimation"], r["rang"])] = (
             f"{signe}{fr(r['part_baisse_icf_pct'], 0)} % ({fr(r['ic_bas'], 0)} à {fr(r['ic_haut'], 0)})")
-        if r["rang"] == "Ensemble, effet commun":
+        e["part_num"][(relatif, r["estimation"], r["rang"])] = (
+            float(r["part_baisse_icf_pct"]), float(r["ic_bas"]), float(r["ic_haut"]))
+        if r["rang"] == "Ensemble, effet commun" and not relatif:
             e["recul23"] = float(r["ecart_gain_euros"])
             if r["estimation"] == "2005-2023":
                 e["part_0523"] = float(r["part_baisse_icf_pct"])
+        if r["rang"] == "Ensemble, effet commun" and relatif:
+            e["recul23_pct"] = float(r["ecart_mesure"])
     parts = {r["facteur"]: r for r in lire("graph_parts_baisse_icf.csv")}
     e["dec_pf"] = float(parts["Politique familiale"]["part"])
     e["dec_reste"] = float(parts["Non expliqué"]["part"])
@@ -1032,8 +1086,8 @@ def chiffres_erfs():
     e["dec_0523"], e["dec_0523_bas"], e["dec_0523_haut"] = (
         float(ens["pf_0523"]), float(ens["pf_0523_bas"]), float(ens["pf_0523_haut"]))
     qs = [q[k] for k in ("Q1", "Q2", "Q3", "Q4")]
-    e["q_min"] = max(float(r["politique_familiale"]) for r in qs)   # le moins négatif
-    e["q_max"] = min(float(r["politique_familiale"]) for r in qs)
+    e["q_min"] = min(float(r["politique_familiale"]) for r in qs)
+    e["q_max"] = max(float(r["politique_familiale"]) for r in qs)
     e["q0523_min"] = min(float(r["pf_0523"]) for r in qs)
     e["q0523_max"] = max(float(r["pf_0523"]) for r in qs)
     return e
@@ -1059,7 +1113,7 @@ def chiffres_plafonds_qf():
 
     q60 = lire("erfs_qf_prestations.csv")
     bloc = lambda b: [r for r in q60 if r["bloc"] == b]
-    STRICT = "Annee x decile x nombre d'enfants | 2005-2023"
+    STRICT = "Reference | 2005-2023"   # référence : effets d'année par décile x enfants x âge
     reformes = bloc("Reforme a budget constant")
     autres = [float(r["effet_naissances_pct"]) for r in reformes
               if r["specification"] != STRICT and r["groupe"] == "Ensemble"]
