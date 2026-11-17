@@ -60,7 +60,7 @@
 \subtitle{Bilan du projet SRCV, 2014-2025}
 \author[Kévin Genna]{Kévin Genna}
 \institute[Chaire TDTE]{Chaire Transitions Démographiques, Transitions Économiques}
-\date[12 novembre 2026]{Point d'étape au 12 novembre 2026}
+\date[17 novembre 2026]{Point d'étape au 17 novembre 2026}
 
 \begin{document}
 
@@ -79,10 +79,10 @@
         \footnotesize
         \begin{itemize}\setlength{\itemsep}{2pt}
           \item Logement : surtout un choix, et une contrainte à la marge d'une pièce.
-          \item Recensement : résultats confirmés de 2014 à 2023 ; moins de premières naissances en ville.
+          \item Recensement : confirmé de 2014 à 2023 ; moins de premières naissances en ville.
           \item Fluidité : déménager est plus difficile ; le premier enfant est repoussé plus que perdu.
-          \item Politique familiale : dans l'ERFS, une fois le report des naissances contrôlé, un effet positif mais non significatif du barème, de l'ordre de 20\,\% de la baisse ; congé parental raccourci en 2015, pas moins de naissances.
-          \item ICF $-$22\,\% : vie en couple, un tiers ; surfaces, 4 à 19\,\% ; politique familiale, 5 à 10\,\% ; 45\,\% inexpliqués.
+          \item Politique familiale : ni le barème (de l'ordre de 20\,\% de la baisse, non significatif), ni l'offre d'accueil, ni le congé parental n'expliquent l'essentiel de la baisse.
+          \item Naissances par femme $-$15\,\% de 2014 à 2023 (recensement) : vie en couple, 41\,\% ; logement, rien ; barème, 10 à 20\,\% ; le reste, moins de premiers enfants à âge donné.
         \end{itemize}
       \end{callout}
     \end{column}
@@ -393,9 +393,7 @@
       \small
       \begin{itemize}\setlength{\itemsep}{0.5em}
         \item Aux trois millésimes, le taux de première naissance \alert{bondit à 60 m²}, puis ne varie plus : la marche de SRCV, au même endroit.
-        \item Comme dans SRCV, 73 à 75\,\% des couples sans enfant ont la place d'un enfant.
-        \item Sans cette place, la probabilité de première naissance baisse de \textbf{10,1 points} en 2014, 9,3 en 2019, 7,3 en 2023 (SRCV : 10,2).
-        \item Place et surface gardent chacune un effet propre.
+        \item Place et surface gardent chacune un effet propre ; le tableau suivant compare les deux sources.
       \end{itemize}
     \end{column}
   \end{columns}
@@ -497,7 +495,7 @@
         \begin{itemize}\setlength{\itemsep}{2pt}
           \item Taux de naissance des couples : 8,3, puis 8,0, puis 7,4\,\% ($-$10\,\%), presque autant dans chaque situation de logement.
           \item Premier enfant : de 14,9 à 12,9\,\% avec la place d'un enfant, de 6,8 à 5,8\,\% sans.
-          \item Les situations bougent peu : la recomposition n'explique \textbf{rien} de la baisse.
+          \item Les situations bougent peu : à âge et nombre d'enfants donnés, la recomposition n'explique \textbf{rien} de la baisse ($-$5\,\%), quand SRCV y voyait 12\,\%.
         \end{itemize}
       \end{callout}
     \end{column}
@@ -709,120 +707,65 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{La politique familiale, l'étude qui en découle}
 
-\begin{frame}{Ce que rapporte un enfant de plus}
+\begin{frame}{Un quart de moins par enfant, surtout au milieu}
   \begin{columns}[T]
-    \begin{column}{0.28\textwidth}
+    \begin{column}{0.25\textwidth}
       \kpi{4\,866\,€}{par an pour un enfant de plus, barème de 2014 indexé}
       \vspace{0.2cm}
       \kpi[tdtered]{3\,772\,€}{barème de 2025 : $-$22\,\%, et $-$33\,\% au premier enfant}
     \end{column}
-    \begin{column}{0.68\textwidth}
-      \footnotesize
-      \begin{tabular}{@{}lrrr@{}}
-        \toprule
-        Instrument & 2014 & 2025 & Part de la baisse \\
-        \midrule
-        Prestations monétaires & 3\,666\,€ & 2\,635\,€ & 16\,\% \\
-        \quad dont PAJE & 2\,211\,€ & 1\,378\,€ & 14\,\% \\
-        \quad dont AF et complément familial & 1\,455\,€ & 1\,257\,€ & 2\,\% \\
-        Quotient familial & 1\,200\,€ & 1\,137\,€ & 1\,\% \\
-        Crèches, assistantes maternelles & \multicolumn{2}{c}{offre en hausse} & non chiffré \\
-        \bottomrule
-      \end{tabular}
-      \vspace{0.3cm}
-
-      \small Le gain d'un enfant de plus est simulé avec \textbf{OpenFisca}, en local, selon le revenu du couple, l'activité des parents et l'âge des enfants déjà nés.
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2025 ; OpenFisca-France, barèmes 2014 et 2025 ; calculs de l'auteur.}
-\end{frame}
-
-\begin{frame}{Qui a perdu, et avec quel effet}
-  \begin{columns}[T]
-    \begin{column}{0.56\textwidth}
-      \footnotesize\setlength{\tabcolsep}{4pt}
-      \begin{tabular}{@{}lrl@{}}
-        \toprule
-        Quartile & Recul du gain & Instrument en cause \\
-        \midrule
-        Q1 (modestes) & $-$512\,€ ($-$11\,\%) & PAJE, en partie \\
-        Q2 & $-$1\,583\,€ ($-$25\,\%) & PAJE, quotient familial \\
-        Q3 & $-$1\,798\,€ ($-$35\,\%) & PAJE, plafonds abaissés \\
-        Q4 (aisés) & $-$483\,€ ($-$14\,\%) & Modulation des AF \\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-    \begin{column}{0.40\textwidth}
-      \small
-      \begin{aere}
-        \item Mille euros de gain en plus : +0,29 point de probabilité de naissance, \alert{non significatif} ($p = 0{,}26$).
-        \item L'imprécision vient du petit nombre de naissances ; il en faudrait environ 9\,300.
-        \item D'où une étude à part, sur l'\textbf{ERFS 2005-2023}, reçue le 28 octobre : voir plus loin.
-      \end{aere}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025 ; OpenFisca-France ; quartiles de niveau de vie des couples.}
-\end{frame}
-
-\begin{frame}{Affiner l'effet, trois pistes testées}
-  \begin{columns}[T]
-    \begin{column}{0.315\textwidth}
-      \card{\faCalculator}{Mieux mesurer}{Statut conjugal et partage des revenus réels, gain sur trois ans : l'effet ne bouge pas (+0,23 point).}
-    \end{column}
-    \begin{column}{0.315\textwidth}
-      \card{\faHistory}{Les réformes}{De 2014 à 2018, 900\,€ perdus par an pour trois couples sur quatre ; effets trop imprécis.}
-    \end{column}
-    \begin{column}{0.315\textwidth}
-      \card{\faBaby}{Les rangs}{Effet nul au premier enfant, positif aux suivants (+0,43 point, $p = 0{,}08$).}
-    \end{column}
-  \end{columns}
-  \vspace{0.3cm}
-  \begin{callout}{Bilan}
-    La précision ne vient pas de la mesure. Avec des vagues espacées de quatre ans, les réformes ne se laissent pas isoler (placebos de 2006 et 2010 nuls, effets après réforme de signe instable).
-  \end{callout}
-\end{frame}
-
-\begin{frame}{L'effet par rang, et ce qu'il pèse}
-  \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[tdte, ybar, bar width=0.6cm, height=5.3cm, ymin=-1.5, ymax=2.1,
-            symbolic x coords={a,b,c,d}, xtick={a,b,c,d},
-            xticklabels={{1\textsuperscript{er} enfant},{2\textsuperscript{e} enfant},{3\textsuperscript{e} ou plus},{Ensemble}},
-            x tick label style={font=\scriptsize,color=tdteink}, xticklabel pos=lower,
-            ylabel={effet de 1\,000\,€ par an (points)}, ymajorgrids, axis x line*=bottom,
-            enlarge x limits=0.18, title={Effet du gain, intervalle à 95\,\%},
-            extra y ticks={0}, extra y tick labels={}, extra y tick style={grid style={tdtegrey}},
-            error bars/y dir=both, error bars/y explicit,
-            error bars/error bar style={tdteink,thick},
-            error bars/error mark options={rotate=90,mark size=3pt,tdteink}]
-          \addplot[fill=tdtenavy,draw=none] coordinates
-            {(a,0.068) +- (0,1.370) (b,0.706) +- (0,1.203) (c,0.449) +- (0,0.439) (d,0.231) +- (0,0.492)};
-        \end{axis}
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.45\textwidth}
-      \footnotesize
+    \begin{column}{0.34\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
       \begin{tabular}{@{}lrr@{}}
         \toprule
-        Part de la baisse de l'ICF & Part & IC à 95\,\% \\
+        € par an & 2014 & 2025 \\
         \midrule
-        Référence (script 38) & 18\,\% & $-$14 à 52\,\% \\
-        Mesure affinée & 14\,\% & $-$17 à 47\,\% \\
-        Effets par rang & 25\,\% & $-$8 à 59\,\% \\
+        Prestations monétaires & 3\,666 & 2\,635 \\
+        \quad dont PAJE & 2\,211 & 1\,378 \\
+        \quad dont AF et CF & 1\,455 & 1\,257 \\
+        Quotient familial & 1\,200 & 1\,137 \\
         \bottomrule
       \end{tabular}
       \vspace{0.25cm}
 
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.35em}
-        \item Cohérent avec Laroque et Salanié (troisième enfant) et Elmallakh (enfant supplémentaire).
-        \item L'écart avec le premier enfant n'est pas significatif ($p = 0{,}31$).
-        \item L'ERFS, dix fois plus riche en naissances, ne confirme pas ces effets.
-      \end{itemize}
+      \footnotesize\RaggedRight La PAJE fait l'essentiel du recul ; le quotient familial ne bouge presque pas.
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lrl@{}}
+        \toprule
+        Quartile & Recul & En cause \\
+        \midrule
+        Q1 (modestes) & $-$11\,\% & PAJE, en partie \\
+        Q2 & $-$25\,\% & PAJE, QF \\
+        Q3 & $-$35\,\% & plafonds de la PAJE \\
+        Q4 (aisés) & $-$14\,\% & modulation des AF \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \footnotesize\RaggedRight Les classes moyennes ont le plus perdu : 1\,798\,€ par an en Q3.
     \end{column}
   \end{columns}
-  \source{Insee, SRCV 2014-2025 ; mesure affinée du gain ; probits, effets marginaux moyens.}
+  \source{Insee, SRCV 2014-2025 ; gain simulé avec OpenFisca-France (local), barèmes 2014 et 2025 ; quartiles de niveau de vie.}
+\end{frame}
+
+\begin{frame}{Dans SRCV, un effet trop imprécis}
+  \begin{columns}[T]
+    \begin{column}{0.315\textwidth}
+      \card{\faCalculator}{Mieux mesurer}{Statut conjugal, partage réel des revenus, gain sur trois ans : l'effet ne bouge pas (+0,23 point).}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \card{\faHistory}{Les réformes}{De 2014 à 2018, 900\,€ perdus par an pour trois couples sur quatre ; vagues trop espacées pour les isoler.}
+    \end{column}
+    \begin{column}{0.315\textwidth}
+      \card{\faBaby}{Les rangs}{Nul au premier enfant, positif aux suivants (+0,43 point, $p = 0{,}08$), sans écart significatif.}
+    \end{column}
+  \end{columns}
+  \vspace{0.2cm}
+  \begin{callout}{Bilan}
+    \RaggedRight +0,29 point pour 1\,000\,€ (p~=~0,26), soit 14 à 25\,\% de la baisse ($-$17 à 59\,\%) : avec 1\,519 naissances, SRCV ne tranche pas. D'où l'\textbf{ERFS 2005-2023}, dix fois plus riche en naissances.
+  \end{callout}
 \end{frame}
 
 \begin{frame}{L'ERFS, dix fois plus de naissances}
@@ -945,6 +888,155 @@
     \end{column}
   \end{columns}
   \source{ERFS 2005-2023 ; perte : gain au barème de 2014 moins gain au barème de 2023, couples de 2023, revenu du ménage hors prestations ; part de la baisse de l'ICF 2014-2023, effet estimé sur 2005-2023 ; placebo : exposition aux réformes $\times$ 2005-2008 sur 2005-2012. Script R/57.}
+\end{frame}
+
+\begin{frame}{Ce que pèse le barème dans la baisse}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \footnotesize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Part de la baisse (\%) & Effet 2014-2023 & Effet 2005-2023 \\
+        \midrule
+        ERFS, baisse 2014-2023 & +10 ($-$20 à 40) & +20 ($-$5 à 44) \\
+        \quad effets par rang & +5 ($-$30 à 41) & +22 ($-$5 à 49) \\
+        \quad gain en \% du revenu & +18 ($-$16 à 52) & +20 ($-$7 à 46) \\
+        Décomposition SRCV 2014-2025 & +5 ($-$11 à 21) & +10 ($-$3 à 23) \\
+        \midrule
+        SRCV 2014-2025 & \multicolumn{2}{c}{14 ($-$17 à 47)} \\
+        \quad effets par rang & \multicolumn{2}{c}{25 ($-$8 à 59)} \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.1cm}
+
+      \scriptsize Intervalles à 95\,\% entre parenthèses. 2014-2023 : la période des réformes ; 2005-2023 : plus précis.
+      \vspace{0.2cm}
+
+      \small Les couples de 2023 perdent 1\,277\,€ par an par rapport au barème de 2014 ($-$26\,\%), le plus dans le troisième quartile (2\,428\,€).
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \begin{callout}[tdtenavy]{Verdict}
+        \footnotesize\RaggedRight Effet positif, non significatif : \textbf{de 5 à 20\,\%} de la baisse selon la période et la mesure, \textbf{au plus la moitié}.
+      \end{callout}
+      \begin{callout}{Ce qui reste fragile}
+        \footnotesize\RaggedRight
+        \begin{itemize}\setlength{\itemsep}{1pt}
+          \item En probit, l'effet 2014-2023 est nul ($-$0,06).
+          \item Classes moyennes : pas d'écart avec les autres.
+        \end{itemize}
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023, effets d'année par décile $\times$ enfants $\times$ âge ; ICF de 2,00 (2014) à 1,68 (2023), Insee ; SRCV : script 50.}
+\end{frame}
+
+\begin{frame}{Avec le revenu d'avant la naissance}
+  \begin{columns}[T]
+    \begin{column}{0.57\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Couples suivis d'une année sur l'autre & Effet de 1\,000\,€ & Part de la baisse (\%) \\
+        \midrule
+        Revenus de l'année de la naissance & +0,05 (0,19) & 7 ($-$39 à 52) \\
+        Revenus de l'année d'avant & +0,04 (0,15) & 5 ($-$31 à 41) \\
+        \quad naissances conçues après l'enquête & +0,01 (0,08) & 4 ($-$58 à 66) \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Un tiers des ménages est réinterrogé l'année suivante : le gain y est resimulé avec le revenu d'avant, que le congé parental n'a pas touché.
+        \item Grouper les erreurs-types élargit peu les bornes.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \kpi{0,04}{point pour 1\,000\,€, avec le revenu d'avant la naissance}
+      \vspace{0.1cm}
+      \begin{callout}[tdtenavy]{En clair}
+        \footnotesize\RaggedRight Sur le panel, l'effet est plus faible, avec le revenu de l'année de la naissance comme avec celui d'avant, mais près de deux fois moins précis : 3\,269 naissances seulement.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2005-2023 ; panel : 55\,474 couples, 3\,269 naissances, gain resimulé par OpenFisca (local) ; intervalles à 95\,\%. Script R/63.}
+\end{frame}
+
+\begin{frame}{Le premier enfant, seule question ouverte}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lccc@{}}
+        \toprule
+        Couples, 2012-2014 → 2021-2023 & 1\textsuperscript{er} enfant & 2\textsuperscript{e} enfant & 3\textsuperscript{e} ou plus \\
+        \midrule
+        Taux de naissance en 2012-2014 & 11,7\,\% & 11,4\,\% & 3,7\,\% \\
+        Évolution à âge de la femme donné & \textbf{$-$24\,\%} & $-$2\,\% & $-$1\,\% \\
+        Contribution à la baisse & 48\,\% & 31\,\% & 21\,\% \\
+        Recul du gain dû au barème & $-$31\,\% & $-$22\,\% & $-$19\,\% \\
+        \midrule
+        Effet de 1\,000\,€ (points) & +0,55 (0,31) & $-$0,09 (0,21) & +0,11 (0,12) \\
+        \quad revenus d'avant la naissance & $-$0,27 (0,42) & $-$0,20 (0,36) & +0,22 (0,12) \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.25cm}
+
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item La baisse est d'abord celle du \textbf{premier enfant} ; les rangs suivants ne bougent presque pas.
+        \item Les réformes ont retiré environ 1\,090\,€ par an à chaque rang : près d'un tiers du gain d'un premier enfant.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \kpi[tdtered]{37\,\%}{du recul du premier enfant si l'on prend l'effet tel quel, entre $-$4 et 78\,\%}
+      \vspace{0.1cm}
+      \begin{callout}{Ni établi ni écarté}
+        \scriptsize\RaggedRight +0,55 avec le revenu de l'année de la naissance, $-$0,27 avec celui d'avant. Pour trancher : l'EDP au CASD.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS ; rang : enfants de moins de 21 ans présents dans le ménage, plus un ; contribution : évolution des taux et du nombre de couples à chaque rang ; recul du gain : 1\,095, 1\,094 et 1\,090\,€ par an ; écarts-types entre parenthèses. Script R/63.}
+\end{frame}
+
+\begin{frame}{Avec RSA, prime d'activité et aides au logement}
+  \begin{columns}[T]
+    \begin{column}{0.60\textwidth}
+      \scriptsize\setlength{\tabcolsep}{3pt}
+      \begin{tabular}{@{}lcccc@{}}
+        \toprule
+        Enfant de plus (€ par an) & RSA & Prime d'act. & Aides logt & Gain → gain complet \\
+        \midrule
+        Ensemble, 2014 & $-$120 & -- & +108 & 5\,026 → 5\,013 \\
+        Ensemble, 2023 & $-$10 & $-$44 & +108 & 3\,678 → 3\,733 \\
+        1\textsuperscript{er} quartile, 2014 & $-$438 & -- & +424 & 4\,531 → 4\,517 \\
+        1\textsuperscript{er} quartile, 2023 & $-$34 & $-$153 & +419 & 3\,942 → 4\,174 \\
+        \bottomrule
+      \end{tabular}
+      \vspace{0.2cm}
+
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Effet de 1\,000\,€ (points), 2010-2023 & Gain & Gain complet \\
+        \midrule
+        Ensemble & +0,08 (0,11) & +0,04 (0,11) \\
+        Moitié modeste & +0,55 (0,31) & +0,16 (0,26) \\
+        Part de la baisse de l'ICF & +10\,\% ($-$17 à 37) & +5\,\% ($-$21 à 31) \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \footnotesize
+      \begin{itemize}\setlength{\itemsep}{0.3em}
+        \item Le RSA et la prime d'activité \textbf{baissent} à la naissance : allocations familiales et PAJE entrent dans leurs ressources.
+        \item Les aides au logement \textbf{montent} presque d'autant.
+        \item Recul dû aux réformes : 1\,241\,€ au lieu de 1\,277\,€.
+      \end{itemize}
+      \begin{callout}[tdtenavy]{En clair}
+        \scriptsize\RaggedRight Le gain net d'une famille modeste change peu, et l'effet reste faible ; chez les modestes, il se réduit même une fois ces aides comptées.
+      \end{callout}
+    \end{column}
+  \end{columns}
+  \source{ERFS 2010-2023 hors 2013 et 2017 (statut d'occupation manquant), OpenFisca local ; € de 2023 ; aides au logement sous-simulées (12-14\,\% de bénéficiaires contre 22-23\,\%), RSA surestimé avant 2016. Script R/64.}
 \end{frame}
 
 \pgfplotsset{plafond/.style={tdte, height=4.1cm, xmin=2004.5, xmax=2023.5, ymin=-9, ymax=8.5,
@@ -1075,44 +1167,52 @@
         \scriptsize\RaggedRight Les montants des prestations et du quotient familial n'ont pas d'effet mesurable sur les naissances : reverser l'un en l'autre ne relancerait pas la natalité.
       \end{callout}
       \begin{callout}{Hors de portée}
-        \scriptsize\RaggedRight Accueil du jeune enfant, congé parental, existence même d'une politique familiale, effets lents ou communs à toutes les familles.
+        \scriptsize\RaggedRight Existence même d'une politique familiale, effets lents ou communs à toutes les familles. Accueil du jeune enfant et congé parental : diapositives suivantes.
       \end{callout}
     \end{column}
   \end{columns}
   \source{Couples de 2023 dont la femme a 15 à 49 ans, budget équilibré sur ce champ ; valeur sur l'enfance actualisée à 2\,\% ; effets séparés : référence, intervalles à 95\,\% ; effet revenu sur les enfants déjà nés non compté. Script R/60.}
 \end{frame}
 
-\begin{frame}{L'emploi des femmes avant la naissance}
+\begin{frame}{L'offre d'accueil n'explique pas la baisse}
   \begin{columns}[T]
-    \begin{column}{0.60\textwidth}
+    \begin{column}{0.50\textwidth}
       \scriptsize\setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}lccc@{}}
+      \begin{tabular}{@{}lrr@{}}
         \toprule
-        Naissance l'année suivante (points) & Tous rangs & 1\textsuperscript{er} enfant & 2\textsuperscript{e} enfant \\
+        France métropolitaine & RP 2019 & RP 2023 \\
         \midrule
-        Femme en emploi temporaire & $-$1,7 (0,5) & $-$1,8 (1,0) & $-$3,3 (1,0) \\
-        Femme, moins de 25\,\% des revenus du couple & $-$1,1 (0,3) & $-$2,3 (0,9) & $-$1,1 (0,9) \\
-        Homme au chômage & 0,0 (0,6) & $-$0,3 (1,3) & $-$0,5 (1,5) \\
-        \midrule
-        Taux de naissance & 6,3\,\% & 10,1\,\% & 10,0\,\% \\
+        Places pour 100 femmes de 20-39 ans & 16,8 & 16,2 \\
+        \quad crèches & 5,8 & 6,2 \\
+        \quad assistantes maternelles & 9,4 & 8,6 \\
+        Taux de couverture (pour 100 enfants) & 62 & 66 \\
+        Taux de naissance des couples & 7,97\,\% & 7,42\,\% \\
         \bottomrule
       \end{tabular}
-      \vspace{0.25cm}
+      \vspace{0.3cm}
 
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.3em}
-        \item C'est la \textbf{précarité de l'emploi de la femme} qui va avec moins de naissances, pas le chômage de l'homme.
-        \item Associations : sur les seules naissances conçues après l'observation (998), plus rien n'est significatif.
-        \item Les inégalités de revenu dans le couple ont reculé pendant la baisse : elles ne l'expliquent pas.
-      \end{itemize}
+      \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Une place de plus pour 100 femmes & Points & Part de la baisse \\
+        \midrule
+        96 départements & $-$0,004 (0,047) & 0\,\% ($-$10 à 9) \\
+        941 communes de plus de 10\,000 hab. & $-$0,033 (0,030) & $-$4\,\% ($-$10 à 3) \\
+        \bottomrule
+      \end{tabular}
     \end{column}
-    \begin{column}{0.36\textwidth}
-      \kpi{35 → 40\,\%}{part des femmes dans les revenus d'activité du couple, de 2005 à 2023}
-      \vspace{0.1cm}
-      \kpi[tdtered]{10,7 → 2,4\,\%}{des mères d'un enfant de moins de 3 ans en congé parental}
+    \begin{column}{0.46\textwidth}
+      \small
+      \begin{itemize}\setlength{\itemsep}{0.35em}
+        \item L'offre a peu bougé : $-$4\,\% de places par femme, des assistantes maternelles vers les crèches.
+        \item Là où elle a progressé, les naissances n'ont pas mieux résisté, à tout rang et pour chaque mode d'accueil.
+        \item Le taux de couverture monte parce que les enfants sont moins nombreux ($-$9\,\%) : il donnerait un faux effet négatif.
+      \end{itemize}
+      \begin{callout}[tdtenavy]{En clair}
+        \footnotesize\RaggedRight L'accueil peut compter pour la fécondité, mais son évolution récente n'explique pas la baisse.
+      \end{callout}
     \end{column}
   \end{columns}
-  \source{ERFS 2005-2023, panel d'un an (l'enquête Emploi réinterroge un tiers des ménages) : 55\,474 couples, 3\,269 naissances ; références : emploi stable, femme gagnant 40 à 60\,\% des revenus ; modèles linéaires pondérés, contrôles du script 57 ; écarts-types entre parenthèses. Script R/61.}
+  \source{Cnaf, places d'accueil des moins de 3 ans (data.caf.fr) ; Insee, recensements 2019 et 2023 ; effets fixes d'âge $\times$ millésime et de territoire ; script R/65.}
 \end{frame}
 
 \begin{frame}{Congé parental : les mères reviennent plus tôt}
@@ -1166,198 +1266,176 @@
   \source{ERFS 2008-2023 ; double différence, effets fixes d'année et d'âge du benjamin, référence 2016 ; retrait : congé parental ou inactivité ; intervalles à 95\,\%. Script R/62.}
 \end{frame}
 
-\begin{frame}{Ce que pèse le barème dans la baisse}
-  \begin{columns}[T]
-    \begin{column}{0.57\textwidth}
-      \footnotesize\setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}lcc@{}}
-        \toprule
-        Part de la baisse (\%) & Effet 2014-2023 & Effet 2005-2023 \\
-        \midrule
-        ERFS, baisse 2014-2023 & +10 ($-$20 à 40) & +20 ($-$5 à 44) \\
-        \quad effets par rang & +5 ($-$30 à 41) & +22 ($-$5 à 49) \\
-        \quad gain en \% du revenu & +18 ($-$16 à 52) & +20 ($-$7 à 46) \\
-        Décomposition 2014-2025 & +5 ($-$11 à 21) & +10 ($-$3 à 23) \\
-        \midrule
-        SRCV 2014-2025 & \multicolumn{2}{c}{14 ($-$17 à 47)} \\
-        \quad effets par rang & \multicolumn{2}{c}{25 ($-$8 à 59)} \\
-        \bottomrule
-      \end{tabular}
-      \vspace{0.1cm}
-
-      \scriptsize Intervalles à 95\,\% entre parenthèses. 2014-2023 : la période des réformes ; 2005-2023 : plus précis.
-      \vspace{0.2cm}
-
-      \small Les couples de 2023 perdent 1\,277\,€ par an par rapport au barème de 2014 ($-$26\,\%), le plus dans le troisième quartile (2\,428\,€).
-    \end{column}
-    \begin{column}{0.39\textwidth}
-      \begin{callout}[tdtenavy]{Verdict}
-        \footnotesize\RaggedRight Effet positif, non significatif : \textbf{de 5 à 20\,\%} de la baisse selon la période et la mesure, \textbf{au plus la moitié}.
-      \end{callout}
-      \begin{callout}{Ce qui reste fragile}
-        \footnotesize\RaggedRight
-        \begin{itemize}\setlength{\itemsep}{1pt}
-          \item En probit, l'effet 2014-2023 est nul ($-$0,06).
-          \item Classes moyennes : pas d'écart avec les autres.
-          \item Premier enfant : +0,55 ($p = 0{,}06$), mais $-$0,27 avec le revenu d'avant.
-        \end{itemize}
-      \end{callout}
-    \end{column}
-  \end{columns}
-  \source{ERFS 2005-2023, effets d'année par décile $\times$ enfants $\times$ âge ; ICF de 2,00 (2014) à 1,68 (2023), Insee ; SRCV : script 50. L'ERFS ne repère plus les déménagements après 2020 : la fluidité résidentielle n'y est pas testable.}
-\end{frame}
-
-\begin{frame}{Deux vérifications : un effet faible et imprécis}
-  \begin{columns}[T]
-    \begin{column}{0.57\textwidth}
-      \scriptsize\setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}lcc@{}}
-        \toprule
-        Effet de 1\,000\,€ & Points & Part de la baisse (\%) \\
-        \midrule
-        \multicolumn{3}{@{}l}{\textit{Tous les couples, 2005-2023}} \\
-        Écarts-types robustes & +0,16 (0,093) & 20 ($-$3 à 42) \\
-        Groupés, la borne la plus prudente & +0,16 (0,103) & 20 ($-$5 à 44) \\
-        \midrule
-        \multicolumn{3}{@{}l}{\textit{Couples suivis d'une année sur l'autre}} \\
-        Revenus de l'année de la naissance & +0,05 (0,19) & 7 ($-$39 à 52) \\
-        Revenus de l'année d'avant & +0,04 (0,15) & 5 ($-$31 à 41) \\
-        \quad naissances conçues après l'enquête & +0,01 (0,08) & 4 ($-$58 à 66) \\
-        \bottomrule
-      \end{tabular}
-      \vspace{0.25cm}
-
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.3em}
-        \item Grappes : année $\times$ revenu $\times$ taille de la famille, groupe suivi dans le temps, couple. Les bornes s'élargissent peu.
-        \item Le $-$0,054 des prestations sur l'enfance, peu crédible, disparaît avec les effets d'année par groupe (+0,02).
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.39\textwidth}
-      \kpi{0,04}{point pour 1\,000\,€, avec le revenu d'avant la naissance}
-      \vspace{0.1cm}
-      \begin{callout}[tdtenavy]{En clair}
-        \footnotesize\RaggedRight Sur le panel, l'effet est plus faible, avec le revenu de l'année de la naissance comme avec celui d'avant, mais près de deux fois moins précis : 3\,269 naissances seulement.
-      \end{callout}
-    \end{column}
-  \end{columns}
-  \source{ERFS 2005-2023 ; panel : 55\,474 couples, 3\,269 naissances, gain resimulé par OpenFisca (local) ; intervalles à 95\,\%. Script R/63.}
-\end{frame}
-
-\begin{frame}{Le premier enfant, seule question ouverte}
+\begin{frame}{L'emploi des femmes avant la naissance}
   \begin{columns}[T]
     \begin{column}{0.60\textwidth}
       \scriptsize\setlength{\tabcolsep}{3pt}
       \begin{tabular}{@{}lccc@{}}
         \toprule
-        Couples, 2012-2014 → 2021-2023 & 1\textsuperscript{er} enfant & 2\textsuperscript{e} enfant & 3\textsuperscript{e} ou plus \\
+        Naissance l'année suivante (points) & Tous rangs & 1\textsuperscript{er} enfant & 2\textsuperscript{e} enfant \\
         \midrule
-        Taux de naissance en 2012-2014 & 11,7\,\% & 11,4\,\% & 3,7\,\% \\
-        Évolution à âge de la femme donné & \textbf{$-$24\,\%} & $-$2\,\% & $-$1\,\% \\
-        Contribution à la baisse & 48\,\% & 31\,\% & 21\,\% \\
-        Recul du gain dû au barème & $-$31\,\% & $-$22\,\% & $-$19\,\% \\
+        Femme en emploi temporaire & $-$1,7 (0,5) & $-$1,8 (1,0) & $-$3,3 (1,0) \\
+        Femme, moins de 25\,\% des revenus du couple & $-$1,1 (0,3) & $-$2,3 (0,9) & $-$1,1 (0,9) \\
+        Homme au chômage & 0,0 (0,6) & $-$0,3 (1,3) & $-$0,5 (1,5) \\
         \midrule
-        Effet de 1\,000\,€ (points) & +0,55 (0,31) & $-$0,09 (0,21) & +0,11 (0,12) \\
-        \quad revenus d'avant la naissance & $-$0,27 (0,42) & $-$0,20 (0,36) & +0,22 (0,12) \\
+        Taux de naissance & 6,3\,\% & 10,1\,\% & 10,0\,\% \\
         \bottomrule
       \end{tabular}
       \vspace{0.25cm}
 
       \small
       \begin{itemize}\setlength{\itemsep}{0.3em}
-        \item La baisse est d'abord celle du \textbf{premier enfant} ; les rangs suivants ne bougent presque pas.
-        \item Les réformes ont retiré environ 1\,090\,€ par an à chaque rang : près d'un tiers du gain d'un premier enfant.
+        \item C'est la \textbf{précarité de l'emploi de la femme} qui va avec moins de naissances, pas le chômage de l'homme.
+        \item Associations : sur les seules naissances conçues après l'observation (998), plus rien n'est significatif.
+        \item Les inégalités de revenu dans le couple ont reculé pendant la baisse : elles ne l'expliquent pas.
       \end{itemize}
     \end{column}
     \begin{column}{0.36\textwidth}
-      \kpi[tdtered]{37\,\%}{du recul du premier enfant si l'on prend l'effet tel quel, entre $-$4 et 78\,\%}
+      \kpi{35 → 40\,\%}{part des femmes dans les revenus d'activité du couple, de 2005 à 2023}
       \vspace{0.1cm}
-      \begin{callout}{Ni établi ni écarté}
-        \scriptsize\RaggedRight +0,55 avec le revenu de l'année de la naissance, $-$0,27 avec celui d'avant. Pour trancher : l'EDP au CASD.
-      \end{callout}
+      \kpi[tdtered]{10,7 → 2,4\,\%}{des mères d'un enfant de moins de 3 ans en congé parental}
     \end{column}
   \end{columns}
-  \source{ERFS ; rang : enfants de moins de 21 ans présents dans le ménage, plus un ; contribution : évolution des taux et du nombre de couples à chaque rang ; recul du gain : 1\,095, 1\,094 et 1\,090\,€ par an ; écarts-types entre parenthèses. Script R/63.}
+  \source{ERFS 2005-2023, panel d'un an (l'enquête Emploi réinterroge un tiers des ménages) : 55\,474 couples, 3\,269 naissances ; références : emploi stable, femme gagnant 40 à 60\,\% des revenus ; modèles linéaires pondérés, contrôles du script 57 ; écarts-types entre parenthèses. Script R/61.}
 \end{frame}
 
-\begin{frame}{Avec RSA, prime d'activité et aides au logement}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{La décomposition de la baisse}
+
+\begin{frame}{Ce qui explique la baisse, de 2014 à 2023}
   \begin{columns}[T]
-    \begin{column}{0.60\textwidth}
-      \scriptsize\setlength{\tabcolsep}{3pt}
-      \begin{tabular}{@{}lcccc@{}}
+    \begin{column}{0.235\textwidth}\kpi[tdtered]{$-$15\,\%}{naissances par femme, de 1,77 à 1,50}\end{column}
+    \begin{column}{0.235\textwidth}\kpi{41\,\%}{dus au recul de la vie en couple}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdteorange]{$\approx$\,0}{pour le logement des couples}\end{column}
+    \begin{column}{0.235\textwidth}\kpi[tdtegrey]{48\,\%}{inexpliqués : moins de premiers enfants}\end{column}
+  \end{columns}
+  \vspace{0.25cm}
+  \begin{aere}
+    \item Le recensement devient la référence : \alert{cent fois plus de naissances} que SRCV.
+    \item Barème de la politique familiale : 10\,\% (20\,\% avec l'effet 2005-2023), non significatif ; offre d'accueil : rien.
+    \item L'âge ne joue pas : les couples vieillissent parce que les jeunes vivent moins en couple.
+  \end{aere}
+  \source{Insee, recensements 2014 et 2023 : somme des taux de naissance par âge, 15-49 ans, France métropolitaine (ICF Insee : $-$16\,\%). Script R/68.}
+\end{frame}
+
+\begin{frame}{La part de chaque facteur}
+  \centering\footnotesize\setlength{\tabcolsep}{3.5pt}
+  \begin{tabular}{@{}lrrrp{0.34\textwidth}@{}}
+    \toprule
+    Facteur & Recensement & SRCV & Fourchette & Lecture \\
+     & 2014-2023 & 2014-2025 & SRCV & \\
+    \midrule
+    Recul de la vie en couple & 41\,\% & 34\,\% & 33 à 34\,\% & À âge donné \\
+    \quad dont tension immobilière & 4\,\% & & & De 3 à 4,5\,\% \\
+    Logement, petites surfaces & $-$6\,\% & 12\,\% & 4 à 19\,\% & Avec statut et place : $-$5\,\% \\
+    {\color{blue} Logement, statuts d'occupation} & $-$1\,\% & $-$10\,\% & & Recul des propriétaires non accédants, les moins féconds (SRCV) \\
+    Politique familiale (barème) & 10\,\% & 5\,\% & {$-$\color{red}11 à 21\,\%}& IC $-$20 à 40 ; 20\,\% (effet 2005-2023) \\
+    Offre d'accueil & $\approx$\,0 & & & 2019-2023, de $-$5 à 5\,\% \\
+    Âge des couples & 0 & 4\,\% & 2 à 4\,\% & Neutre à âge et rang donnés \\
+    Prix au m², revenu, ville & & $\approx$\,0 & & Aucun effet à surface donnée \\
+    Naissances hors couple & 6\,\% & & & \\
+    Non expliqué & 48\,\% & 45\,\% & & Moins de premiers enfants à âge donné \\
+    \bottomrule
+  \end{tabular}
+  \source{Insee, recensements 2014 et 2023 (naissances par femme de 1,77 à 1,50) et SRCV 2014-2025 (ICF de 2,00 à 1,56) ; ERFS 2014-2023 pour le barème ; OpenFisca-France. Logement au recensement : statut $\times$ surface $\times$ place, à âge et nombre d'enfants donnés. Scripts R/68 et R/39.}
+\end{frame}
+
+\begin{frame}{La vie en couple recule partout}
+  \begin{columns}[T]
+    \begin{column}{0.54\textwidth}
+      \footnotesize\setlength{\tabcolsep}{4pt}
+      \begin{tabular}{@{}lccc@{}}
         \toprule
-        Enfant de plus (€ par an) & RSA & Prime d'act. & Aides logt & Gain → gain complet \\
+        Femmes de 25 à 29 ans (\%) & 2014 & 2023 & Écart \\
         \midrule
-        Ensemble, 2014 & $-$120 & -- & +108 & 5\,026 → 5\,013 \\
-        Ensemble, 2023 & $-$10 & $-$44 & +108 & 3\,678 → 3\,733 \\
-        1\textsuperscript{er} quartile, 2014 & $-$438 & -- & +424 & 4\,531 → 4\,517 \\
-        1\textsuperscript{er} quartile, 2023 & $-$34 & $-$153 & +419 & 3\,942 → 4\,174 \\
+        En couple & 60,1 & 53,3 & $-$6,8 \\
+        Seules & 15,9 & 20,9 & +5,0 \\
+        Chez leurs parents & 10,9 & 14,1 & +3,2 \\
+        \midrule
+        En couple, cantons en zone C & 71,9 & 66,7 & $-$5,2 \\
+        \quad en zone B2 & 61,1 & 55,8 & $-$5,3 \\
+        \quad en zone B1 & 56,1 & 49,9 & $-$6,2 \\
+        \quad en zones A et A bis & 51,5 & 43,5 & $-$7,9 \\
+        \midrule
+        Hommes de 25 à 29 ans en couple & 46,9 & 40,9 & $-$6,0 \\
+        \bottomrule
+      \end{tabular}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \small
+      \begin{aere}
+        \item Le recul touche \alert{tous les milieux} : l'activité et le diplôme n'en expliquent rien.
+        \item Il est plus fort dans les cantons tendus, où progresse la vie seule, pas le retour chez les parents : plutôt des célibataires qui arrivent que des couples empêchés.
+        \item La tension en expliquerait 8 à 11\,\% à 25-29 ans, soit \textbf{3 à 4,5\,\%} de la baisse des naissances.
+      \end{aere}
+    \end{column}
+  \end{columns}
+  \source{Insee, recensements 2014 et 2023, fichiers détail, France métropolitaine ; zone A/B/C majoritaire du canton-ou-ville (zonage 2022) ; tension : effets canton et département $\times$ millésime, deux mesures. Scripts R/66 et R/67.}
+\end{frame}
+
+\begin{frame}{Dans les couples, tout part du premier enfant}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \footnotesize\setlength{\tabcolsep}{4pt}
+      \begin{tabular}{@{}lccc@{}}
+        \toprule
+        Part de la baisse (\%) & Taux à âge & Enfants & Total \\
+         & et rang donnés & déjà nés & \\
+        \midrule
+        1\textsuperscript{er} enfant & 53 & $-$44 & 10 \\
+        2\textsuperscript{e} enfant & 9 & 15 & 24 \\
+        3\textsuperscript{e} enfant & 2 & 10 & 12 \\
+        4\textsuperscript{e} et plus & $-$3 & 4 & 2 \\
+        \midrule
+        Ensemble & 62 & $-$15 & 47 \\
         \bottomrule
       \end{tabular}
       \vspace{0.2cm}
 
-      \begin{tabular}{@{}lcc@{}}
-        \toprule
-        Effet de 1\,000\,€ (points), 2010-2023 & Gain & Gain complet \\
-        \midrule
-        Ensemble & +0,08 (0,11) & +0,04 (0,11) \\
-        Moitié modeste & +0,55 (0,31) & +0,16 (0,26) \\
-        Part de la baisse de l'ICF & +10\,\% ($-$17 à 37) & +5\,\% ($-$21 à 31) \\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-    \begin{column}{0.36\textwidth}
-      \footnotesize
+      \small
       \begin{itemize}\setlength{\itemsep}{0.3em}
-        \item Le RSA et la prime d'activité \textbf{baissent} à la naissance : allocations familiales et PAJE entrent dans leurs ressources.
-        \item Les aides au logement \textbf{montent} presque d'autant.
-        \item Recul dû aux réformes : 1\,241\,€ au lieu de 1\,277\,€.
+        \item À âge donné, les couples sans enfant en ont \textbf{moins souvent un} : c'est le cœur de la baisse.
+        \item Il en reste donc plus sans enfant à chaque âge : les premières naissances baissent peu, les deuxièmes et troisièmes davantage.
       \end{itemize}
-      \begin{callout}[tdtenavy]{En clair}
-        \scriptsize\RaggedRight Le gain net d'une famille modeste change peu, et l'effet reste faible ; chez les modestes, il se réduit même une fois ces aides comptées.
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \kpi[tdtered]{36,8 ans}{âge moyen des femmes en couple en 2023 (36,5 en 2014)}
+      \vspace{0.1cm}
+      \begin{callout}[tdtenavy]{L'âge des couples}
+        \footnotesize\RaggedRight À nombre d'enfants donné, l'âge n'explique rien du recul du taux des couples ($-$1\,\%) : les 4\,\% de SRCV ne se retrouvent pas.
       \end{callout}
     \end{column}
   \end{columns}
-  \source{ERFS 2010-2023 hors 2013 et 2017 (statut d'occupation manquant), OpenFisca local ; € de 2023 ; aides au logement sous-simulées (12-14\,\% de bénéficiaires contre 22-23\,\%), RSA surestimé avant 2016. Script R/64.}
+  \source{Insee, recensements 2014 et 2023, couples de la famille principale (47\,\% de la baisse, 53\,\% pour tous les couples) ; enfants présents au logement. Script R/66.}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Premières décompositions de la baisse de l'ICF}
-
-\begin{frame}{Ce qui explique la baisse de l'ICF entre 2014 et 2025}
-  \begin{columns}[T]
-    \begin{column}{0.235\textwidth}\kpi[tdtered]{$-$22\,\%}{ICF passé de 2,00 à 1,56 enfant par femme}\end{column}
-    \begin{column}{0.235\textwidth}\kpi{34\,\%}{de la baisse viennent du recul de la vie en couple}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdteorange]{4 à 19\,\%}{pour les petites surfaces, selon la forme retenue}\end{column}
-    \begin{column}{0.235\textwidth}\kpi[tdtegrey]{45\,\%}{restent inexpliqués : à situation donnée, moins d'enfants}\end{column}
-  \end{columns}
-  \vspace{0.25cm}
-  \begin{aere}
-    \item Aucun facteur n'explique la baisse à lui seul ; ensemble, les facteurs mesurés en couvrent \alert{un peu plus de la moitié}.
-    \item Le barème de la politique familiale y prend une petite part, non significative : 5 à 10\,\% selon la période d'estimation dans l'ERFS, au plus 23\,\%.
-    \item La vie en couple recule à âge donné, surtout à 25-29 ans (de 58,3 à 53,4\,\% des femmes de 15 à 49 ans), dans tous les milieux.
-  \end{aere}
-\end{frame}
-
-\begin{frame}{La part de chaque facteur}
-  \centering\small
-  \begin{tabular}{@{}lrrp{0.43\textwidth}@{}}
+\begin{frame}{Une baisse plus forte chez les plus diplômées}
+  \centering\scriptsize\setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}lcccccc@{}}
     \toprule
-    Facteur & Part & Fourchette & Lecture \\
+    Femmes de 25 à 49 ans & Part des femmes & Baisse & \multicolumn{4}{c}{Part de la baisse du groupe (\%)} \\
+    \cmidrule(l){4-7}
+     & 2014 $\to$ 2023 & & Vie en couple & Logement & Couples & Hors couple \\
     \midrule
-    Recul de la vie en couple & 34\,\% & 33 à 34\,\% & Moins de femmes en couple à âge donné \\
-    Logement, petites surfaces & 12\,\% & 4 à 19\,\% & IC à 95\,\% de 0 à 33\,\% ; en partie de l'anticipation \\
-    {\color{blue} Logement, statuts d'occupation} & $-$10\,\% & & Recul des propriétaires non accédants, les moins féconds \\
-    Politique familiale (barème) & 5\,\% & {$-$\color{red}11 à 21\,\%}& Effet ERFS 2014-2023 ; +10\,\% avec l'effet 2005-2023 ; SRCV : 18\,\%, non significatif \\
-    Âge des couples & 4\,\% & 2 à 4\,\% & Les couples ont vieilli d'un demi-an \\
-    Prix au m², revenu, ville & $\approx$\,0 & & Aucun effet à surface donnée \\
-    Non expliqué & 45\,\% & & Moins de naissances à situation donnée \\
+    Infra CAP & 16 $\to$ 11\,\% & $-$6\,\% & 74 & $-$15 & 51 & $-$10 \\
+    CAP-BEP & 20 $\to$ 14\,\% & $-$5\,\% & 65 & $-$25 & 84 & $-$24 \\
+    Bac & 20 $\to$ 20\,\% & $-$10\,\% & 50 & $-$12 & 70 & $-$8 \\
+    Supérieur & 44 $\to$ 54\,\% & $-$14\,\% & 43 & $-$9 & 70 & $-$4 \\
+    \midrule
+    Ensemble & & $-$12\,\% & 43 & $-$9 & 64 & 1 \\
     \bottomrule
   \end{tabular}
-  \source{Insee, SRCV 2014-2025 ; ERFS 2014-2023 pour l'effet du barème, appliqué au recul du gain des couples de 2025 ; OpenFisca-France ; calculs de l'auteur.}
+  \vspace{0.3cm}
+
+  \raggedright\small
+  \begin{aere}
+    \item Sans le bac, la baisse est faible et vient surtout du recul de la vie en couple ; avec le bac ou plus, des \alert{taux des couples}.
+    \item Partout, le logement des couples a évolué dans le sens de plus de naissances.
+  \end{aere}
+  \source{Insee, recensements 2014 et 2023 ; somme des taux par âge de 25 à 49 ans du groupe ; « Couples » : taux des couples à âge donné, hors logement ; chaque groupe change de composition à mesure que les études s'allongent. Script R/68.}
 \end{frame}
 
-\begin{frame}{La décomposition par quartile de niveau de vie}
+\begin{frame}{Par quartile de niveau de vie, dans SRCV}
   \begin{columns}[c]
     \begin{column}{0.64\textwidth}
       \begin{tikzpicture}
@@ -1415,10 +1493,10 @@
       \end{aere}
     \end{column}
   \end{columns}
-  \source{Insee, SRCV 2014-2025 ; politique familiale : effet estimé dans l'ERFS 2014-2023 ; calculs de l'auteur.}
+  \source{Insee, SRCV 2014-2025 (le recensement ne mesure pas le revenu) ; politique familiale : effet estimé dans l'ERFS 2014-2023 ; calculs de l'auteur.}
 \end{frame}
 
-\begin{frame}{Par quartile, en enfants par femme}
+\begin{frame}{Par quartile (SRCV), en enfants par femme}
   \begin{columns}[c]
     \begin{column}{0.64\textwidth}
       \begin{tikzpicture}
@@ -1480,145 +1558,19 @@
   \source{Insee, SRCV 2014-2025 ; Insee (2026) pour l'ICF ; parts de la diapositive précédente multipliées par 0,44.}
 \end{frame}
 
-\begin{frame}{La décomposition par diplôme de la femme}
-  \begin{columns}[c]
-    \begin{column}{0.64\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[icf, xmax=110, width=0.82\linewidth, symbolic y coords={CAP,Bac,Bac2,Sup,Ens}, ytick={CAP,Bac,Bac2,Sup,Ens},
-            yticklabels={{CAP-BEP ou moins},Bac,Bac+2,{Bac+3 ou plus},{Ensemble (25-49 ans)}}]
-          \addplot[fill=fcouple,draw=none] coordinates {(30.3000,Ens) (28.6000,Sup) (49.5000,Bac2) (24.9000,Bac) (24.9000,CAP)};
-          \addplot[fill=flogement,draw=none] coordinates {(11.7000,Ens) (18.0000,Sup) (0.0000,Bac2) (1.0000,Bac) (15.9000,CAP)};
-          \addplot[fill=fpf,draw=none] coordinates {(5.4000,Ens) (5.6000,Sup) (5.4000,Bac2) (5.6000,Bac) (5.1000,CAP)};
-          \addplot[fill=fage,draw=none] coordinates {(6.7000,Ens) (8.9000,Sup) (10.6000,Bac2) (1.8000,Bac) (3.8000,CAP)};
-          \addplot[fill=freste,draw=none] coordinates {(45.8000,Ens) (38.9000,Sup) (39.5000,Bac2) (66.7000,Bac) (50.3000,CAP)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
-          \coordinate (e1) at (axis cs:15.1500,Ens);
-          \coordinate (e2) at (axis cs:36.1500,Ens);
-          \coordinate (e3) at (axis cs:44.7000,Ens);
-          \coordinate (e4) at (axis cs:50.7500,Ens);
-          \coordinate (e5) at (axis cs:77.0000,Ens);
-          \coordinate (e6) at (axis cs:14.3000,Sup);
-          \coordinate (e7) at (axis cs:37.6000,Sup);
-          \coordinate (e8) at (axis cs:49.4000,Sup);
-          \coordinate (e9) at (axis cs:56.6500,Sup);
-          \coordinate (e10) at (axis cs:80.5500,Sup);
-          \coordinate (e11) at (axis cs:24.7500,Bac2);
-          \coordinate (e12) at (axis cs:52.2000,Bac2);
-          \coordinate (e13) at (axis cs:60.2000,Bac2);
-          \coordinate (e14) at (axis cs:85.2500,Bac2);
-          \coordinate (e15) at (axis cs:12.4500,Bac);
-          \coordinate (e16) at (axis cs:28.7000,Bac);
-          \coordinate (e17) at (axis cs:66.6500,Bac);
-          \coordinate (e18) at (axis cs:12.4500,CAP);
-          \coordinate (e19) at (axis cs:32.8500,CAP);
-          \coordinate (e20) at (axis cs:43.3500,CAP);
-          \coordinate (e21) at (axis cs:74.8500,CAP);
-        \end{axis}
-        \node[etiq,text=white] at (e1) {30};
-        \node[etiq,text=black] at (e2) {12};
-        \node[etiq,text=black] at (e3) {5};
-        \node[etiq,text=black] at (e4) {7};
-        \node[etiq,text=black] at (e5) {46};
-        \node[etiq,text=white] at (e6) {29};
-        \node[etiq,text=black] at (e7) {18};
-        \node[etiq,text=black] at (e8) {6};
-        \node[etiq,text=black] at (e9) {9};
-        \node[etiq,text=black] at (e10) {39};
-        \node[etiq,text=white] at (e11) {50};
-        \node[etiq,text=black] at (e12) {5};
-        \node[etiq,text=black] at (e13) {11};
-        \node[etiq,text=black] at (e14) {40};
-        \node[etiq,text=white] at (e15) {25};
-        \node[etiq,text=black] at (e16) {6};
-        \node[etiq,text=black] at (e17) {67};
-        \node[etiq,text=white] at (e18) {25};
-        \node[etiq,text=black] at (e19) {16};
-        \node[etiq,text=black] at (e20) {5};
-        \node[etiq,text=black] at (e21) {50};
-
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      \small
-      \begin{aere}
-        \item Le recul de la vie en couple touche \alert{tous les niveaux de diplôme}, sans concentration chez les moins diplômées.
-        \item Le barème de la politique familiale pèse autant dans chaque groupe (5\,\%, 10\,\% avec l'effet 2005-2023).
-        \item Chez les bac+2, la contribution des surfaces est légèrement négative ($-$5\,\%), non représentée.
-      \end{aere}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025, femmes de 25 à 49 ans ; politique familiale : effet estimé dans l'ERFS 2014-2023 ; calculs de l'auteur.}
-\end{frame}
-
-\begin{frame}{Par diplôme, en enfants par femme}
-  \begin{columns}[c]
-    \begin{column}{0.64\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[icfpts, xmax=0.49, width=0.82\linewidth, symbolic y coords={CAP,Bac,Bac2,Sup,Ens}, ytick={CAP,Bac,Bac2,Sup,Ens},
-            yticklabels={{CAP-BEP ou moins},Bac,Bac+2,{Bac+3 ou plus},{Ensemble (25-49 ans)}}]
-          \addplot[fill=fcouple,draw=none] coordinates {(0.1333,Ens) (0.1258,Sup) (0.2178,Bac2) (0.1096,Bac) (0.1096,CAP)};
-          \addplot[fill=flogement,draw=none] coordinates {(0.0515,Ens) (0.0792,Sup) (0.0000,Bac2) (0.0044,Bac) (0.0700,CAP)};
-          \addplot[fill=fpf,draw=none] coordinates {(0.0238,Ens) (0.0246,Sup) (0.0238,Bac2) (0.0246,Bac) (0.0224,CAP)};
-          \addplot[fill=fage,draw=none] coordinates {(0.0295,Ens) (0.0392,Sup) (0.0466,Bac2) (0.0079,Bac) (0.0167,CAP)};
-          \addplot[fill=freste,draw=none] coordinates {(0.2015,Ens) (0.1712,Sup) (0.1738,Bac2) (0.2935,Bac) (0.2213,CAP)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
-          \coordinate (e1) at (axis cs:0.0667,Ens);
-          \coordinate (e2) at (axis cs:0.1591,Ens);
-          \coordinate (e3) at (axis cs:0.3388,Ens);
-          \coordinate (e4) at (axis cs:0.0629,Sup);
-          \coordinate (e5) at (axis cs:0.1654,Sup);
-          \coordinate (e6) at (axis cs:0.3544,Sup);
-          \coordinate (e7) at (axis cs:0.1089,Bac2);
-          \coordinate (e8) at (axis cs:0.2649,Bac2);
-          \coordinate (e9) at (axis cs:0.3751,Bac2);
-          \coordinate (e10) at (axis cs:0.0548,Bac);
-          \coordinate (e11) at (axis cs:0.2933,Bac);
-          \coordinate (e12) at (axis cs:0.0548,CAP);
-          \coordinate (e13) at (axis cs:0.1445,CAP);
-          \coordinate (e14) at (axis cs:0.3293,CAP);
-        \end{axis}
-        \node[etiq,text=white] at (e1) {0,13};
-        \node[etiq,text=black] at (e2) {0,05};
-        \node[etiq,text=black] at (e3) {0,20};
-        \node[etiq,text=white] at (e4) {0,13};
-        \node[etiq,text=black] at (e5) {0,08};
-        \node[etiq,text=black] at (e6) {0,17};
-        \node[etiq,text=white] at (e7) {0,22};
-        \node[etiq,text=black] at (e8) {0,05};
-        \node[etiq,text=black] at (e9) {0,17};
-        \node[etiq,text=white] at (e10) {0,11};
-        \node[etiq,text=black] at (e11) {0,29};
-        \node[etiq,text=white] at (e12) {0,11};
-        \node[etiq,text=black] at (e13) {0,07};
-        \node[etiq,text=black] at (e14) {0,22};
-
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.4em}
-        \item Chez les 25-49 ans, la vie en couple équivaut à 0,13 enfant par femme ; 0,20 reste inexpliqué.
-        \item Chez les bac+2, la vie en couple pèse 0,22 ; les surfaces y jouent un peu en sens inverse ($+$0,02, non représenté).
-        \item Une barre de groupe se lit comme pour les quartiles.
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025, femmes de 25 à 49 ans ; parts de la diapositive précédente multipliées par 0,44.}
-\end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
 \begin{frame}{À retenir}
   \small
   \begin{enumerate}\setlength{\itemsep}{0.05em}
-    \item Le logement pèse peu dans la baisse de la fécondité, de \textbf{4 à 19\,\%} au plus, et la plupart de l'association est un logement choisi en vue d'un enfant.
+    \item Le logement ne pèse presque rien dans la baisse de la fécondité : \textbf{rien} au recensement (SRCV : 4 à 19\,\%), et la plupart de l'association est un logement choisi en vue d'un enfant.
     \item Une contrainte existe pourtant, \textbf{à la marge d'une pièce} : sans la place d'un enfant, un tiers de naissances en moins dans les années suivantes, en partie repoussées à plus tard.
     \item Le recensement le confirme de 2014 à 2023, et la situe surtout dans les grandes villes, où la plupart des couples sans enfant n'ont pas cette pièce.
     \item Déménager est plus difficile depuis 2022 (\textbf{crédit, relocation}) ; ce canal pèse au plus 6\,\% du recul des premières naissances, et \textbf{repousse} le premier enfant plus qu'il ne le supprime.
     \item Une politique du logement qui viserait la natalité porterait sur l'\textbf{offre de logements familiaux}, en nombre de pièces.
-    \item Le barème de la \textbf{politique familiale} (un quart de moins par enfant depuis 2014) aurait un effet positif, de l'ordre de \textbf{20\,\%} de la baisse, sans être significatif ; le \textbf{congé parental} raccourci en 2015 n'en a pas ; la précarité de l'emploi des femmes va avec moins de naissances.
-    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} ; près de la moitié reste inexpliquée.
+    \item Ni le barème de la \textbf{politique familiale} (un quart de moins par enfant : \textbf{10 à 20\,\%} de la baisse, non significatif), ni l'\textbf{offre d'accueil}, ni le \textbf{congé parental} n'expliquent l'essentiel de la baisse ; la précarité de l'emploi des femmes va avec moins de naissances.
+    \item La baisse de la fécondité depuis 2014 tient d'abord au \textbf{recul de la vie en couple} (41\,\%, partout) ; près de la moitié reste inexpliquée : \textbf{moins de premiers enfants} à âge donné.
   \end{enumerate}
 \end{frame}
 

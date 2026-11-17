@@ -5,7 +5,10 @@ Produit synthese_logement_fecondite.docx. Les chiffres de la politique
 familiale sont lus dans les sorties des scripts R/38 (SRCV), R/57 (ERFS),
 R/39 et R/41 (décomposition de la baisse de l'ICF), R/59 (plafonds de la PAJE),
 R/60 (prestations ou quotient familial), R/61 (emploi des conjoints) et R/62
-(congé parental de 2015), dans Output/, hors dépôt.
+(congé parental de 2015) ; ceux du recensement dans les sorties des scripts R/65
+(offre d'accueil), R/66 et R/67 (vie en couple), R/68 et R/69 (décomposition de
+référence, 2014-2023) ; dans Output/, hors dépôt. Si le document est ouvert dans
+Word, il est écrit sous le nom synthese_logement_fecondite_maj.docx.
 """
 import csv
 import re
@@ -224,40 +227,53 @@ class Synthese:
         return t
 
     def enregistrer(self):
-        self.doc.save(SORTIE)
-        print("Écrit :", SORTIE)
+        try:
+            self.doc.save(SORTIE)
+            print("Écrit :", SORTIE)
+        except PermissionError:   # ouvert dans Word
+            autre = SORTIE.with_name(SORTIE.stem + "_maj.docx")
+            self.doc.save(autre)
+            print("Document ouvert dans Word ; écrit :", autre)
 
 
 
 # ── Contenu (période 2014-2025) ─────────────────────────────────────────────
-def en_bref(s, pf, e):
+def en_bref(s, pf, e, rc):
+    coh = rc["coh"]
     s.encadre("En bref", [
-        "L'ICF a baissé de 22 % entre 2014 et 2025 (de 2,00 à 1,56). Aucun facteur n'explique "
-        "à lui seul cette baisse ; ceux que nous avons mesurés en couvrent un peu plus de la moitié.",
-        "Le premier facteur identifié est le **recul de la vie en couple** : environ un tiers de "
-        "la baisse, car 92 % des naissances ont lieu en couple.",
-        "Les **petites surfaces** pèsent de 4 à 19 % de la baisse selon la spécification. Mais "
-        "le recul des propriétaires non accédants a joué en sens inverse, et le logement dans "
-        "son ensemble n'explique presque rien ; l'association ressemble d'ailleurs davantage à "
-        "un choix qu'à une contrainte.",
+        f"Entre 2014 et 2023, les naissances par femme mesurées au recensement baissent de "
+        f"{fr(100 * (1 - rc['icf23'] / rc['icf14']), 0)} % (de {fr(rc['icf14'], 2)} à {fr(rc['icf23'], 2)}), "
+        "comme l'ICF de l'Insee ; jusqu'en 2025, celui-ci perd 22 %. Le recensement, cent fois plus riche en "
+        "naissances que l'enquête SRCV, sert de référence pour décomposer la baisse ; aucun facteur ne "
+        "l'explique à lui seul.",
+        f"Le premier facteur est le **recul de la vie en couple** : {fr(rc['couple'], 0)} % de la baisse. "
+        f"À 25-29 ans, {fr(coh[('Femmes', '2023', 'En couple')], 0)} % des femmes vivent en couple en 2023, "
+        f"contre {fr(coh[('Femmes', '2014', 'En couple')], 0)} % en 2014. Le recul touche tous les milieux et "
+        "tous les territoires, un peu plus les zones tendues : la tension immobilière en expliquerait "
+        f"{fr(rc['tension_bas'], 1)} à {fr(rc['tension_haut'], 1)} % de la baisse des naissances.",
+        "Le **logement** ne pèse presque rien dans la baisse. Au recensement, les surfaces des couples ne "
+        "rétrécissent pas, et à âge et nombre d'enfants donnés leur logement a même évolué dans le sens de "
+        f"plus de naissances ({fr(rc['logement'], 0)} %) ; SRCV, qui voyait les couples sans enfant logés "
+        "sous 50 m² passer de 15 à 19 %, attribuait 4 à 19 % de la baisse aux petites surfaces. Une "
+        "contrainte existe pourtant, **à la marge d'une pièce** : les couples sans enfant qui n'ont pas la "
+        "place d'un enfant ont nettement moins de premières naissances, aujourd'hui comme dans les années suivantes.",
         f"Le barème de la **politique familiale** est devenu moins généreux : en euros constants, "
         f"un enfant de plus rapporte {fr(pf['perte'], 0)} € de moins par an qu'avec le barème de "
-        f"2014 ({fr(-pf['perte_pct'], 0)} %), pour les trois quarts à cause de la PAJE. Dans "
-        f"SRCV, ce recul semblait expliquer de l'ordre de {fr(pf['part14'], 0)} % de la baisse, "
-        f"sans que l'estimation soit significative. L'**ERFS**, avec {fr(e['naissances'], 0)} "
-        "naissances de 2005 à 2023, dix fois plus, précise : une fois contrôlé le report des "
-        "naissances, l'effet du barème est **positif mais non significatif**, de l'ordre de "
-        f"{fr(e['part_0523'], 0)} % de la baisse (de {fr(e['part_num'][(False, '2005-2023', 'Ensemble, effet commun')][1], 0)} "
-        f"à {fr(e['part_num'][(False, '2005-2023', 'Ensemble, effet commun')][2], 0)} %). Mesurés sur toute l'enfance, **ni les prestations ni le "
-        "quotient familial** n'ont d'effet mesurable : reverser le quotient familial en "
-        "prestations ne relancerait pas la natalité.",
+        f"2014 ({fr(-pf['perte_pct'], 0)} %), pour les trois quarts à cause de la PAJE. L'**ERFS**, avec "
+        f"{fr(e['naissances'], 0)} naissances de 2005 à 2023, dix fois plus que SRCV, montre qu'une fois "
+        "contrôlé le report des naissances, l'effet du barème est **positif mais non significatif** : "
+        f"{fr(rc['pf'], 0)} à {fr(rc['pf2'], 0)} % de la baisse selon la période d'estimation. Mesurés sur "
+        "toute l'enfance, **ni les prestations ni le quotient familial** n'ont d'effet mesurable ; l'**offre "
+        "d'accueil** du jeune enfant, à peu près stable rapportée aux femmes de 20 à 39 ans, n'explique pas "
+        "non plus la baisse.",
         "Les **inégalités entre femmes et hommes** dans le couple ont reculé pendant la baisse. La "
         "réforme du **congé parental** de 2015 a ramené les mères plus tôt vers l'emploi, sans relais "
         "des pères et sans baisse des naissances ; c'est la précarité de l'emploi des femmes qui va "
         "avec moins de naissances.",
-        "Près de la moitié de la baisse reste inexpliquée : à situation donnée, les couples font moins "
-        "d'enfants, ce qui renvoie au désir d'enfant (en net recul selon l'Ined) et à la "
-        "confiance en l'avenir.",
+        f"Près de la moitié de la baisse ({fr(rc['reste'], 0)} %) reste inexpliquée : à âge donné, les couples "
+        "sans enfant en ont **moins souvent un premier**, et ce recul se répercute sur les rangs suivants. "
+        "L'âge des couples n'y est pour rien. Le désir d'enfant (en net recul selon l'Ined) et la confiance "
+        "en l'avenir sont les pistes.",
     ])
 
 
@@ -273,6 +289,12 @@ def contexte(s):
         "à 2025. Le champ principal compte 19 645 couples dont la femme a 15 à 49 ans, et 1 519 "
         "naissances. Pour la politique familiale, l'enquête Revenus fiscaux et sociaux (ERFS) "
         "de 2005 à 2023 apporte dix fois plus de naissances (section 4.6).")
+    s.p("Le recensement de la population (fichiers détail de 2014, 2019 et 2023 : de 1,8 à 2,3 "
+        "millions de couples et de 143 000 à 202 000 naissances par millésime) mesure le logement en "
+        "pièces et en tranches de surface, mais ni le revenu ni le coût du logement. Il sert de "
+        "référence pour décomposer la baisse : les naissances par femme y sont la somme des taux de "
+        "naissance par âge, de 15 à 49 ans, et leur baisse se partage entre la part des femmes en couple "
+        "à âge donné, le taux de naissance des couples et celui des femmes hors couple (section 2).")
     s.p("La méthode est la même pour chaque facteur. Un modèle estime le lien entre ce facteur "
         "et la probabilité d'une naissance, toutes choses égales par ailleurs ; on donne ensuite "
         "aux couples de 2025 la valeur que ce facteur avait en 2014, et l'on mesure de combien "
@@ -281,64 +303,141 @@ def contexte(s):
         "lisent comme causale une association qui ne l'est pas forcément.")
 
 
-def vue_ensemble(s, pf, e, diplomes):
+def vue_ensemble(s, pf, e, rc):
     s.h1("2. Ce qui explique la baisse : vue d'ensemble")
-    s.p("La figure 1 rassemble la part de la baisse de l'ICF entre 2014 et 2025 associée à "
-        "chacun des facteurs étudiés. Les valeurs sont centrales ; la fourchette figure sous "
-        "chaque segment. Pour la politique familiale, l'effet du barème est celui que donne "
-        "l'ERFS, dix fois plus riche en naissances que SRCV, appliqué au recul du gain d'un "
-        "enfant des couples de 2025 ; positif mais non significatif, il entre dans la barre.")
-    s.doc.add_picture(str(ICI / "graph_parts_baisse_icf.png"), width=Cm(16))
+    s.p("La figure 1 décompose la baisse des naissances par femme mesurée au recensement entre 2014 "
+        "et 2023. Trois termes d'abord : la part des femmes en couple à âge donné, le taux de naissance "
+        "des couples et celui des femmes hors couple. Le terme des couples se partage ensuite entre le "
+        "logement (la répartition des couples de 2014 par statut d'occupation, surface et place pour un "
+        "enfant, à âge et nombre d'enfants donnés), le barème de la politique familiale (effet estimé "
+        "dans l'ERFS sur la même période), l'offre d'accueil du jeune enfant et un reste.")
+    s.doc.add_picture(str(ICI / "graph_parts_baisse_recensement.png"), width=Cm(16))
     s.doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     par = s.doc.add_paragraph()
-    texte(par, "Figure 1 — Part de la baisse de l'ICF entre 2014 et 2025 associée à chaque "
-          "facteur. ", gras=True, taille=9.5)
-    texte(par, "Ne figure pas dans la barre : la structure des statuts d'occupation, qui a "
-          "soutenu la natalité (environ −10 %), de sorte que le logement dans son ensemble pèse "
-          "entre −6 % et +8 %. Les parts ne "
-          "s'additionnent qu'approximativement : elles viennent de méthodes et de champs "
-          "différents.", italique=True, taille=9.5, couleur=GRIS)
+    texte(par, "Figure 1 — Part de la baisse des naissances par femme entre 2014 et 2023 associée à "
+          "chaque facteur, au recensement. ", gras=True, taille=9.5)
+    texte(par, "Le logement, de signe contraire, part à gauche de zéro ; fourchettes sous les segments. "
+          "Les parts sont des bornes hautes : elles lisent comme causales des associations.",
+          italique=True, taille=9.5, couleur=GRIS)
+    sr = rc["srcv"]
+    zero = lambda x: "≈ 0" if abs(x) < 0.5 else f"{fr(x, 0)} %"
     s.tableau(
-        ["Facteur", "Part de la baisse", "Fourchette", "Lecture"],
-        [["Recul de la vie en couple", "34 %", "33 à 34 %",
-          "Moins de femmes en couple à âge donné ; corrélation, le lien avec le logement n'est "
-          "pas établi"],
-         ["Logement : petites surfaces", "12 %", "4 à 19 %",
-          "Effet de la surface significatif, mais probablement un choix plus qu'une contrainte"],
-         ["Logement : statuts d'occupation", "−10 %", "",
-          "Moins de propriétaires non accédants, les moins féconds : la structure a soutenu la "
-          "natalité"],
-         ["Politique familiale (barème)", f"{fr(e['dec_pf'], 0)} %",
-          f"{fr(e['dec_pf_bas'], 0)} à {fr(e['dec_pf_haut'], 0)} %",
-          "Effet estimé dans l'ERFS sur 2014-2023 ; "
-          f"+{fr(e['dec_0523'], 0)} % ({fr(e['dec_0523_bas'], 0)} à {fr(e['dec_0523_haut'], 0)} %) "
-          "avec l'effet estimé sur 2005-2023 ; positif et non significatif dans les deux cas. "
-          f"SRCV seule donnait {fr(pf['part14'], 0)} % ({fr(pf['bas14'], 0)} à "
-          f"{fr(pf['haut14'], 0)} %)"],
-         ["Âge des couples", "4 %", "2 à 4 %", "Les couples ont vieilli d'un demi-an"],
-         ["Prix au m², revenu, concentration urbaine", "≈ 0", "",
+        ["Facteur", "Recensement 2014-2023", "SRCV 2014-2025", "Lecture"],
+        [["Recul de la vie en couple", f"{fr(rc['couple'], 0)} %", f"{fr(sr['Recul de la vie en couple'], 0)} %",
+          "Moins de femmes en couple à âge donné, dans tous les milieux ; dont "
+          f"{fr(rc['tension_bas'], 1)} à {fr(rc['tension_haut'], 1)} % liés à la tension immobilière"],
+         ["Logement : surface, place, statut",
+          f"{fr(rc['logement'], 0)} % ({fr(rc['log_bas'], 0)} à {fr(rc['log_haut'], 0)})",
+          f"{fr(sr['Logement : petites surfaces'], 0)} % (4 à 19)",
+          "Au recensement, les surfaces ne rétrécissent pas. SRCV : petites surfaces, et −10 % pour "
+          "les statuts d'occupation (moins de propriétaires non accédants, les moins féconds)"],
+         ["Politique familiale (barème)", f"{fr(rc['pf'], 0)} % ({fr(rc['pf_bas'], 0)} à {fr(rc['pf_haut'], 0)})",
+          f"{fr(e['dec_pf'], 0)} % ({fr(e['dec_pf_bas'], 0)} à {fr(e['dec_pf_haut'], 0)})",
+          f"Effet estimé dans l'ERFS ; {fr(rc['pf2'], 0)} % ({fr(rc['pf2_bas'], 0)} à {fr(rc['pf2_haut'], 0)}) "
+          "avec l'effet estimé sur 2005-2023 ; positif et non significatif"],
+         ["Offre d'accueil du jeune enfant", f"{zero(rc['accueil'])} ({fr(rc['acc_bas'], 0)} à {fr(rc['acc_haut'], 0)})", "",
+          "Places pour 100 femmes de 20 à 39 ans, 2019-2023 (section 4.10)"],
+         ["Âge des couples", "0", f"{fr(sr['Âge des couples'], 0)} % (2 à 4)",
+          "Neutre à âge donné ; à nombre d'enfants donné, il n'explique rien non plus au recensement"],
+         ["Prix au m², revenu, concentration urbaine", "", "≈ 0",
           "Aucun effet à surface donnée ; la natalité n'est pas plus faible en ville"],
-         ["Non expliqué", f"{fr(e['dec_reste'], 0)} %", "", "Moins de naissances à situation donnée"]],
-        [4.3, 2.2, 2.3, 7.4],
-        note="Parts de la baisse de l'ICF entre 2014 et 2025 (−22 %), sous l'hypothèse que la "
-             "natalité des femmes hors du champ étudié varie comme celle du champ. Logement : "
-             "modèle sur les couples, logement prédéterminé ; seuil de surface à 60 m² pour la "
-             "valeur centrale. Politique familiale : effet relatif du gain estimé dans l'ERFS, "
-             "appliqué au recul du gain d'un enfant des couples SRCV de 2025.")
-    s.h2("Par quartile de niveau de vie")
-    s.p("La figure 2 refait le même calcul dans chaque quartile de niveau de vie. Les "
-        "quartiles portent sur le niveau de vie du ménage des femmes de 15 à 49 ans, hors "
-        "prestations ; chaque facteur est mesuré avec la même méthode que pour l'ensemble, mais "
-        "sur les seules femmes ou les seuls couples du quartile, à une exception près : le "
-        "recul de l'âge des couples est mesuré au niveau national puis appliqué à chaque "
-        "groupe (mesuré groupe par groupe, il reflétait surtout la recomposition des groupes "
-        "entre 2014 et 2025). Toutes les barres sont rapportées à la baisse nationale "
-        "(−22 %) : une contribution négative part à gauche de zéro.")
+         ["Naissances hors couple", f"{fr(rc['hors'], 0)} %", "", "Taux des femmes qui ne vivent pas en couple"],
+         ["Non expliqué", f"{fr(rc['reste'], 0)} %", f"{fr(e['dec_reste'], 0)} %",
+          "Moins de premiers enfants à âge donné, ce qui se répercute sur les rangs suivants"]],
+        [4.3, 2.8, 2.6, 6.5],
+        note=f"Recensement : naissances par femme de {fr(rc['icf14'], 2)} (2014) à {fr(rc['icf23'], 2)} (2023) ; "
+             "logement : statut × surface × place, fourchette avec chaque variable seule. SRCV : parts de "
+             "la baisse de l'ICF entre 2014 et 2025 (−22 %), logement prédéterminé, seuil de surface à 60 m² "
+             "pour la valeur centrale ; politique familiale : effet de l'ERFS appliqué au recul du gain d'un "
+             "enfant des couples SRCV de 2025. SRCV reste la seule source qui mesure le niveau de vie.")
+
+    s.h2("La vie en couple recule partout")
+    coh, z = rc["coh"], rc["zones"]
+    ecart = lambda a, b: frs(b - a, 1)
+    lignes = []
+    for lib, cle in (("En couple", "En couple"), ("Seules", "Seul"), ("Chez leurs parents", "Chez ses parents")):
+        a, b = coh[("Femmes", "2014", cle)], coh[("Femmes", "2023", cle)]
+        lignes.append([lib, f"{fr(a, 1)} %", f"{fr(b, 1)} %", ecart(a, b)])
+    for lib, zone in (("En couple, cantons en zone C", "C"), ("En couple, cantons en zones A et A bis", "A et A bis")):
+        a, b = z[(zone, "2014")], z[(zone, "2023")]
+        lignes.append([lib, f"{fr(a, 1)} %", f"{fr(b, 1)} %", ecart(a, b)])
+    a, b = coh[("Hommes", "2014", "En couple")], coh[("Hommes", "2023", "En couple")]
+    lignes.append(["Hommes de 25 à 29 ans en couple", f"{fr(a, 1)} %", f"{fr(b, 1)} %", ecart(a, b)])
+    s.tableau(["Femmes de 25 à 29 ans", "2014", "2023", "Écart (points)"], lignes, [7.6, 2.6, 2.6, 3.0],
+              note="Recensements 2014 et 2023, France métropolitaine ; zone A/B/C majoritaire du "
+                   "canton-ou-ville (zonage de 2022).")
+    s.puces([
+        "**Partout.** Le recul est le plus fort à 25-29 ans et presque aussi net chez les hommes. À âge "
+        "donné, l'activité et le diplôme n'en expliquent rien : il touche aussi les femmes en emploi stable.",
+        "**Un peu plus en zone tendue.** Au canton-ou-ville (1 975 cantons, effets canton et département × "
+        f"millésime), la tension immobilière de 2014 expliquerait {fr(rc['tension_recul'][0], 0)} à "
+        f"{fr(rc['tension_recul'][1], 0)} % du recul à 25-29 ans, soit {fr(rc['tension_bas'], 1)} à "
+        f"{fr(rc['tension_haut'], 1)} % de la baisse des naissances.",
+        "**Plutôt des célibataires que des couples empêchés.** Dans les cantons tendus, c'est la vie seule "
+        "qui progresse, pas le retour chez les parents : on y voit plutôt l'arrivée de jeunes célibataires "
+        "qu'une contrainte d'accès au logement.",
+    ])
+
+    s.h2("Dans les couples, tout part du premier enfant")
+    pa = rc["parite"]
+    noms = (("1er enfant", "Premier enfant"), ("2e enfant", "Deuxième enfant"), ("3e enfant", "Troisième enfant"),
+            ("4e ou plus", "Quatrième et plus"), ("Ensemble", "Ensemble"))
+    s.tableau(["Part de la baisse (%)", "Taux à âge et rang donnés", "Nombre d'enfants déjà nés", "Total"],
+              [[lib, fr(pa[k]["part_taux_par_parite_pct"], 0), fr(pa[k]["part_parite_pct"], 0),
+                fr(float(pa[k]["part_taux_par_parite_pct"]) + float(pa[k]["part_parite_pct"]), 0)] for k, lib in noms],
+              [5.6, 3.6, 3.6, 3.4],
+              note="Le terme « taux des couples à âge donné », scindé entre les taux par nombre d'enfants "
+                   "déjà nés et la répartition des couples selon ce nombre ; couples de la famille principale "
+                   "(47 % de la baisse, 53 % pour tous les couples) ; enfants présents au logement, sous-estimés "
+                   "après 40 ans.")
+    s.p("À âge donné, les couples sans enfant en ont moins souvent un, et c'est le cœur de la baisse. Il en "
+        "reste donc plus sans enfant à chaque âge : les premières naissances baissent peu, les deuxièmes et "
+        "troisièmes davantage. Trois recensements ne disent pas s'il s'agit d'un report ou d'un renoncement. "
+        f"L'âge des couples, lui, ne joue pas : les femmes en couple ont {fr(rc['age23'], 1)} ans en moyenne en "
+        f"2023 contre {fr(rc['age14'], 1)} en 2014, parce que les plus jeunes vivent moins en couple, et à nombre "
+        f"d'enfants donné l'âge n'explique rien du recul du taux des couples ({fr(rc['age_parite'], 0)} %). "
+        "Les 4 % que SRCV lui attribuait ne se retrouvent pas.")
+
+    s.h2("Par diplôme de la femme")
+    s.p("Le diplôme a l'avantage de ne pas dépendre de la vie en couple. Le tableau refait la "
+        "décomposition au recensement dans chaque groupe, sur les femmes de 25 à 49 ans (avant 25 ans, "
+        "beaucoup étudient encore) ; les parts sont rapportées à la baisse propre au groupe.")
+    noms_d = {"Infra CAP": "Infra CAP", "CAP-BEP": "CAP-BEP", "Bac": "Bac", "Superieur": "Supérieur",
+              "Ensemble (25-49 ans)": "Ensemble des 25-49 ans"}
+    lignes = []
+    for r in rc["diplomes"]:
+        femmes = (f"{fr(r['part_femmes_2014_pct'], 0)} → {fr(r['part_femmes_2023_pct'], 0)} %"
+                  if r["part_femmes_2014_pct"] not in ("", "NA") else "")
+        lignes.append([noms_d[r["groupe"]], femmes, f"{fr(r['baisse_pct'], 0)} %", fr(r["part_vie_en_couple_pct"], 0),
+                       fr(r["part_logement_pct"], 0), fr(r["part_taux_couples_hors_logement_pct"], 0),
+                       fr(r["part_hors_couple_pct"], 0)])
+    lignes = lignes[1:] + lignes[:1]
+    s.tableau(["Diplôme (25-49 ans)", "Part des femmes", "Baisse", "Vie en couple", "Logement",
+               "Taux des couples", "Hors couple"], lignes, [3.6, 2.6, 1.7, 2.1, 1.9, 2.3, 2.0], taille=9.5,
+              note="Somme des taux par âge de 25 à 49 ans dans chaque groupe ; parts en % de la baisse du "
+                   "groupe ; « taux des couples » : à âge donné, hors logement. Chaque groupe change de "
+                   "composition à mesure que les études s'allongent : à lire avec prudence.")
+    s.puces([
+        "**La baisse est la plus forte chez les diplômées du supérieur**, désormais plus de la moitié des "
+        "femmes de 25 à 49 ans, et elle vient surtout des taux des couples ; sans le bac, elle est faible et "
+        "vient surtout du recul de la vie en couple.",
+        "**Partout, le logement des couples a évolué dans le sens de plus de naissances** ; chez les moins "
+        "diplômées, les naissances hors couple progressent.",
+    ])
+
+    s.h2("Par quartile de niveau de vie, dans SRCV")
+    s.p("Le recensement ne mesure pas le revenu : le découpage par niveau de vie reste celui de SRCV, sur "
+        "2014-2025. La figure 2 refait le calcul de SRCV dans chaque quartile de niveau de vie du ménage "
+        "des femmes de 15 à 49 ans, hors prestations ; chaque facteur est mesuré sur les seules femmes ou "
+        "les seuls couples du quartile, sauf l'âge des couples, mesuré au niveau national puis appliqué à "
+        "chaque groupe. Toutes les barres sont rapportées à la baisse nationale (−22 %) : une contribution "
+        "négative part à gauche de zéro. Cette variante garde les petites surfaces et l'âge des couples, "
+        "que le recensement ne retrouve pas.")
     s.doc.add_picture(str(ICI / "graph_parts_icf_quartiles.png"), width=Cm(16))
     s.doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     par = s.doc.add_paragraph()
     texte(par, "Figure 2 — Part de la baisse de l'ICF entre 2014 et 2025 associée à chaque "
-          "facteur, par quartile de niveau de vie. ", gras=True, taille=9.5)
+          "facteur, par quartile de niveau de vie (SRCV). ", gras=True, taille=9.5)
     texte(par, "Parts de la baisse nationale de l'ICF ; le « non expliqué » suppose que chaque "
           "quartile a baissé comme la moyenne. Le trait pointillé marque 100 %.",
           italique=True, taille=9.5, couleur=GRIS)
@@ -346,51 +445,12 @@ def vue_ensemble(s, pf, e, diplomes):
         "**Les classes moyennes ont le plus perdu** (section 4.4), et avec l'effet estimé dans "
         f"l'ERFS, c'est là que le barème pèse le plus : de {fr(e['q_min'], 0)} à "
         f"{fr(e['q_max'], 0)} % de la baisse selon le quartile, ou de +{fr(e['q0523_min'], 0)} à "
-        f"+{fr(e['q0523_max'], 0)} % avec l'effet estimé sur 2005-2023, le plus en Q3. SRCV "
-        "seule le concentrait sur les classes moyennes (33 % en Q3), mais sans précision.",
+        f"+{fr(e['q0523_max'], 0)} % avec l'effet estimé sur 2005-2023, le plus en Q3, sans être significatif.",
         "**Le recul de la vie en couple atteint 66 % en Q1**, contre 26 à 33 % ailleurs, mais "
         "c'est surtout un effet de classement. Une femme qui ne vit pas en couple n'a qu'un "
         "revenu dans son ménage et tombe en Q1 : c'est la vie hors couple qui classe en Q1, "
-        "et non un revenu modeste qui empêche de se mettre en couple. Comme les femmes hors "
-        "couple sont plus nombreuses, Q1 s'en remplit (part de femmes en couple de 44 % à 35 %, "
-        "contre 70 % à 69 % en Q4). Le résultat est le même avec des seuils de quartile fixés "
-        "en 2014, et le découpage par diplôme, ci-dessous, ne montre pas de recul concentré "
-        "chez les moins diplômées.",
-        "**Le logement** va de 3 % (Q3) à 23 % (Q4), sans profil net selon le revenu ; "
-        "**l'âge des couples** pèse peu partout (0 à 10 %).",
-    ])
-    s.h2("Par diplôme de la femme")
-    s.p("Le diplôme a l'avantage de ne pas dépendre de la vie en couple. La figure 3 refait le "
-        "calcul par diplôme, sur les femmes de 25 à 49 ans : avant 25 ans, beaucoup sont "
-        "encore étudiantes, et leur diplôme du moment les classerait à tort parmi les moins "
-        "diplômées.")
-    s.doc.add_picture(str(ICI / "graph_parts_icf_diplome.png"), width=Cm(16))
-    s.doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
-    par = s.doc.add_paragraph()
-    texte(par, "Figure 3 — Part de la baisse de l'ICF entre 2014 et 2025 associée à chaque "
-          "facteur, par diplôme de la femme (25-49 ans). ", gras=True, taille=9.5)
-    texte(par, "Parts de la baisse nationale de l'ICF ; le « non expliqué » suppose que chaque "
-          "groupe a baissé comme la moyenne. Le trait pointillé marque 100 %.",
-          italique=True, taille=9.5, couleur=GRIS)
-    s.tableau(
-        ["Diplôme de la femme (25-49 ans)", "En couple en 2014", "En couple en 2024-2025",
-         "Part de la baisse liée à la vie en couple"],
-        [[r["groupe"].replace("Ensemble", "Ensemble des 25-49 ans"),
-          f"{fr(r['en_couple_2014'], 0)} %", f"{fr(r['en_couple_2425'], 0)} %",
-          f"{fr(r['vie_en_couple'], 0)} %"] for r in diplomes],
-        [6.2, 3.0, 3.2, 3.8], taille=9.5,
-        note="Femmes de 15 à 49 ans pour le découpage par quartile, de 25 à 49 ans pour le "
-             "découpage par diplôme : les deux lignes « Ensemble » diffèrent pour cette raison.")
-    s.puces([
-        "**Le recul de la vie en couple touche tous les niveaux de diplôme** : il pèse 25 à "
-        "29 % de la baisse, sauf chez les bac+2 (50 %, où la part en couple passe de 79 % à "
-        "72 %). Il n'est pas concentré chez les femmes peu diplômées.",
-        "**La politique familiale pèse peu dans tous les groupes** (environ −3 %, ou +7 % avec "
-        "l'effet estimé sur 2005-2023) : le barème dépend du revenu, pas du diplôme, et les "
-        "deux ne se recouvrent qu'en partie.",
-        "**Le logement** pèse surtout aux deux extrémités (18 % pour le supérieur, 16 % pour "
-        "CAP-BEP ou moins) et presque rien pour le bac et le bac+2 ; avec 34 à 93 naissances "
-        "par groupe en 2025, ces écarts restent fragiles.",
+        "et non un revenu modeste qui empêche de se mettre en couple. Le résultat est le même avec des "
+        "seuils de quartile fixés en 2014.",
     ])
 
 
@@ -406,6 +466,9 @@ def logement(s):
         "La surface moyenne des couples en âge d'avoir des enfants a peu varié (de 102,8 à "
         "100,9 m²), mais la médiane a perdu 6 m², et la part des couples sans enfant logés sous "
         "50 m² est passée de 14,6 % à 19,1 %.",
+        "Le **recensement** ne confirme pas ce rétrécissement : la part des couples logés sous 60 m² ne "
+        "bouge pas (13,8 % en 2014, 13,7 % en 2023), et celle des couples sans enfant qui n'ont pas la "
+        "place d'un enfant recule (de 26,6 % à 24,5 %).",
     ])
     s.h2("3.2 Surface et naissance")
     s.puces([
@@ -430,6 +493,14 @@ def logement(s):
         "naissances, sans que le panel, trop court, puisse exclure un effet causal. La "
         "géographie va dans le même sens : les logements urbains sont plus petits, mais la "
         "fécondité n'est pas plus faible en ville.")
+    s.p("La place en pièces nuance ce verdict. Mesuré avec la norme de peuplement de l'Insee, le manque "
+        "de place pour un enfant de plus prédit des naissances futures moins nombreuses : −35 % pour un "
+        "premier enfant (p = 0,01), −39 % chez les parents à qui une pièce manque déjà. Le recensement le "
+        "confirme aux trois dates : sans cette place, la probabilité d'un premier enfant est inférieure de "
+        "7 à 10 points (de −65 à −79 % du taux). Une partie de l'association est donc de l'anticipation ; "
+        "l'autre prend la forme d'une contrainte à la marge d'une pièce. Elle pèse sur les naissances de "
+        "chaque couple concerné, mais presque pas sur la baisse : la part des couples sans cette place n'a "
+        "pas augmenté.")
     s.h2("3.4 Le modèle théorique")
     s.p("Un modèle à générations imbriquées formalise la contrainte d'espace : le jeune adulte "
         "achète un logement, puis décide de sa fécondité dans ce logement. Ses prédictions en "
@@ -479,8 +550,8 @@ def politique_familiale(s, pf, gains, instr, quart, e):
           f"{fr(-r['ecart_gain'], 0)} €",
           f"{fr(r['part_de_la_baisse_pct'], 0)} % ({fr(r['part_ic_bas'], 0)} à "
           f"{fr(r['part_ic_haut'], 0)})"] for lib, r in instr]
-        + [["Services en nature (crèches, assistantes maternelles)", "non mesuré", "non mesuré",
-            "offre en hausse", "non chiffré"]],
+        + [["Offre d'accueil (places pour 100 femmes de 20 à 39 ans, 2019 et 2023)", "16,8", "16,2",
+            "−0,6", "≈ 0 (section 4.10)"]],
         [6.1, 2.2, 2.2, 2.3, 3.4],
         note="Gain annuel d'un enfant supplémentaire, euros constants de 2025 ; part de la "
              "baisse de l'ICF 2014-2025 et intervalle de confiance à 95 %. Les sous-totaux "
@@ -495,12 +566,11 @@ def politique_familiale(s, pf, gains, instr, quart, e):
         "**Les baisses d'impôt** n'ont guère bougé en moyenne : le plafond du quotient "
         "familial avait été abaissé en 2013 et 2014, avant notre période, et il est depuis "
         "indexé. Les écarts entre quartiles sont détaillés ci-dessous.",
-        "**Les services en nature** ne sont pas observables dans SRCV et ne sont pas chiffrés "
-        "ici. Ils n'ont en tout cas pas reculé : la capacité d'accueil des moins de 3 ans est "
-        "passée d'environ 56 places pour 100 enfants en 2015 à 60,9 en 2023, en partie parce "
-        "que les naissances baissent, et la dépense publique d'accueil du jeune enfant a "
-        "continué de croître (17,5 milliards d'euros en 2024). Ce volet ne contribue donc pas à "
-        "la baisse, même si Saudubray (2026) le juge le plus efficace à long terme.",
+        "**L'offre d'accueil** n'a guère bougé : rapportée aux femmes de 20 à 39 ans, elle passe de "
+        "16,8 à 16,2 places entre les recensements de 2019 et 2023, et le taux de couverture monte "
+        "surtout parce que les enfants de moins de 3 ans sont moins nombreux ; la dépense publique "
+        "d'accueil a continué de croître (17,5 milliards d'euros en 2024). Elle n'explique pas la baisse "
+        "(section 4.10), même si Saudubray (2026) juge ce volet le plus efficace à long terme.",
     ])
     s.h2("4.4 Qui a perdu ? Lecture par quartile de niveau de vie")
     s.p("Les réformes n'ont pas touché tous les couples de la même façon. La figure 4 et le "
@@ -877,13 +947,47 @@ def inegalites(s, ig):
         "portée de ces données : il faudrait l'enquête Emploi du temps de l'Insee.")
 
 
+def accueil(s, rc):
+    s.h2("4.10 L'offre d'accueil du jeune enfant")
+    o, a = rc["offre"], rc["acc"]
+    s.p("Les places de crèche, d'assistante maternelle, de garde à domicile et d'école à deux ans (Cnaf, "
+        "data.caf.fr) sont rapportées aux femmes de 20 à 39 ans du recensement, puis reliées au taux de "
+        "naissance des couples, par département (96) et par commune de plus de 10 000 habitants (941 "
+        "communes, 2,4 millions de couples), avec des effets d'âge × millésime et de territoire. Rapportées "
+        "aux enfants, les places montent mécaniquement quand les naissances baissent (de "
+        f"{fr(o['2019']['taux_couverture'], 0)} à {fr(o['2023']['taux_couverture'], 0)} places pour 100 enfants "
+        "de moins de 3 ans) : le taux de couverture irait, à tort, avec moins de naissances. D'où la mesure "
+        f"par femme : {fr(o['2019']['places_pour_100_femmes'], 1)} places en 2019, "
+        f"{fr(o['2023']['places_pour_100_femmes'], 1)} en 2023.")
+    s.tableau(["Une place de plus pour 100 femmes de 20 à 39 ans", "Départements", "Communes"],
+              [["Effet sur le taux de naissance des couples (points)",
+                f"{fr(a['Departement']['effet_pts'], 3)} ({fr(a['Departement']['se'], 3)})",
+                f"{fr(a['Commune']['effet_pts'], 3)} ({fr(a['Commune']['se'], 3)})"],
+               ["Part du recul 2019-2023 du taux des couples",
+                f"{fr(a['Departement']['part_pct'], 0).lstrip('−') if abs(float(a['Departement']['part_pct'])) < 0.5 else fr(a['Departement']['part_pct'], 0)} % "
+                f"({fr(a['Departement']['part_bas'], 0)} à {fr(a['Departement']['part_haut'], 0)})",
+                f"{fr(a['Commune']['part_pct'], 0)} % ({fr(a['Commune']['part_bas'], 0)} à {fr(a['Commune']['part_haut'], 0)})"]],
+              [8.6, 3.8, 3.8],
+              note="Recensement 2019 : places de 2017 à 2020 ; recensement 2023 : places de 2021 à 2023 ; "
+                   "communes avec effets département × millésime ; écarts-types entre parenthèses. Places en "
+                   "métropole : 1,33 million en 2017, 1,27 million en 2023 (crèches +14 %, assistantes "
+                   "maternelles −13 %, école à deux ans −26 %).")
+    s.puces([
+        "**Aucun effet** : ni l'offre totale ni aucun mode pris à part ne va avec plus de naissances ; "
+        "l'association est même un peu plus forte chez les femmes sans emploi, à l'inverse de ce qu'on "
+        "attendrait de l'accueil.",
+        "**Un modèle écarté** : avec 2014, l'offre reconstruite à partir de l'ancienne série des taux de "
+        "couverture suit les enfants presque un pour un ; le modèle à trois millésimes n'est pas retenu.",
+    ])
+
+
 def autres_pistes(s):
     s.h1("5. Vie en couple, calendrier, départ de chez les parents")
     s.puces([
-        "**Vie en couple** : la part des femmes de 15 à 49 ans vivant en couple passe de 58,3 % "
-        "à 53,4 % entre 2014 et 2025, surtout à 25-29 ans (de 65,8 % à 56,1 %). Comme 92 % des "
-        "naissances ont lieu en couple, ce recul suffit, à natalité inchangée dans chaque "
-        "groupe, à expliquer environ un tiers de la baisse de l'ICF.",
+        "**Vie en couple** : dans SRCV, la part des femmes de 15 à 49 ans vivant en couple passe de "
+        "58,3 % à 53,4 % entre 2014 et 2025 ; au recensement, de 54,8 % à 51,6 % entre 2014 et 2023, "
+        "surtout à 25-29 ans. Comme neuf naissances sur dix ont lieu en couple, ce recul explique un tiers "
+        "de la baisse dans SRCV, 41 % au recensement (section 2).",
         "**Concentration urbaine** : les jeunes se concentrent dans les grandes agglomérations, "
         "mais la natalité n'y est pas plus faible ; l'effet de composition est nul.",
         "**Calendrier** : l'âge auquel la moitié des couples dispose d'au moins 80 m² recule "
@@ -900,8 +1004,11 @@ def autres_pistes(s):
 def reste_et_limites(s):
     s.h1("6. Ce qui reste inexpliqué")
     s.p("Près de la moitié de la baisse ne tient à aucun des facteurs mesurés : à âge, vie en "
-        "couple, logement et revenu donnés, les couples font moins d'enfants qu'en 2014. Deux "
-        "pistes, extérieures à nos données, sont compatibles avec ce constat. Le nombre "
+        "couple, logement et revenu donnés, les couples font moins d'enfants qu'en 2014. Le recensement "
+        "en dit la forme : à âge donné, les couples sans enfant en ont moins souvent un premier ; il en "
+        "reste donc plus sans enfant à chaque âge, et le recul se répercute sur les deuxièmes et "
+        "troisièmes naissances (section 2). Trois recensements ne disent pas s'il s'agit d'un report ou "
+        "d'un renoncement. Deux pistes, extérieures à nos données, sont compatibles avec ce constat. Le nombre "
         "d'enfants souhaité recule : chez les femmes de moins de 30 ans, il est passé de 2,5 à "
         "1,9 en vingt ans (Bouchet-Valat et Toulemon, 2025). Et la confiance en l'avenir pèse "
         "durablement sur la fécondité dans les pays de l'OCDE (Saudubray, 2026).")
@@ -916,17 +1023,16 @@ def reste_et_limites(s):
         "Le champ du logement et de la politique familiale est celui des **couples constitués** ; "
         "le passage à l'ensemble des femmes suppose que la natalité hors couple varie dans la "
         "même proportion.",
-        "Les services (crèches, assistantes maternelles) ne sont ni observables dans SRCV, ni "
-        "simulés dans l'ERFS ; le congé parental y est repéré (section 4.9), mais pas le partage des "
-        "tâches domestiques. Dans SRCV, le gain simulé suppose les "
+        "L'offre d'accueil n'est mesurée que par territoire (section 4.10), et le complément de mode "
+        "de garde n'est pas simulé ; le congé parental est repéré dans l'ERFS (section 4.9), mais pas le "
+        "partage des tâches domestiques. Dans SRCV, le gain simulé suppose les "
         "couples mariés et approche le revenu imposable ; dans l'ERFS, le statut conjugal et "
         "les revenus imposables de chaque conjoint sont observés.",
         "Pistes : une variation extérieure de l'offre de logement pour trancher la causalité ; "
-        "relier la vie en couple et le départ de chez les parents au logement, avec les "
-        "fichiers détaillés du recensement ; pour la politique familiale, mesurer le revenu "
-        "d'avant la naissance (ERFS en panel d'un an, fichiers complets au CASD), tester les "
-        "services d'accueil du jeune enfant et mesurer le partage des tâches avec l'enquête Emploi "
-        "du temps.",
+        "suivre les mêmes personnes sur dix ans ou plus (échantillon démographique permanent) pour "
+        "départager report et renoncement du premier enfant ; pour la politique familiale, des "
+        "premières naissances plus nombreuses (fichiers complets au CASD) et le partage des tâches, "
+        "avec l'enquête Emploi du temps.",
     ])
 
 
@@ -954,8 +1060,9 @@ def donnees_documents(s):
          ["Note de modélisation", "10", "Modèle à générations imbriquées à trois périodes"],
          ["Article", "32", "« La surface fait-elle les naissances ? », 2014-2025, pour la "
           "Revue économique ou la Revue d'économie politique"],
-         ["Diaporama", "51", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
-          "(plafonds de la PAJE, prestations ou quotient familial, emploi des femmes et congé parental)"],
+         ["Diaporama", "55", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
+          "(plafonds de la PAJE, prestations ou quotient familial, offre d'accueil, emploi des femmes et "
+          "congé parental) ; décomposition de la baisse au recensement"],
          ["Note sur l'ERFS", "", "« Politique familiale et fécondité dans l'ERFS 2005-2023 », "
           "document partagé"],
          ["Page de bilan et bilan Word", "17", "Point d'étape partagé en ligne et sa version Word"]],
@@ -969,6 +1076,9 @@ def sources(s):
         "2014 à 2025 ; calculs de l'auteur.",
         "Insee-DGFiP-Cnaf-Cnav-CCMSA, enquête Revenus fiscaux et sociaux (ERFS), millésimes 2005 "
         "à 2023, fichiers de production et de recherche (Progedo-Adisp) ; calculs de l'auteur.",
+        "Insee, recensements de la population 2014, 2019 et 2023, fichiers détail ; calculs de l'auteur.",
+        "Cnaf, data.caf.fr : places d'accueil du jeune enfant par mode, 2017-2023 ; ministère chargé du "
+        "Logement, zonage A/B/C (2022) ; Insee, table d'appartenance géographique des communes (2022).",
         "Insee (2026), « Bilan démographique 2025 », Insee Première n° 2087.",
         "Insee (2024), « Bilan démographique 2023 », Insee Première.",
         "Elmallakh N. (2023), Demography, vol. 60, n° 5, p. 1493-1522.",
@@ -1093,6 +1203,43 @@ def chiffres_erfs():
     return e
 
 
+def chiffres_recensement():
+    """Lit les sorties des scripts 65 à 68 et 39 (offre d'accueil, vie en couple, décompositions)."""
+    d68 = lire("decomposition_recensement.csv")
+    syn = {r["facteur"].strip(): r for r in d68 if r["bloc"] == "Synthese"}
+    v = lambda f, k="part_pct": float(syn[f][k])
+    tt = next(r for r in d68 if r["bloc"] == "Trois termes")
+    lo, pf, pf2, ac = ("Logement (statut x surface x place)", "Politique familiale (bareme)",
+                       "Politique familiale, effet 2005-2023", "Offre d'accueil")
+    rc = {"icf14": float(tt["icf_2014"]), "icf23": float(tt["icf_2023"]),
+          "couple": v("Recul de la vie en couple"), "tension_bas": v("dont tension immobiliere", "bas"),
+          "tension_haut": v("dont tension immobiliere", "haut"), "hors": v("Naissances hors couple"),
+          "logement": v(lo), "log_bas": v(lo, "bas"), "log_haut": v(lo, "haut"),
+          "pf": v(pf), "pf_bas": v(pf, "bas"), "pf_haut": v(pf, "haut"),
+          "pf2": v(pf2), "pf2_bas": v(pf2, "bas"), "pf2_haut": v(pf2, "haut"),
+          "accueil": v(ac), "acc_bas": v(ac, "bas"), "acc_haut": v(ac, "haut"), "reste": v("Non explique"),
+          "tension_recul": sorted(float(r["part_du_recul_pct"]) for r in d68 if r["bloc"] == "Tension"),
+          "diplomes": [r for r in d68 if r["bloc"] == "Par diplome"]}
+    v66 = lire("vie_en_couple_recensement.csv")
+    rc["coh"] = {(r["sexe"], r["annee"], r["cohab"]): float(r["part_pct"]) for r in v66
+                 if r["bloc"] == "Cohabitation par age" and r["age5"] == "25-29"}
+    rc["parite"] = {r["rang"]: r for r in v66 if r["bloc"] == "ICF, taux des couples par parite"
+                    and r["periode"] == "2014-2023"}
+    brut = {r["annee"]: r for r in v66 if r["bloc"] == "Taux brut et ICF"}
+    rc["age14"], rc["age23"] = float(brut["2014"]["age_moyen_couples"]), float(brut["2023"]["age_moyen_couples"])
+    rc["age_parite"] = next(float(r["part_de_la_baisse_pct"]) for r in v66
+                            if r["bloc"] == "Recomposition du taux brut des couples"
+                            and r["cellules"] == "age dans parite (parite de 2023)")
+    rc["zones"] = {(r["zone_cl"], r["annee"]): float(r["en_couple"]) for r in lire("vie_en_couple_canton.csv")
+                   if r["bloc"] == "25-29 ans selon la zone A/B/C" and r["sexe"] == "Femmes"}
+    a65 = lire("accueil_jeune_enfant.csv")
+    rc["offre"] = {r["annee"]: r for r in a65 if r["bloc"] == "Offre par millesime"}
+    rc["acc"] = {r["niveau"]: r for r in a65 if r["bloc"] == "Part de la baisse 2019-2023"
+                 and r["echantillon"] == "Ensemble"}
+    rc["srcv"] = {r["facteur"]: float(r["part"]) for r in lire("graph_parts_baisse_icf.csv")}
+    return rc
+
+
 def chiffres_plafonds_qf():
     """Lit les sorties des scripts 59 (plafonds de la PAJE) et 60 (prestations ou QF)."""
     p59 = lire("erfs_plafonds_paje.csv")
@@ -1156,19 +1303,19 @@ def main():
     ig = chiffres_inegalites()
     quart = [{k: (v if k == "q" else float(v)) for k, v in r.items()}
              for r in lire("politique_familiale_par_quartile_2014.csv")]
-    diplomes = [{k: (v if k == "groupe" else float(v)) for k, v in r.items()}
-                for r in lire("decomposition_icf_par_diplome.csv")]
+    rc = chiffres_recensement()
     s = Synthese()
     s.titre("Logement, politique familiale et baisse de la fécondité",
-            "Synthèse des travaux sur les enquêtes SRCV (2014-2025) et ERFS (2005-2023)",
+            "Synthèse des travaux sur les enquêtes SRCV (2014-2025) et ERFS (2005-2023) et les recensements (2014-2023)",
             "Kévin Genna, Institut Louis Bachelier", "Novembre 2026")
-    en_bref(s, pf, e)
+    en_bref(s, pf, e, rc)
     contexte(s)
-    vue_ensemble(s, pf, e, diplomes)
+    vue_ensemble(s, pf, e, rc)
     logement(s)
     politique_familiale(s, pf, gains, instr, quart, e)
     plafonds_qf(s, pl, qf)
     inegalites(s, ig)
+    accueil(s, rc)
     autres_pistes(s)
     reste_et_limites(s)
     donnees_documents(s)
