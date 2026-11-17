@@ -1373,6 +1373,33 @@
   \source{Insee, recensements 2014 et 2023, fichiers détail, France métropolitaine ; zone A/B/C majoritaire du canton-ou-ville (zonage 2022) ; tension : effets canton et département $\times$ millésime, deux mesures. Scripts R/66 et R/67.}
 \end{frame}
 
+\begin{frame}{Tension, voisinage et prix}
+  \centering\scriptsize\setlength{\tabcolsep}{6pt}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Unité et voisines, 2014 $\to$ 2023 (points) & Commune\textsuperscript{a} & Canton-ou-ville & Aire d'attraction \\
+    \midrule
+    \multicolumn{4}{@{}l}{\textit{Zonage : 10 points de population de plus en zone tendue}} \\
+    \quad Femmes de 25-29 ans en couple & $-$0,18 & $-$0,21 & $-$0,07 \\
+    \quad Femmes de 25-29 ans seules & +0,26\textsuperscript{**} & +0,28\textsuperscript{**} & +0,34\textsuperscript{**} \\
+    \quad Premier enfant des couples & $-$0,08 & $-$0,08 & $-$0,23\textsuperscript{*} \\
+    \midrule
+    \multicolumn{4}{@{}l}{\textit{Prix (DVF+) : 10\,\% de hausse de plus que la moyenne}} \\
+    \quad Femmes de 25-29 ans en couple & +0,07 & 0,00 & $-$0,14 \\
+    \quad Femmes de 25-29 ans seules & +0,41 & +0,45 & +0,38 \\
+    \quad Premier enfant des couples & $-$0,26 & $-$0,21 & $-$0,41\textsuperscript{*} \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.25cm}
+
+  \raggedright\small
+  \begin{aere}
+    \item Les voisines comptent peu, et rien ne passe d'un territoire à l'autre : la vie seule progresse sur place, dans les zones tendues.
+    \item Là où les prix ont le plus monté, la vie en couple n'a pas reculé davantage : le lien tient à la grande ville, pas à la hausse des prix (+12\,\% en réel).
+  \end{aere}
+  \source{Insee, recensements 2014, 2019, 2023 ; DVF+ (Cerema), 7 millions de ventes, à type et pièces donnés ; IGN ; couronnes 0-20 et 20-50 km ; effets fixes d'unité, d'âge et de département $\times$ millésime ; * p $<$ 0,05, ** p $<$ 0,01 ; a : commune si connue, sinon reste du canton. Scripts R/70 et R/72.}
+\end{frame}
+
 \begin{frame}{Dans les couples, tout part du premier enfant}
   \begin{columns}[T]
     \begin{column}{0.58\textwidth}
