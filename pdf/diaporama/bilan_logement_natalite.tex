@@ -1435,127 +1435,32 @@
   \source{Insee, recensements 2014 et 2023 ; somme des taux par âge de 25 à 49 ans du groupe ; « Couples » : taux des couples à âge donné, hors logement ; chaque groupe change de composition à mesure que les études s'allongent. Script R/68.}
 \end{frame}
 
-\begin{frame}{Par quartile de niveau de vie, dans SRCV}
-  \begin{columns}[c]
-    \begin{column}{0.64\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[icf, xmax=110, width=0.88\linewidth, symbolic y coords={Q4,Q3,Q2,Q1,Ens}, ytick={Q4,Q3,Q2,Q1,Ens},
-            yticklabels={{Q4 (aisés)},Q3,Q2,{Q1 (modestes)},Ensemble}]
-          \addplot[fill=fcouple,draw=none] coordinates {(33.8000,Ens) (66.0000,Q1) (30.3000,Q2) (33.0000,Q3) (26.1000,Q4)};
-          \addplot[fill=flogement,draw=none] coordinates {(12.2000,Ens) (13.6000,Q1) (14.5000,Q2) (3.1000,Q3) (22.8000,Q4)};
-          \addplot[fill=fpf,draw=none] coordinates {(5.3000,Ens) (2.2000,Q1) (4.9000,Q2) (9.2000,Q3) (3.8000,Q4)};
-          \addplot[fill=fage,draw=none] coordinates {(4.7000,Ens) (0.3000,Q1) (3.4000,Q2) (2.1000,Q3) (9.5000,Q4)};
-          \addplot[fill=freste,draw=none] coordinates {(43.9000,Ens) (17.9000,Q1) (46.9000,Q2) (52.7000,Q3) (37.8000,Q4)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
-          \coordinate (e1) at (axis cs:16.9000,Ens);
-          \coordinate (e2) at (axis cs:39.9000,Ens);
-          \coordinate (e3) at (axis cs:48.6500,Ens);
-          \coordinate (e4) at (axis cs:77.9500,Ens);
-          \coordinate (e5) at (axis cs:33.0000,Q1);
-          \coordinate (e6) at (axis cs:72.8000,Q1);
-          \coordinate (e7) at (axis cs:91.0500,Q1);
-          \coordinate (e8) at (axis cs:15.1500,Q2);
-          \coordinate (e9) at (axis cs:37.5500,Q2);
-          \coordinate (e10) at (axis cs:76.5500,Q2);
-          \coordinate (e11) at (axis cs:16.5000,Q3);
-          \coordinate (e12) at (axis cs:40.7000,Q3);
-          \coordinate (e13) at (axis cs:73.7500,Q3);
-          \coordinate (e14) at (axis cs:13.0500,Q4);
-          \coordinate (e15) at (axis cs:37.5000,Q4);
-          \coordinate (e16) at (axis cs:57.4500,Q4);
-          \coordinate (e17) at (axis cs:81.1000,Q4);
-        \end{axis}
-        \node[etiq,text=white] at (e1) {34};
-        \node[etiq,text=black] at (e2) {12};
-        \node[etiq,text=black] at (e3) {5};
-        \node[etiq,text=black] at (e4) {44};
-        \node[etiq,text=white] at (e5) {66};
-        \node[etiq,text=black] at (e6) {14};
-        \node[etiq,text=black] at (e7) {18};
-        \node[etiq,text=white] at (e8) {30};
-        \node[etiq,text=black] at (e9) {15};
-        \node[etiq,text=black] at (e10) {47};
-        \node[etiq,text=white] at (e11) {33};
-        \node[etiq,text=black] at (e12) {9};
-        \node[etiq,text=black] at (e13) {53};
-        \node[etiq,text=white] at (e14) {26};
-        \node[etiq,text=black] at (e15) {23};
-        \node[etiq,text=black] at (e16) {10};
-        \node[etiq,text=black] at (e17) {38};
+\begin{frame}{Par profession, l'écart vient des couples}
+  \centering\scriptsize\setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lccccccc@{}}
+    \toprule
+    Femmes de 25 à 49 ans & Part des femmes & Enfants par femme & Baisse & \multicolumn{4}{c}{Contribution, en enfants par femme} \\
+    \cmidrule(l){5-8}
+     & 2014 $\to$ 2023 & 2014 $\to$ 2023 & & Vie en couple & Logement & Couples & Hors couple \\
+    \midrule
+    Cadres & 13 $\to$ 17\,\% & 1,49 $\to$ 1,29 & $-$13\,\% & $-$0,07 & +0,02 & $-$0,16 & +0,01 \\
+    Professions intermédiaires & 26 $\to$ 27\,\% & 1,48 $\to$ 1,29 & $-$13\,\% & $-$0,07 & +0,03 & $-$0,15 & 0,00 \\
+    Employées & 38 $\to$ 32\,\% & 1,30 $\to$ 1,20 & $-$7\,\% & $-$0,07 & +0,02 & $-$0,05 & 0,00 \\
+    Ouvrières & 7 $\to$ 7\,\% & 1,11 $\to$ 1,00 & $-$10\,\% & $-$0,04 & +0,01 & $-$0,08 & 0,00 \\
+    Indépendantes & 3 $\to$ 4\,\% & 1,26 $\to$ 1,17 & $-$8\,\% & $-$0,05 & +0,01 & $-$0,05 & $-$0,01 \\
+    Sans activité professionnelle & 13 $\to$ 13\,\% & 2,62 $\to$ 2,22 & $-$15\,\% & $-$0,16 & +0,01 & $-$0,22 & $-$0,02 \\
+    \midrule
+    Ensemble & & 1,55 $\to$ 1,36 & $-$12\,\% & $-$0,08 & +0,02 & $-$0,12 & 0,00 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.3cm}
 
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      \small
-      \begin{aere}
-        \item Les classes moyennes ont le plus perdu (1\,878\,€ par an en Q3), et c'est là que le barème \alert{pèse le plus} : 9\,\% en Q3, 18\,\% avec l'effet estimé sur 2005-2023, sans être significatif.
-        \item Les 66\,\% de la vie en couple en Q1 sont surtout un effet de classement : une femme seule n'a qu'un revenu et tombe en Q1.
-      \end{aere}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025 (le recensement ne mesure pas le revenu) ; politique familiale : effet estimé dans l'ERFS 2014-2023 ; calculs de l'auteur.}
-\end{frame}
-
-\begin{frame}{Par quartile (SRCV), en enfants par femme}
-  \begin{columns}[c]
-    \begin{column}{0.64\textwidth}
-      \begin{tikzpicture}
-        \begin{axis}[icfpts, xmax=0.49, width=0.88\linewidth, symbolic y coords={Q4,Q3,Q2,Q1,Ens}, ytick={Q4,Q3,Q2,Q1,Ens},
-            yticklabels={{Q4 (aisés)},Q3,Q2,{Q1 (modestes)},Ensemble}]
-          \addplot[fill=fcouple,draw=none] coordinates {(0.1487,Ens) (0.2904,Q1) (0.1333,Q2) (0.1452,Q3) (0.1148,Q4)};
-          \addplot[fill=flogement,draw=none] coordinates {(0.0537,Ens) (0.0598,Q1) (0.0638,Q2) (0.0136,Q3) (0.1003,Q4)};
-          \addplot[fill=fpf,draw=none] coordinates {(0.0233,Ens) (0.0097,Q1) (0.0216,Q2) (0.0405,Q3) (0.0167,Q4)};
-          \addplot[fill=fage,draw=none] coordinates {(0.0207,Ens) (0.0013,Q1) (0.0150,Q2) (0.0092,Q3) (0.0418,Q4)};
-          \addplot[fill=freste,draw=none] coordinates {(0.1932,Ens) (0.0788,Q1) (0.2064,Q2) (0.2319,Q3) (0.1663,Q4)};
-          \legend{Vie en couple, Petites surfaces, Politique familiale, Âge des couples, Non expliqué}
-          \coordinate (e1) at (axis cs:0.0744,Ens);
-          \coordinate (e2) at (axis cs:0.1756,Ens);
-          \coordinate (e3) at (axis cs:0.3430,Ens);
-          \coordinate (e4) at (axis cs:0.1452,Q1);
-          \coordinate (e5) at (axis cs:0.3203,Q1);
-          \coordinate (e6) at (axis cs:0.4006,Q1);
-          \coordinate (e7) at (axis cs:0.0667,Q2);
-          \coordinate (e8) at (axis cs:0.1652,Q2);
-          \coordinate (e9) at (axis cs:0.3368,Q2);
-          \coordinate (e10) at (axis cs:0.0726,Q3);
-          \coordinate (e11) at (axis cs:0.1791,Q3);
-          \coordinate (e12) at (axis cs:0.3245,Q3);
-          \coordinate (e13) at (axis cs:0.0574,Q4);
-          \coordinate (e14) at (axis cs:0.1650,Q4);
-          \coordinate (e15) at (axis cs:0.2528,Q4);
-          \coordinate (e16) at (axis cs:0.3568,Q4);
-        \end{axis}
-        \node[etiq,text=white] at (e1) {0,15};
-        \node[etiq,text=black] at (e2) {0,05};
-        \node[etiq,text=black] at (e3) {0,19};
-        \node[etiq,text=white] at (e4) {0,29};
-        \node[etiq,text=black] at (e5) {0,06};
-        \node[etiq,text=black] at (e6) {0,08};
-        \node[etiq,text=white] at (e7) {0,13};
-        \node[etiq,text=black] at (e8) {0,06};
-        \node[etiq,text=black] at (e9) {0,21};
-        \node[etiq,text=white] at (e10) {0,15};
-        \node[etiq,text=black] at (e11) {0,04};
-        \node[etiq,text=black] at (e12) {0,23};
-        \node[etiq,text=white] at (e13) {0,11};
-        \node[etiq,text=black] at (e14) {0,10};
-        \node[etiq,text=black] at (e15) {0,04};
-        \node[etiq,text=black] at (e16) {0,17};
-
-      \end{tikzpicture}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      \small
-      \begin{itemize}\setlength{\itemsep}{0.4em}
-        \item \textbf{France entière}, l'ICF perd 0,44 enfant par femme : 0,15 pour la vie en couple, 0,05 pour les surfaces (0,02 à 0,08), 0,02 pour le barème (0,04 avec l'effet 2005-2023), 0,02 pour l'âge, 0,19 non expliqué.
-      \end{itemize}
-      \vspace{0.15cm}
-      \begin{callout}[tdtenavy]{Lire un quartile}
-        \footnotesize En Q4, la vie en couple équivaut à 0,11 enfant par femme, au niveau de fécondité national. Ce n'est pas la contribution du Q4 à la baisse de l'ICF de la France.
-      \end{callout}
-    \end{column}
-  \end{columns}
-  \source{Insee, SRCV 2014-2025 ; Insee (2026) pour l'ICF ; parts de la diapositive précédente multipliées par 0,44.}
+  \raggedright\small
+  \begin{aere}
+    \item La vie en couple coûte presque autant d'enfants partout (0,04 à 0,07) ; l'écart vient des \alert{taux des couples} : $-$0,16 chez les cadres, $-$0,05 chez les employées.
+    \item Écart cadres-employées : 0,19 enfant par femme en 2014, 0,09 en 2023. Même lecture que le diplôme.
+  \end{aere}
+  \source{Insee, recensements 2014 et 2023 (sans revenu) ; profession exercée ou, pour les chômeuses, la dernière (PCS 2003 en 2014, 2020 en 2023) ; « sans activité » : dont des mères qui ont cessé de travailler ; « Couples » : taux à âge donné, hors logement. Script R/68.}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

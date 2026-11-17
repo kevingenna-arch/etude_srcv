@@ -425,9 +425,47 @@ def vue_ensemble(s, pf, e, rc):
         "diplômées, les naissances hors couple progressent.",
     ])
 
+    s.h2("Par profession de la femme")
+    s.p("Faute de revenu, le recensement permet un découpage par profession : la profession exercée ou, "
+        "pour les chômeuses, la dernière exercée. Comme le diplôme, elle ne dépend pas de la vie en couple. "
+        "Le tableau donne, pour les femmes de 25 à 49 ans, la somme des taux par âge du groupe en 2014 et en "
+        "2023, et la contribution de chaque terme à sa variation, en enfants par femme.")
+    noms_p = {"Cadres": "Cadres", "Professions intermediaires": "Professions intermédiaires",
+              "Employees": "Employées", "Ouvrieres": "Ouvrières", "Independantes": "Indépendantes",
+              "Sans activite professionnelle": "Sans activité professionnelle",
+              "Ensemble (25-49 ans)": "Ensemble des 25-49 ans"}
+    pr = {r["groupe"]: r for r in rc["professions"]}
+    lignes = []
+    for g in noms_p:
+        r = pr[g]
+        femmes = (f"{fr(r['part_femmes_2014_pct'], 0)} → {fr(r['part_femmes_2023_pct'], 0)} %"
+                  if r["part_femmes_2014_pct"] not in ("", "NA") else "")
+        lignes.append([noms_p[g], femmes, f"{fr(r['icf_2014'], 2)} → {fr(r['icf_2023'], 2)}",
+                       frs(r["vie_en_couple"], 2), frs(r["logement"], 2),
+                       frs(r["taux_couples_hors_logement"], 2), frs(r["hors_couple"], 2)])
+    s.tableau(["Profession (25-49 ans)", "Part des femmes", "Enfants par femme", "Vie en couple", "Logement",
+               "Taux des couples", "Hors couple"], lignes, [3.8, 2.3, 2.5, 1.9, 1.8, 2.0, 1.9], taille=9.5,
+              note="Somme des taux par âge de 25 à 49 ans du groupe, 2014 → 2023 ; les quatre dernières colonnes "
+                   "sont les contributions à sa variation, en enfants par femme (elles s'additionnent aux "
+                   "arrondis près). Profession : PCS 2003 en 2014, PCS 2020 en 2023. « Sans activité "
+                   "professionnelle » : inactives, étudiantes, chômeuses n'ayant jamais travaillé, dont des "
+                   "mères qui ont cessé de travailler ; ce groupe dépend en partie des naissances.")
+    hors = [abs(float(pr[g]["vie_en_couple"])) for g in noms_p
+            if g not in ("Sans activite professionnelle", "Ensemble (25-49 ans)")]
+    ecart = lambda a: float(pr["Cadres"][a]) - float(pr["Employees"][a])
+    s.puces([
+        "**Le recul de la vie en couple coûte presque autant d'enfants dans chaque groupe** "
+        f"({fr(min(hors), 2)} à {fr(max(hors), 2)} par femme) ; l'écart vient des taux des couples : "
+        f"{fr(pr['Cadres']['taux_couples_hors_logement'], 2)} enfant par femme chez les cadres, "
+        f"{fr(pr['Professions intermediaires']['taux_couples_hors_logement'], 2)} dans les professions "
+        f"intermédiaires, {fr(pr['Employees']['taux_couples_hors_logement'], 2)} chez les employées.",
+        f"**Les écarts se resserrent** : {fr(ecart('icf_2014'), 2)} enfant par femme séparait cadres et "
+        f"employées en 2014, {fr(ecart('icf_2023'), 2)} en 2023. C'est la lecture du diplôme : la baisse est "
+        "plus forte en haut de l'échelle, et elle passe par les couples.",
+    ])
+
     s.h2("Par quartile de niveau de vie, dans SRCV")
-    s.p("Le recensement ne mesure pas le revenu : le découpage par niveau de vie reste celui de SRCV, sur "
-        "2014-2025. La figure 2 refait le calcul de SRCV dans chaque quartile de niveau de vie du ménage "
+    s.p("Pour le niveau de vie lui-même, il faut revenir à SRCV, sur 2014-2025. La figure 2 refait le calcul de SRCV dans chaque quartile de niveau de vie du ménage "
         "des femmes de 15 à 49 ans, hors prestations ; chaque facteur est mesuré sur les seules femmes ou "
         "les seuls couples du quartile, sauf l'âge des couples, mesuré au niveau national puis appliqué à "
         "chaque groupe. Toutes les barres sont rapportées à la baisse nationale (−22 %) : une contribution "
@@ -1060,9 +1098,9 @@ def donnees_documents(s):
          ["Note de modélisation", "10", "Modèle à générations imbriquées à trois périodes"],
          ["Article", "32", "« La surface fait-elle les naissances ? », 2014-2025, pour la "
           "Revue économique ou la Revue d'économie politique"],
-         ["Diaporama", "55", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
+         ["Diaporama", "54", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
           "(plafonds de la PAJE, prestations ou quotient familial, offre d'accueil, emploi des femmes et "
-          "congé parental) ; décomposition de la baisse au recensement"],
+          "congé parental) ; décomposition de la baisse au recensement, par diplôme et par profession"],
          ["Note sur l'ERFS", "", "« Politique familiale et fécondité dans l'ERFS 2005-2023 », "
           "document partagé"],
          ["Page de bilan et bilan Word", "17", "Point d'étape partagé en ligne et sa version Word"]],
@@ -1219,7 +1257,8 @@ def chiffres_recensement():
           "pf2": v(pf2), "pf2_bas": v(pf2, "bas"), "pf2_haut": v(pf2, "haut"),
           "accueil": v(ac), "acc_bas": v(ac, "bas"), "acc_haut": v(ac, "haut"), "reste": v("Non explique"),
           "tension_recul": sorted(float(r["part_du_recul_pct"]) for r in d68 if r["bloc"] == "Tension"),
-          "diplomes": [r for r in d68 if r["bloc"] == "Par diplome"]}
+          "diplomes": [r for r in d68 if r["bloc"] == "Par diplome"],
+          "professions": [r for r in d68 if r["bloc"] == "Par groupe socioprofessionnel"]}
     v66 = lire("vie_en_couple_recensement.csv")
     rc["coh"] = {(r["sexe"], r["annee"], r["cohab"]): float(r["part_pct"]) for r in v66
                  if r["bloc"] == "Cohabitation par age" and r["age5"] == "25-29"}

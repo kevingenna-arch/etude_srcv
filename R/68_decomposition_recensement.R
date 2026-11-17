@@ -66,7 +66,7 @@ print(as.data.frame(tt %>% mutate(across(c(vie_en_couple, taux_couples, hors_cou
 # ── §2 Logement, à âge et nombre d'enfants donnés ──────────────────────────
 cp <- map_dfr(ANS, ~ readRDS(file.path(DIR_RP, "_extrait", paste0("couples_RP", .x, ".rds")))) %>%
   filter(metrodom == "M", surf %in% as.character(1:7), !is.na(place), !is.na(stocd)) %>%
-  transmute(annee, poids, naiss01, age = age_femme, parite = pmin(nb_enf_avant, 3L), dipl = as.character(diplome4),
+  transmute(annee, hh, poids, naiss01, age = age_femme, parite = pmin(nb_enf_avant, 3L), dipl = as.character(diplome4),
             surface = surf, surface3 = case_when(surf %in% c("1", "2", "3") ~ "Moins de 60 m2",
                                                  surf %in% c("4", "5") ~ "60 a 99 m2", TRUE ~ "100 m2 ou plus"),
             place = as.character(place),
@@ -172,10 +172,91 @@ print(as.data.frame(par_diplome %>% select(groupe, icf_2014, icf_2023, baisse_pc
                                            part_femmes_2014_pct, part_femmes_2023_pct) %>%
                       mutate(across(where(is.double), ~ round(.x, 2)))), row.names = FALSE)
 
+# ── §6 Par groupe socioprofessionnel de la femme, 25-49 ans ───────────────
+#  Le recensement ne mesure pas le revenu : le groupe socioprofessionnel remplace les quartiles de
+#  niveau de vie de SRCV (script 41). Comme le diplôme, il ne dépend pas de la vie en couple (dans
+#  SRCV, une femme seule n'a qu'un revenu et tombe en Q1).
+#  Profession exercée, ou dernière profession pour les chômeuses : CS1 en 2014 (PCS 2003) ; STAT_GSEC
+#  en 2023 (PCS 2020 ; GS n'y classe que les personnes en emploi). « Sans activité professionnelle » :
+#  inactives, étudiantes, chômeuses n'ayant jamais travaillé — groupe qui dépend en partie des
+#  naissances (mères qui cessent de travailler). Indépendantes : agricultrices, artisanes,
+#  commerçantes, cheffes d'entreprise.
+#  Cache : Data/recensement/_extrait/cellules_pcs.rds (relit les fichiers détail, ~2 min).
+F_PCS   <- file.path(DIR_RP, "_extrait", "cellules_pcs.rds")
+GROUPES <- c("Independantes", "Cadres", "Professions intermediaires", "Employees", "Ouvrieres", "Sans activite professionnelle")
+groupe_pcs <- function(code, an) {
+  code <- trimws(code)
+  if (an == "2023") {   # STAT_GSEC : 1x en emploi, 2x chômeuses ayant travaillé (x = groupe 1 à 6)
+    g <- if_else(substr(code, 1, 1) %in% c("1", "2") & substr(code, 2, 2) %in% as.character(1:6), substr(code, 2, 2), "0")
+  } else g <- if_else(code %in% as.character(1:6), code, "0")   # CS1 : 7 retraitées, 8 autres sans activité
+  case_when(g %in% c("1", "2") ~ GROUPES[1], g == "3" ~ GROUPES[2], g == "4" ~ GROUPES[3],
+            g == "5" ~ GROUPES[4], g == "6" ~ GROUPES[5], TRUE ~ GROUPES[6])
+}
+if (!file.exists(F_PCS)) {
+  suppressPackageStartupMessages(library(data.table))
+  FICH <- c("2014" = "FD_INDCVI_2014.txt", "2023" = "FD_INDCVI_2023.csv"); CSV <- c("2014" = "CS1", "2023" = "STAT_GSEC")
+  ext <- lapply(set_names(ANS), function(an) {
+    t0 <- Sys.time()
+    x <- fread(file.path(DIR_RP, FICH[[an]]), sep = ";", colClasses = "character", showProgress = FALSE,
+               select = c("CANTVILLE", "NUMMI", "NUMF", "LPRF", "AGEREV", "SEXE", "IPONDI", "METRODOM", "MOCO", CSV[[an]]))
+    setnames(x, CSV[[an]], "CS")
+    x <- x[METRODOM == "M"]
+    x[, `:=`(age = as.integer(AGEREV), w = as.numeric(IPONDI), fam = paste(CANTVILLE, NUMMI, NUMF))]
+    bebes <- unique(x[LPRF == "3" & age == 0 & MOCO %in% c("11", "12"), .(fam)])[, bebe := 1L]   # comme au script 66
+    x <- x[SEXE == "2" & age >= 15 & age <= 49]
+    x[bebes, bebe := i.bebe, on = "fam"]
+    x[, `:=`(naiss = as.integer(LPRF %in% c("1", "2") & !is.na(bebe)), couple = MOCO %in% c("21", "22"),
+             grp = groupe_pcs(CS, an))]
+    cel <- x[, .(n = sum(w), naiss = sum(w * naiss)), by = .(age, couple, grp)][, annee := an]
+    # Clé des femmes en couple, pour classer les couples des extraits du script 48 (hh = canton-ou-ville + ménage)
+    cle <- x[couple == TRUE & LPRF %in% c("1", "2"), .(hh = paste(CANTVILLE, NUMMI), age_femme = age, grp)]
+    cle <- cle[, if (.N == 1) .SD, by = .(hh, age_femme)]   # clés ambiguës écartées
+    cat(an, ": femmes de 15 à 49 ans", nrow(x), "; ", round(difftime(Sys.time(), t0, units = "secs")), "s\n")
+    rm(x); gc(verbose = FALSE)
+    list(cel = as_tibble(cel), cle = as_tibble(cle) %>% mutate(annee = an))
+  })
+  saveRDS(list(cel = map_dfr(ext, "cel"), cle = map_dfr(ext, "cle")), F_PCS)
+}
+pcs <- readRDS(F_PCS)
+#  Contrôle : mêmes effectifs et naissances que les cellules du script 66
+ctl <- inner_join(pcs$cel %>% group_by(annee, age) %>% summarise(n1 = sum(n), b1 = sum(naiss), .groups = "drop"),
+                  femmes %>% group_by(annee, age) %>% summarise(n0 = sum(n), b0 = sum(naiss), .groups = "drop"), by = c("annee", "age"))
+cat("\nGroupe socioprofessionnel : écart maximal aux cellules du script 66 (effectifs, naissances) :",
+    signif(max(abs(ctl$n1 / ctl$n0 - 1)), 2), signif(max(abs(ctl$b1 / ctl$b0 - 1)), 2), "\n")
+stopifnot(max(abs(ctl$n1 / ctl$n0 - 1)) < 1e-6, max(abs(ctl$b1 / ctl$b0 - 1)) < 1e-6)
+fp <- pcs$cel %>% rename(dipl = grp)   # même forme que `femmes` pour par_age()
+xp <- cp %>% select(-dipl) %>% left_join(pcs$cle, by = c("annee", "hh", "age" = "age_femme")) %>% rename(dipl = grp)
+cat("Couples des extraits classés :", paste(round(100 * tapply(!is.na(xp$dipl), xp$annee, mean), 1), collapse = " / "), "%\n")
+xp <- xp %>% filter(!is.na(dipl))
+par_pcs <- map_dfr(c("Ensemble (25-49 ans)", GROUPES), function(g) {
+  f <- fp %>% filter(age >= 25, if (g %in% GROUPES) dipl == g else TRUE)
+  x <- xp %>% filter(age >= 25, if (g %in% GROUPES) dipl == g else TRUE)
+  l <- par_age(f); t3 <- trois_termes(l)
+  t3 %>% mutate(groupe = g, logement = effet_logement(x, l, "croise"), .before = 1)
+}) %>% mutate(baisse_pct = 100 * variation / icf_2014,
+              across(c(vie_en_couple, logement, taux_couples, hors_couple), ~ 100 * .x / variation, .names = "part_{.col}_pct"),
+              part_taux_couples_hors_logement_pct = part_taux_couples_pct - part_logement_pct,
+              taux_couples_hors_logement = taux_couples - logement)
+poids_pcs <- fp %>% filter(age >= 25) %>% count(annee, dipl, wt = n) %>% group_by(annee) %>%
+  mutate(pct = 100 * n / sum(n)) %>% select(-n) %>% pivot_wider(names_from = annee, values_from = pct, names_prefix = "p")
+couple_pcs <- fp %>% filter(age >= 25) %>% group_by(annee, dipl) %>% summarise(c = 100 * sum(n[couple]) / sum(n), .groups = "drop") %>%
+  pivot_wider(names_from = annee, values_from = c, names_prefix = "c")
+par_pcs <- par_pcs %>% left_join(poids_pcs, by = c("groupe" = "dipl")) %>% left_join(couple_pcs, by = c("groupe" = "dipl")) %>%
+  rename(part_femmes_2014_pct = p2014, part_femmes_2023_pct = p2023, en_couple_2014_pct = c2014, en_couple_2023_pct = c2023)
+cat("\nPar groupe socioprofessionnel (25-49 ans ; parts en % de la baisse du groupe) :\n")
+print(as.data.frame(par_pcs %>% select(groupe, icf_2014, icf_2023, baisse_pct, part_vie_en_couple_pct, part_logement_pct,
+                                       part_taux_couples_hors_logement_pct, part_hors_couple_pct,
+                                       part_femmes_2014_pct, part_femmes_2023_pct, en_couple_2014_pct, en_couple_2023_pct) %>%
+                      mutate(across(where(is.double), ~ round(.x, 2)))), row.names = FALSE)
+cat("\nEn enfants par femme (somme des taux de 25 à 49 ans du groupe) :\n")
+print(as.data.frame(par_pcs %>% select(groupe, variation, vie_en_couple, logement, taux_couples_hors_logement, hors_couple) %>%
+                      mutate(across(where(is.double), ~ round(.x, 3)))), row.names = FALSE)
+
 # ── Sortie ─────────────────────────────────────────────────────────────────
 ecrire(bind_rows(tt %>% mutate(bloc = "Trois termes", .before = 1),
                  logement %>% mutate(bloc = "Logement", .before = 1),
                  synthese %>% mutate(bloc = "Synthese", .before = 1),
                  tens %>% select(tension, effet_pts, moy, part_du_recul_pct, part_baisse_pct) %>% mutate(bloc = "Tension", .before = 1),
-                 par_diplome %>% mutate(bloc = "Par diplome", .before = 1)),
+                 par_diplome %>% mutate(bloc = "Par diplome", .before = 1),
+                 par_pcs %>% mutate(bloc = "Par groupe socioprofessionnel", .before = 1)),
        "Output/decomposition_recensement.csv")
