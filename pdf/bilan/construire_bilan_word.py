@@ -3,8 +3,10 @@
 Usage : python construire_bilan_word.py  (depuis ce dossier)
 Lit bilan_logement_natalite.html, source de la page publiée, et écrit
 bilan_logement_natalite.docx dans le style de la synthèse Word
-(../synthese/construire_synthese.py). Les deux graphiques en barres viennent
-de figures_bilan.R ; légendes et graduations HTML sont alors inutiles.
+(../synthese/construire_synthese.py). Le graphique en barres (quartiles de
+SRCV, seul restant depuis le 17 novembre) vient de figures_bilan.R ; légendes et
+graduations HTML sont alors inutiles. Un graphique en barres ajouté à la page
+sans figure correspondante arrête le script (StopIteration).
 """
 import re
 import sys
@@ -24,7 +26,7 @@ from construire_synthese import (FOND, GRIS, MARINE, POLICE, Synthese,  # noqa: 
 
 SOURCE = ICI / "bilan_logement_natalite.html"
 SORTIE = ICI / "bilan_logement_natalite.docx"
-FIGURES = [ICI / "graph_parts_icf_quartiles.png", ICI / "graph_parts_icf_diplome.png"]
+FIGURES = [ICI / "graph_parts_icf_quartiles.png"]   # dans l'ordre des graphiques en barres de la page
 OCRE = RGBColor(0x8F, 0x5A, 0x07)
 PUCES = {"ok": RGBColor(0x2C, 0x7A, 0x4B), "part": RGBColor(0x94, 0x60, 0x06),
          "no": RGBColor(0xAD, 0x3A, 0x3A)}
