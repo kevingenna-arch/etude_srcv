@@ -378,6 +378,50 @@ def vue_ensemble(s, pf, e, rc):
         "qu'une contrainte d'accès au logement.",
     ])
 
+    s.h2("Tension, voisinage et prix")
+    s.p(f"Deux tests de plus, sur une géographie fine : la commune quand le recensement la donne, sinon le "
+        f"reste du canton-ou-ville ({fr(rc['unites_mixtes'], 0)} unités), puis le canton et l'aire d'attraction "
+        "des villes, échelle à laquelle les départs du centre vers la périphérie s'annulent. On ajoute la "
+        "tension des unités voisines, en couronnes de 0-20 et 20-50 km. La tension est soit le zonage A/B/C, "
+        "soit un indice de prix au m² des logements anciens tiré de DVF+ (ventes de 2014 à 2024, à type de "
+        "bien et nombre de pièces donnés), qui varie dans le temps.")
+    etoile = lambda p: "\u2217\u2217" if p < 0.01 else ("\u2217" if p < 0.05 else "")
+    ech = ("Mixte", "Canton-ou-ville", "Aire d'attraction")
+    iss = (("Femmes de 25-29 ans en couple", "Femmes 25-29 en couple"),
+           ("Femmes de 25-29 ans seules", "Femmes 25-29 seules"),
+           ("Premier enfant des couples", "Premiere naissance (couples sans enfant)"))
+    def ligne(src, lib, cle):
+        return ["\u00a0\u00a0\u00a0" + lib] + [frs(src[(cle, e)]["effet_pts"], 2) + etoile(float(src[(cle, e)]["p"]))
+                                                  for e in ech]
+    lignes = ([["Zonage : 10 points de population de plus en zone tendue", "", "", ""]]
+              + [ligne(rc["vz"], l, c) for l, c in iss]
+              + [["Prix (DVF+) : 10 % de hausse de plus que la moyenne", "", "", ""]]
+              + [ligne(rc["vp"], l, c) for l, c in iss])
+    s.tableau(["Unité et voisines, 2014 → 2023 (points)", "Commune ou reste du canton", "Canton-ou-ville",
+               "Aire d'attraction"], lignes, [7.0, 3.2, 3.0, 3.0], taille=9.5,
+              note="Effet de la tension de l'unité et de ses voisines (somme des coefficients) sur l'évolution "
+                   "depuis 2014 ; effets fixes d'unité, d'âge × millésime et de département × millésime ; "
+                   "erreurs-types groupées par département ; \u2217 p < 0,05, \u2217\u2217 p < 0,01. Prix : "
+                   "évolution relative, la hausse nationale étant absorbée par les effets de millésime. "
+                   "Comparaison de territoires, pas un effet causal : les prix montent là où l'on veut s'installer.")
+    h = rc["hausse"]["2023"]
+    s.puces([
+        "**Les voisines comptent peu.** Une fois le département pris en compte, la proximité d'une zone "
+        "tendue ne change presque rien, et rien ne passe d'un territoire à l'autre : après contrôle de la "
+        "tension et du département, les évolutions des unités voisines ne se ressemblent plus (I de Moran "
+        f"des résidus, p = {fr(rc['moran_p'], 2)}).",
+        "**La vie seule progresse sur place.** C'est le signal le plus solide, à toutes les échelles : plus "
+        "de jeunes femmes seules dans les zones tendues, ce qui ressemble à l'arrivée de célibataires dans "
+        "les grandes villes.",
+        "**Les prix n'y sont pour rien.** Là où les prix ont le plus monté, la vie en couple n'a pas reculé "
+        "davantage : le lien avec le zonage tient à la grande ville, pas à la hausse des prix. Pour le premier "
+        "enfant, le signal est négatif mais faible, significatif à une seule échelle. Les prix réels n'ont "
+        f"d'ailleurs monté que de {fr(100 * float(h['reelle']), 0)} % entre 2014-2016 et 2022-2024 "
+        f"({fr(100 * float(h['nominale']), 0)} % en nominal, {fr(100 * float(h['inflation']), 0)} % "
+        f"d'inflation). La part de la tension dans la décomposition reste de {fr(rc['tension_bas'], 1)} à "
+        f"{fr(rc['tension_haut'], 1)} %.",
+    ])
+
     s.h2("Dans les couples, tout part du premier enfant")
     pa = rc["parite"]
     noms = (("1er enfant", "Premier enfant"), ("2e enfant", "Deuxième enfant"), ("3e enfant", "Troisième enfant"),
@@ -1098,9 +1142,10 @@ def donnees_documents(s):
          ["Note de modélisation", "10", "Modèle à générations imbriquées à trois périodes"],
          ["Article", "32", "« La surface fait-elle les naissances ? », 2014-2025, pour la "
           "Revue économique ou la Revue d'économie politique"],
-         ["Diaporama", "54", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
+         ["Diaporama", "55", "Bilan du projet, du logement à la politique familiale dans l'ERFS "
           "(plafonds de la PAJE, prestations ou quotient familial, offre d'accueil, emploi des femmes et "
-          "congé parental) ; décomposition de la baisse au recensement, par diplôme et par profession"],
+          "congé parental) ; décomposition de la baisse au recensement, tension, voisinage et prix, par "
+          "diplôme et par profession"],
          ["Note sur l'ERFS", "", "« Politique familiale et fécondité dans l'ERFS 2005-2023 », "
           "document partagé"],
          ["Page de bilan et bilan Word", "17", "Point d'étape partagé en ligne et sa version Word"]],
@@ -1117,6 +1162,8 @@ def sources(s):
         "Insee, recensements de la population 2014, 2019 et 2023, fichiers détail ; calculs de l'auteur.",
         "Cnaf, data.caf.fr : places d'accueil du jeune enfant par mode, 2017-2023 ; ministère chargé du "
         "Logement, zonage A/B/C (2022) ; Insee, table d'appartenance géographique des communes (2022).",
+        "Cerema, DVF+ (demandes de valeurs foncières enrichies), ventes 2014-2024 ; IGN, Admin Express "
+        "COG CARTO 2025 ; calculs de l'auteur.",
         "Insee (2026), « Bilan démographique 2025 », Insee Première n° 2087.",
         "Insee (2024), « Bilan démographique 2023 », Insee Première.",
         "Elmallakh N. (2023), Demography, vol. 60, n° 5, p. 1493-1522.",
@@ -1276,6 +1323,16 @@ def chiffres_recensement():
     rc["acc"] = {r["niveau"]: r for r in a65 if r["bloc"] == "Part de la baisse 2019-2023"
                  and r["echantillon"] == "Ensemble"}
     rc["srcv"] = {r["facteur"]: float(r["part"]) for r in lire("graph_parts_baisse_icf.csv")}
+    # Tension, voisinage et prix (scripts 70 et 72) : effet uniforme, avec effets de département
+    tv, pv = lire("tension_voisinage.csv"), lire("prix_voisinage.csv")
+    unif = lambda rows, bloc: {(r["issue"], r["echelle"]): r for r in rows
+                               if r["bloc"] == bloc and "departement" in r["specification"]
+                               and r["terme"].startswith("Effet uniforme") and r.get("annee", "") in ("2023", "", "NA")}
+    rc["vz"], rc["vp"] = unif(tv, "Modeles SLX"), unif(pv, "Modeles SLX, prix")
+    rc["unites_mixtes"] = float(rc["vz"][("Femmes 25-29 en couple", "Mixte")]["unites"])
+    rc["hausse"] = {r["annee"]: r for r in pv if r["bloc"] == "Hausse nationale des prix"}
+    rc["moran_p"] = next(float(r["p"]) for r in tv if r["bloc"] == "Interdependance"
+                         and r["mesure"].startswith("I de Moran, residus"))
     return rc
 
 
