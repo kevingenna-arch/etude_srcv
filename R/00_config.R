@@ -201,6 +201,11 @@ MENSUALITE_MAX <- 10000
 #  Utilisé par le script 26 uniquement ; le chemin est propre à ce poste.
 DIR_DVF <- "C:/Users/kgenn/Documents/TDTE/Immobilier/données Immo fécondité/1_DONNEES_LIVRAISON"
 
+#  Admin Express COG CARTO 2025 (IGN), France métropolitaine en Lambert-93 :
+#  communes, chefs-lieux, population légale 2022. HORS DÉPÔT (293 Mo, dossier du
+#  projet Virage domiciliaire) ; le chemin est propre à ce poste. Script 70.
+F_ADMIN_EXPRESS <- "C:/Users/kgenn/Documents/TDTE/Virage domiciliaire/graphs/ADE-COG-CARTO_4-0_GPKG_LAMB93_FXX-ED2025-01-01.gpkg"
+
 #  Recensement : fichiers détail Insee « individus localisés au canton-ou-ville »
 #  (FD_INDCVI_2019.csv, FD_INDCVI_2023.csv, ~4,7 Go chacun). Scripts 48-49.
 DIR_RP <- file.path("Data", "recensement")
